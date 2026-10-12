@@ -282,7 +282,7 @@ function schoolTeams(){
 function ensureSchoolTeams(st){const have=new Set(st.teams.map(t=>t.id));schoolTeams().forEach(t=>{if(!have.has(t.id))st.teams.push(t)});st.games=st.games||[];return st}
 const teamTitle=t=>t.schoolId?`${t.schoolId} ${t.name}`:t.name;
 
-const KEY='stateam.v5';
+const KEY='stateam.v6';
 const uid=()=>Math.random().toString(36).slice(2,9);
 const today=()=>{const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)};
 const fmtDate=d=>new Date(d+'T00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'});
@@ -302,16 +302,16 @@ function sample(){
     logs:[
       m('2026-09-08','basketball','Busan Foreign School',55,62,26,{points:12,rebounds:4,assists:3},T),
       p('2026-09-10','basketball','Catch-and-shoot threes',90,3,T,'Feet set late on the left wing.'),
-      m('2026-09-14','basketball','Gyeongnam Intl. Foreign School',64,60,30,{points:19,rebounds:5,assists:4},T),
+      m('2026-09-14','basketball','Gyeongnam International Foreign School',64,60,30,{points:19,rebounds:5,assists:4},T),
       p('2026-09-17','basketball','Ball handling under pressure',75,4,T),
-      m('2026-09-19','basketball','Intl. School of Busan',75,69,28,{points:16,rebounds:6,assists:5},T),
+      m('2026-09-19','basketball','International School of Busan',75,69,28,{points:16,rebounds:6,assists:5},T),
       m('2026-09-20','football','Gwangju FC',2,2,70,{goals:1,assists:0,shots:4},'club-wu'),
       p('2026-09-22','basketball','Free throws, 100 reps',60,4,T,'Made 81 of 100.'),
       m('2026-09-24','basketball','Daegu Middle High School',58,63,32,{points:21,rebounds:3,assists:6},T),
       p('2026-09-26','football','Finishing drills',80,3,'club-wu'),
       m('2026-09-28','basketball','Busan Foreign School',68,61,27,{points:18,rebounds:7,assists:4},T),
       p('2026-10-01','basketball','Defensive slides + closeouts',90,5,T),
-      m('2026-10-03','basketball','Intl. School of Busan',72,64,29,{points:24,rebounds:5,assists:5},T),
+      m('2026-10-03','basketball','International School of Busan',72,64,29,{points:24,rebounds:5,assists:5},T),
       p('2026-10-08','basketball','Pick-and-roll reads',85,4,T)
     ],
     games:[]
@@ -321,7 +321,7 @@ function sample(){
   Object.assign(t,{joined:true,managed:true,coach:'Coach Park',meets:'Mon · Wed · Fri, 4:00 pm · Main gym',roster:['Alex Lee','Jiho Park','Chaeyoung Lim','Seojun Kim','Minjae Cho','Dohyun Yoon','Ian Moon','Taeyang Seo']});
   const jv=st.teams.find(x=>x.id==='DIS-MJ-BB');
   Object.assign(jv,{managed:true,coach:'Coach Park',meets:'Tue · Thu, 3:45 pm · Main gym',roster:['Hayoon Jeon','Leo Kim','Junseo Ryu','Eric Bae','Yejun Song','Noah Han']});
-  [['2026-09-16','Busan Foreign School',48,52],['2026-09-23','Daegu Middle High School',55,41],['2026-10-02','Intl. School of Busan',50,47]].forEach(([d,o,us,them],gi)=>{const box={};let left=us;jv.roster.forEach((n,k)=>{const pts=k===jv.roster.length-1?Math.max(0,left):Math.round(us*[.26,.2,.17,.14,.12][(k+gi)%5]);left-=pts;box[n]={points:pts,rebounds:1+((k*5+gi*3)%9),assists:(k*2+gi)%5,minutes:10+((k*9+gi*4)%20)}});st.games.push({id:uid(),teamId:jv.id,date:d,opponent:o,us,them,result:resOf(us,them),location:gi%2?'Away':'Home',box})});
+  [['2026-09-16','Busan Foreign School',48,52],['2026-09-23','Daegu Middle High School',55,41],['2026-10-02','International School of Busan',50,47]].forEach(([d,o,us,them],gi)=>{const box={};let left=us;jv.roster.forEach((n,k)=>{const pts=k===jv.roster.length-1?Math.max(0,left):Math.round(us*[.26,.2,.17,.14,.12][(k+gi)%5]);left-=pts;box[n]={points:pts,rebounds:1+((k*5+gi*3)%9),assists:(k*2+gi)%5,minutes:10+((k*9+gi*4)%20)}});st.games.push({id:uid(),teamId:jv.id,date:d,opponent:o,us,them,result:resOf(us,them),location:gi%2?'Away':'Home',box})});
   st.people={'Jiho Park':['Point guard','3'],'Chaeyoung Lim':['Small forward','11'],'Seojun Kim':['Center','33'],'Minjae Cho':['Power forward','21'],'Dohyun Yoon':['Shooting guard','8'],'Ian Moon':['Point guard','5'],'Taeyang Seo':['Small forward','14'],'Hayoon Jeon':['Point guard','2'],'Leo Kim':['Shooting guard','10'],'Junseo Ryu':['Center','40'],'Eric Bae':['Power forward','23'],'Yejun Song':['Small forward','7'],'Noah Han':['Shooting guard','12']};
   // official games mirror Alex's matches, with a full box score per player
   const w=[.24,.18,.14,.12,.1,.08,.07];
@@ -492,7 +492,7 @@ function vStatsPlayer(){
   <div class="seg" role="group" aria-label="Session type">${[['all','All'],['match','Matches'],['practice','Practice']].map(([k,l])=>`<button data-act="type" data-v="${k}" aria-pressed="${UI.type===k}">${l}</button>`).join('')}</div>
   <div class="kpis">${tile('pulse','Sessions',s.logs.length,`${s.matches.length} M · ${s.practices.length} P`)}${tile('trophy','Win rate',s.winRate==null?'–':s.winRate+'%')}${tile('target','Avg. '+SPORTS[sp].unit,s.matches.length?s.avg.toFixed(1):'–','/ match')}${tile('clock','Time logged',s.minutes,'min')}</div>
   ${playerChart(sp)}</div>
-  <section class="sec"><div class="sechead"><h2>Personal records</h2><span class="small muted">best single match</span></div>
+  <section class="sec"><div class="sechead"><h2>Personal records</h2><span class="small muted">Best single match</span></div>
     <div class="prs">${records(sp).map(p=>`<div class="card pr"><div class="eyebrow">${p.lab}</div><div class="v">${p.best?p.best.v:'–'}</div><div class="d">${p.best?`vs. ${esc(p.best.l.opponent)} · ${fmtDate(p.best.l.date)}`:'No matches yet'}</div></div>`).join('')}</div></section>
   <section class="sec"><div class="sechead"><h2>Session log</h2><span class="small muted num">${logs.length} entries</span></div>
     <div class="card list">${logs.length?logs.map(logRow).join(''):`<div class="empty"><b>Nothing logged here yet</b>Use the buttons below to add one.</div>`}</div>
@@ -589,6 +589,15 @@ function closeModal(){document.getElementById('modal').innerHTML='';modalCtx=nul
 const sheetHead=t=>`<div class="sheethead"><h2>${t}</h2><button class="iconbtn" data-act="close" aria-label="Close" style="flex:0 0 auto">${ic('x',18)}</button></div>`;
 const lockNote=msg=>`<div class="lock">${ic('lock',16)}<span>${msg}</span></div>`;
 
+function oppField(pfx,val){
+  const own=me().school;const list=SCHOOLS.filter(x=>x.name!==own);const custom=!!val&&!list.some(x=>x.name===val);
+  const cities=[...new Set(list.map(x=>x.city))];
+  return `<div class="f"><label for="${pfx}-opp">Opponent</label><select id="${pfx}-opp" name="oppSel" data-opp="${pfx}"><option value="">Choose opponent</option>
+    ${cities.map(c=>`<optgroup label="${c}">${list.filter(x=>x.city===c).map(x=>`<option ${x.name===val?'selected':''}>${esc(x.name)}</option>`).join('')}</optgroup>`).join('')}
+    <option value="__other" ${custom?'selected':''}>Other team (type the name)</option></select>
+    <input id="${pfx}-oppx" name="oppOther" aria-label="Other team name" value="${custom?esc(val):''}" placeholder="Team name" ${custom?'':'hidden'}></div>`;
+}
+const readOpp=fd=>{const v=fd.get('oppSel');return (v==='__other'?fd.get('oppOther')||'':v||'').trim()};
 function logForm(type,existing,draft){
   const l=existing||draft||{type,sport:curSport(),date:today(),minutes:type==='match'?'':60,stats:{},rating:3,result:'W'};
   type=l.type;const sp=l.sport;const teamOpts=joinedTeams().filter(t=>t.sport===sp);
@@ -598,7 +607,7 @@ function logForm(type,existing,draft){
     <div class="grid2"><div class="f"><label for="lf-sport">Sport</label><select id="lf-sport" name="sport">${Object.entries(SPORTS).map(([k,s])=>`<option value="${k}" ${k===sp?'selected':''}>${s.name}</option>`).join('')}</select></div>
       <div class="f"><label for="lf-date">Date</label><input id="lf-date" name="date" type="date" value="${l.date}" max="${today()}"></div></div>
     ${type==='match'?`
-      <div class="f"><label for="lf-opp">Opponent</label><input id="lf-opp" name="opponent" value="${esc(l.opponent||'')}" placeholder="e.g. Busan Foreign School"></div>
+      ${oppField('lf',l.opponent)}
       <div class="grid3"><div class="f"><label for="lf-us">Our score</label><input id="lf-us" name="us" type="number" min="0" inputmode="numeric" value="${l.us??''}"></div>
         <div class="f"><label for="lf-them">Their score</label><input id="lf-them" name="them" type="number" min="0" inputmode="numeric" value="${l.them??''}"></div>
         <div class="f"><label for="lf-res">Result</label><select id="lf-res" name="result">${Object.entries(RES).map(([k,v])=>`<option value="${k}" ${l.result===k?'selected':''}>${v}</option>`).join('')}</select></div></div>`
@@ -617,7 +626,7 @@ function readLogForm(){
   const fd=new FormData(document.getElementById('logForm'));const sp=fd.get('sport');
   const stats={};SPORTS[sp].fields.forEach(([k])=>stats[k]=Math.max(0,+fd.get('s_'+k)||0));
   const o={type:modalCtx.type,sport:sp,date:fd.get('date')||today(),minutes:Math.max(0,+fd.get('minutes')||0),stats,teamId:fd.get('teamId')||'',notes:(fd.get('notes')||'').trim()};
-  if(o.type==='match'){o.opponent=(fd.get('opponent')||'').trim();o.us=fd.get('us')===''?null:+fd.get('us');o.them=fd.get('them')===''?null:+fd.get('them');o.result=fd.get('result')}
+  if(o.type==='match'){o.opponent=readOpp(fd);o.us=fd.get('us')===''?null:+fd.get('us');o.them=fd.get('them')===''?null:+fd.get('them');o.result=fd.get('result')}
   else{o.focus=(fd.get('focus')||'').trim();o.rating=modalCtx.rating}
   return o;
 }
@@ -716,7 +725,7 @@ function gameForm(teamId,existing){
     <div class="card team" style="box-shadow:none;padding:12px;grid-template-columns:40px 1fr;cursor:default">${logoOr(t,'sm')}<span style="font-weight:700">${esc(teamTitle(t))}</span></div>
     <div class="grid2"><div class="f"><label for="gf-date">Date</label><input id="gf-date" name="date" type="date" value="${g.date}"></div>
       <div class="f"><label for="gf-loc">Venue</label><select id="gf-loc" name="location">${['Home','Away','Neutral'].map(v=>`<option ${g.location===v?'selected':''}>${v}</option>`).join('')}</select></div></div>
-    <div class="f"><label for="gf-opp">Opponent</label><input id="gf-opp" name="opponent" value="${esc(g.opponent)}" placeholder="e.g. Busan Foreign School"></div>
+    ${oppField('gf',g.opponent)}
     <div class="grid3"><div class="f"><label for="gf-us">Our score</label><input id="gf-us" name="us" type="number" min="0" inputmode="numeric" value="${g.us}"></div>
       <div class="f"><label for="gf-them">Their score</label><input id="gf-them" name="them" type="number" min="0" inputmode="numeric" value="${g.them}"></div>
       <div class="f"><label for="gf-res">Result</label><select id="gf-res" name="result">${Object.entries(RES).map(([k,v])=>`<option value="${k}" ${g.result===k?'selected':''}>${v}</option>`).join('')}</select></div></div>
@@ -815,6 +824,7 @@ document.addEventListener('click',e=>{
 document.addEventListener('change',e=>{
   const id=e.target.id;
   if(id==='metricSel'){UI.metric=e.target.value;render()}
+  if(e.target.dataset.opp){const x=document.getElementById(e.target.dataset.opp+'-oppx');x.hidden=e.target.value!=='__other';if(!x.hidden)x.focus()}
   if(id==='lf-sport'){const cur=readLogForm();cur.teamId='';cur.stats={};const ed=modalCtx.editId;if(ed){cur.id=ed;logForm(cur.type,cur)}else logForm(cur.type,null,cur)}
   const auto=(a,b,r)=>{const u=document.getElementById(a)?.value,t=document.getElementById(b)?.value;if(u!==''&&t!=='')document.getElementById(r).value=resOf(+u,+t)};
   if(id==='lf-us'||id==='lf-them')auto('lf-us','lf-them','lf-res');
@@ -825,14 +835,14 @@ document.addEventListener('submit',e=>{
   const fail=(el,msg)=>{const x=document.getElementById(el);x.textContent=msg;x.hidden=false};
   if(id==='logForm'){
     const o=readLogForm();
-    if(o.type==='match'&&!o.opponent)return fail('lf-err','Add the opponent’s name so you can find this match later.');
+    if(o.type==='match'&&!o.opponent)return fail('lf-err','Choose the opponent so you can find this match later.');
     if(o.type==='practice'&&!o.focus)return fail('lf-err','Add what you worked on, even a few words like “shooting drills”.');
     if(modalCtx.editId){const i=S.logs.findIndex(l=>l.id===modalCtx.editId);S.logs[i]={...S.logs[i],...o}}else S.logs.push({id:uid(),...o});
     UI.sport=o.sport;save();closeModal();render();toast(o.type==='match'?'Match saved':'Practice saved');
   }
   if(id==='gameForm'){
     if(!isCoach())return;const t=S.teams.find(x=>x.id===modalCtx.teamId);if(!t.managed)return;
-    const opp=(fd.get('opponent')||'').trim();if(!opp)return fail('gf-err','Add the opponent’s name.');
+    const opp=readOpp(fd);if(!opp)return fail('gf-err','Choose the opponent.');
     if(fd.get('us')===''||fd.get('them')==='')return fail('gf-err','Enter the final score for both teams.');
     const keys=[...SPORTS[t.sport].fields.map(x=>x[0]),'minutes'];const box={};
     modalCtx.names.forEach((n,i)=>{const row={};let any=false;keys.forEach(k=>{const v=fd.get(`b_${i}_${k}`);row[k]=Math.max(0,+v||0);if(v!=='')any=true});if(any)box[n]=row});
