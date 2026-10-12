@@ -119,6 +119,25 @@ select.mini{background:var(--surface2);border:1px solid var(--line);border-radiu
 .srow .sname{font-weight:700;font-size:15px;line-height:1.3;text-wrap:balance}
 .srow .chev{color:var(--muted)}
 .srow:hover .chev{color:var(--accent)}
+.prow{display:grid;grid-template-columns:1fr auto;align-items:center;border-top:1px solid var(--line)}
+.prow:first-child{border-top:0}
+.pbtn{display:grid;grid-template-columns:32px 1fr 16px;gap:12px;align-items:center;padding:11px 16px;background:none;border:0;text-align:left;cursor:pointer;width:100%}
+.pbtn:hover{background:var(--surface2)}
+.pbtn .t{font-weight:600}
+.pbtn .m{color:var(--muted);font-size:12px}
+.chip.sm{padding:6px 12px;font-size:13px}
+.lbrow{grid-template-columns:30px 1fr auto}
+.lbrow:disabled{cursor:default}
+.lbrow.me{background:var(--accent-soft)}
+.rank{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:13px;background:var(--surface2);color:var(--muted);font-variant-numeric:tabular-nums}
+.rank.r1{background:var(--accent);color:var(--accent-fg)}
+.rank.r2{background:color-mix(in srgb,var(--accent) 55%,var(--surface2));color:var(--accent-fg)}
+.rank.r3{background:color-mix(in srgb,var(--accent) 30%,var(--surface2));color:var(--fg)}
+.av.sm{width:64px;height:64px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-size:22px;font-weight:800;flex:0 0 auto}
+.avgs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center}
+.avgs b{display:block;font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.avgs span{font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--muted)}
+.backlink{display:inline-flex;margin:-4px 0 6px}
 .avatars{display:flex}
 .avatars span{width:26px;height:26px;border-radius:50%;background:var(--surface2);border:2px solid var(--surface);font-size:10px;font-weight:700;display:grid;place-items:center;margin-left:-6px}
 .avatars span:first-child{margin-left:0}
@@ -263,7 +282,7 @@ function schoolTeams(){
 function ensureSchoolTeams(st){const have=new Set(st.teams.map(t=>t.id));schoolTeams().forEach(t=>{if(!have.has(t.id))st.teams.push(t)});st.games=st.games||[];return st}
 const teamTitle=t=>t.schoolId?`${t.schoolId} ${t.name}`:t.name;
 
-const KEY='stateam.v4';
+const KEY='stateam.v5';
 const uid=()=>Math.random().toString(36).slice(2,9);
 const today=()=>{const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)};
 const fmtDate=d=>new Date(d+'T00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'});
@@ -302,6 +321,8 @@ function sample(){
   Object.assign(t,{joined:true,managed:true,coach:'Coach Park',meets:'Mon · Wed · Fri, 4:00 pm · Main gym',roster:['Alex Lee','Jiho Park','Chaeyoung Lim','Seojun Kim','Minjae Cho','Dohyun Yoon','Ian Moon','Taeyang Seo']});
   const jv=st.teams.find(x=>x.id==='DIS-MJ-BB');
   Object.assign(jv,{managed:true,coach:'Coach Park',meets:'Tue · Thu, 3:45 pm · Main gym',roster:['Hayoon Jeon','Leo Kim','Junseo Ryu','Eric Bae','Yejun Song','Noah Han']});
+  [['2026-09-16','Busan Foreign School',48,52],['2026-09-23','Daegu Middle High School',55,41],['2026-10-02','Intl. School of Busan',50,47]].forEach(([d,o,us,them],gi)=>{const box={};let left=us;jv.roster.forEach((n,k)=>{const pts=k===jv.roster.length-1?Math.max(0,left):Math.round(us*[.26,.2,.17,.14,.12][(k+gi)%5]);left-=pts;box[n]={points:pts,rebounds:1+((k*5+gi*3)%9),assists:(k*2+gi)%5,minutes:10+((k*9+gi*4)%20)}});st.games.push({id:uid(),teamId:jv.id,date:d,opponent:o,us,them,result:resOf(us,them),location:gi%2?'Away':'Home',box})});
+  st.people={'Jiho Park':['Point guard','3'],'Chaeyoung Lim':['Small forward','11'],'Seojun Kim':['Center','33'],'Minjae Cho':['Power forward','21'],'Dohyun Yoon':['Shooting guard','8'],'Ian Moon':['Point guard','5'],'Taeyang Seo':['Small forward','14'],'Hayoon Jeon':['Point guard','2'],'Leo Kim':['Shooting guard','10'],'Junseo Ryu':['Center','40'],'Eric Bae':['Power forward','23'],'Yejun Song':['Small forward','7'],'Noah Han':['Shooting guard','12']};
   // official games mirror Alex's matches, with a full box score per player
   const w=[.24,.18,.14,.12,.1,.08,.07];
   st.logs.filter(l=>l.teamId===T&&l.type==='match').forEach((l,gi)=>{
@@ -611,8 +632,8 @@ function logDetail(id){
     <div id="delZone" class="actions"><button class="btn danger" data-act="delAsk">Delete</button><button class="btn primary" data-act="editLog" data-id="${l.id}">Edit</button></div></div>`,{kind:'detail',id});
 }
 
-function teamDetail(id){
-  const t=S.teams.find(x=>x.id===id);if(!t)return;
+function teamDetail(id,lb){
+  const t=S.teams.find(x=>x.id===id);if(!t)return;lb=lb||SPORTS[t.sport].unit;
   const sc=school(t.schoolId),c=isCoach(),mine=t.managed,games=teamGames(t.id),r=teamRecord(t.id);
   const canEdit=c&&mine;
   let action='';
@@ -629,12 +650,40 @@ function teamDetail(id){
     <dl class="kv"><dt>Coach</dt><dd>${esc(t.coach||'Not set yet')}</dd><dt>Practices</dt><dd>${esc(t.meets||'Not set yet')}</dd><dt>Record</dt><dd>${recStr(r)}${r.D?' (W–L–D)':''}</dd><dt>Players</dt><dd>${t.roster.length}</dd></dl></div>
     ${canEdit?`<div class="card pad" style="box-shadow:none;background:var(--surface2)"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><div><div class="eyebrow">Invite code · only you can see this</div><div class="code">${t.code}</div></div><button class="btn sm" data-act="copy" data-v="${t.code}">${ic('copy',16)}Copy</button></div>
       <div id="codeZone" class="small muted" style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px">Share it only with players on this team.<button class="link small" data-act="regenAsk">New code</button></div></div>`:''}
+    ${leaderboard(t,lb)}
     <div><div class="sechead" style="margin-bottom:8px"><div class="eyebrow">Official games</div>${canEdit?`<button class="link small" data-act="newGame" data-id="${t.id}">+ Log game</button>`:''}</div>
       <div class="card list" style="box-shadow:none">${games.length?games.slice(0,5).map(g=>gameRow(g)).join(''):`<div class="empty small">No official games yet.${canEdit?'':' Your coach adds these.'}</div>`}</div></div>
-    <div><div class="eyebrow" style="margin-bottom:8px">Roster</div><div class="card list" style="box-shadow:none">${t.roster.length?'':'<div class="empty small">No players yet.</div>'}${t.roster.map((n,i)=>`<div class="row" style="cursor:default;grid-template-columns:32px 1fr auto"><span class="avatars"><span style="width:32px;height:32px;font-size:11px">${initials(n)}</span></span><span>${esc(n)}${!c&&n===S.profile.name?' <span class="muted small">(you)</span>':''}</span>${canEdit?`<button class="link small" style="color:var(--bad)" data-act="rmPlayer" data-i="${i}">Remove</button>`:''}</div>`).join('')}</div>
+    <div><div class="eyebrow" style="margin-bottom:8px">Roster</div><div class="card list" style="box-shadow:none">${t.roster.length?'':'<div class="empty small">No players yet.</div>'}${t.roster.map((n,i)=>`<div class="prow"><button class="pbtn" data-act="openPlayer" data-i="${i}"><span class="avatars"><span style="width:32px;height:32px;font-size:11px">${initials(n)}</span></span><span style="min-width:0"><span class="t">${esc(n)}</span>${!c&&n===S.profile.name?' <span class="muted small">(you)</span>':''}${pubInfo(n)?`<div class="m">${esc(pubInfo(n))}</div>`:''}</span><span class="chev">${ic('chev',16)}</span></button>${canEdit?`<button class="link small" style="color:var(--bad);padding-right:14px" data-act="rmPlayer" data-i="${i}">Remove</button>`:''}</div>`).join('')}</div>
       ${canEdit?`<form id="addPlayer" class="addrow" novalidate><input id="ap-name" name="name" placeholder="Add a player by name" aria-label="Player name"><button class="btn sm">Add</button></form>`:''}</div>
     ${!c&&t.joined?lockNote('Team info, roster and official stats are managed by the coach.'):''}
-    ${action}</div>`,{kind:'team',id});
+    ${action}</div>`,{kind:'team',id,lb});
+}
+function pubInfo(n){const P=n===S.profile.name?[S.profile.position,S.profile.jersey]:(S.people||{})[n];if(!P)return '';return [P[0],P[1]?'#'+P[1]:''].filter(Boolean).join(' · ')}
+function leaderboard(t,lb){
+  const f=SPORTS[t.sport].fields;const rows=seasonTotals(t).filter(r=>r.gp).sort((a,b)=>b[lb]-a[lb]||b[lb]/b.gp-a[lb]/a.gp);
+  const lab=f.find(x=>x[0]===lb)[1];
+  return `<div><div class="sechead" style="margin-bottom:8px"><div class="eyebrow">Leaderboard</div><span class="small muted">official games</span></div>
+    ${rows.length?`<div class="chips" role="group" aria-label="Rank by" style="margin-bottom:10px">${f.map(([k,l])=>`<button class="chip sm" data-act="lb" data-v="${k}" aria-pressed="${k===lb}">${l}</button>`).join('')}</div>
+    <div class="card list" style="box-shadow:none">${rows.map((r,i)=>{const ri=t.roster.indexOf(r.name);const mine=!isCoach()&&r.name===S.profile.name;
+      return `<button class="row lbrow ${mine?'me':''}" ${ri>=0?`data-act="openPlayer" data-i="${ri}"`:'disabled'}><span class="rank r${i+1}">${i+1}</span><span style="min-width:0"><div class="t">${esc(r.name)}${mine?' <span class="muted small">(you)</span>':''}</div><div class="m num">${r.gp} GP · ${(r[lb]/r.gp).toFixed(1)} per game</div></span><span class="r"><b>${r[lb]}<small>${lab.toLowerCase()}</small></b></span></button>`}).join('')}</div>`
+    :`<div class="card empty small" style="box-shadow:none">Rankings appear once the coach logs an official game.</div>`}</div>`;
+}
+function playerSheet(teamId,i){
+  const t=S.teams.find(x=>x.id===teamId);const n=t?.roster[i];if(!n)return;
+  const isMe=!isCoach()&&n===S.profile.name;const info=pubInfo(n);
+  const teams=S.teams.filter(x=>x.roster.includes(n)&&(x.schoolId?teamSchool(x)===teamSchool(t):true));
+  const seasons=teams.map(x=>{const r=seasonTotals(x).find(y=>y.name===n);return r&&r.gp?{x,r}:null}).filter(Boolean);
+  openModal(`<div class="sheethead"><button class="link small" data-act="openTeam" data-id="${t.id}">‹ ${esc(teamTitle(t))}</button><button class="iconbtn" data-act="close" aria-label="Close" style="flex:0 0 auto">${ic('x',18)}</button></div>
+  <div class="stack">
+    <div style="display:flex;gap:14px;align-items:center"><div class="av sm">${initials(n)}</div><div style="min-width:0"><h2 style="font-size:22px">${esc(n)}${isMe?' <span class="muted small">(you)</span>':''}</h2>
+      <div class="small muted">${info?esc(info)+' · ':''}${esc(teamSchool(t)||'Club team')}</div></div></div>
+    <div><div class="eyebrow" style="margin-bottom:8px">Teams</div><div style="display:flex;gap:8px;flex-wrap:wrap">${teams.map(x=>`<button class="pill a" style="border:0;cursor:pointer" data-act="openTeam" data-id="${x.id}">${esc(teamTitle(x))}</button>`).join('')}</div></div>
+    <div><div class="eyebrow" style="margin-bottom:8px">Season averages · official games</div>
+    ${seasons.length?seasons.map(({x,r})=>{const f=SPORTS[x.sport].fields;return `<div class="card pad" style="box-shadow:none;margin-bottom:10px"><div class="small" style="font-weight:700;margin-bottom:10px">${esc(teamTitle(x))} <span class="muted" style="font-weight:500">· ${r.gp} games</span></div>
+      <div class="avgs">${f.map(([k,,ab])=>`<div><b>${(r[k]/r.gp).toFixed(1)}</b><span>${ab}</span></div>`).join('')}<div><b>${Math.round(r.minutes/r.gp)}</b><span>MIN</span></div></div></div>`}).join('')
+      :`<div class="card empty small" style="box-shadow:none">No official games played yet.</div>`}</div>
+    ${lockNote(isMe?'Others see only this card. Your personal logs, notes and practice sessions stay private.':'Only public info and official team stats are shown. Personal logs stay private.')}
+  </div>`,{kind:'player',id:t.id});
 }
 function schoolSheet(id){
   const sc=school(id);if(!sc)return;const f=modalCtx?.kind==='school'&&modalCtx.id===id?modalCtx.f:'all';
@@ -650,7 +699,7 @@ function schoolSheet(id){
 function gameDetail(id){
   const g=S.games.find(x=>x.id===id);if(!g)return;const t=S.teams.find(x=>x.id===g.teamId);const f=SPORTS[t.sport].fields;
   const canEdit=isCoach()&&t.managed;const rows=Object.entries(g.box||{}).filter(([,b])=>played(b));
-  openModal(`${sheetHead('vs. '+esc(g.opponent))}<div class="stack">
+  openModal(`<button class="link small backlink" data-act="openTeam" data-id="${t.id}">‹ ${esc(teamTitle(t))}</button>${sheetHead('vs. '+esc(g.opponent))}<div class="stack">
     <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="pill ${g.result}">${RES[g.result]}</span><span class="pill off">Official</span><span class="pill a">${esc(teamTitle(t))}</span></div>
     <div class="score"><div><div class="eyebrow">${esc(t.schoolId||'Us')}</div><b>${g.us}</b></div><span class="muted">–</span><div><div class="eyebrow">Opponent</div><b>${g.them}</b></div></div>
     <dl class="kv"><dt>Date</dt><dd>${new Date(g.date+'T00:00').toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric',year:'numeric'})}</dd><dt>Venue</dt><dd>${g.location||'–'}</dd></dl>
@@ -729,6 +778,8 @@ document.addEventListener('click',e=>{
     case 'delAsk':document.getElementById('delZone').innerHTML=`<span class="small muted" style="margin-right:auto;align-self:center">Delete this session?</span><button class="btn" data-act="close">Keep</button><button class="btn danger" data-act="delYes">Delete</button>`;break;
     case 'delYes':S.logs=S.logs.filter(l=>l.id!==modalCtx.id);save();closeModal();render();toast('Session deleted');break;
     case 'openTeam':teamDetail(b.dataset.id);break;
+    case 'openPlayer':playerSheet(modalCtx.id,+b.dataset.i);break;
+    case 'lb':teamDetail(modalCtx.id,v);break;
     case 'openSchool':schoolSheet(b.dataset.id);break;
     case 'schoolF':modalCtx.f=v;schoolSheet(modalCtx.id);break;
     case 'leave':{const t=team();t.joined=false;t.roster=t.roster.filter(n=>n!==S.profile.name&&n!=='You');save();closeModal();render();toast('Left '+teamTitle(t));break}
