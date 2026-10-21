@@ -157,7 +157,7 @@ select.mini{background:var(--surface2);border:1px solid var(--line);border-radiu
 .notice{font-size:13px;color:var(--muted);background:var(--surface2);border-radius:10px;padding:10px 12px}
 .demo{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:18px}
 .btn:disabled{opacity:.6;cursor:default}
-.agree{display:grid;grid-template-columns:20px 1fr;gap:10px;align-items:start;font-size:14px;color:var(--muted);cursor:pointer}
+.agree{margin-block:8px;display:grid;grid-template-columns:20px 1fr;gap:10px;align-items:start;font-size:14px;color:var(--muted);cursor:pointer}
 .agree input{width:18px;height:18px;margin:2px 0 0;accent-color:var(--accent)}
 .agree a{color:var(--accent);font-weight:600}
 .arow{display:grid;grid-template-columns:40px 1fr auto;gap:12px;align-items:center;padding:12px 16px;border-top:1px solid var(--line)}
@@ -688,6 +688,7 @@ function logDetail(id){
 }
 
 function teamDetail(id,lb){
+  const pc=modalCtx;const from=pc?.kind==='school'?pc.id:((pc?.kind==='team'&&pc.id===id)||pc?.teamId===id)?pc.from:null;
   const t=S.teams.find(x=>x.id===id);if(!t)return;lb=lb||SPORTS[t.sport].unit;
   const sc=school(t.schoolId),c=isCoach(),mine=t.managed,games=teamGames(t.id),r=teamRecord(t.id);
   const canEdit=c&&mine;
@@ -718,7 +719,7 @@ function teamDetail(id,lb){
         <div id="ap-err" class="err" hidden></div>
         <button class="btn primary block">${ic('plus',18)}Add to roster</button></form>`:''}</div>
     ${!c&&t.joined?lockNote('Team info, roster and official stats are managed by the coach.'):''}
-    ${action}</div>`,{kind:'team',id,lb});
+    ${action}</div>`,{kind:'team',id,lb,from});
 }
 const POSITIONS={basketball:['Point guard','Shooting guard','Small forward','Power forward','Center'],football:['Goalkeeper','Defender','Midfielder','Forward'],volleyball:['Setter','Outside hitter','Opposite hitter','Middle blocker','Libero','Defensive specialist']};
 const pubJersey=n=>{const P=(!cloud()&&n===S.profile.name)?[S.profile.position,S.profile.jersey]:(S.people||{})[n];return P&&P[1]!==''&&P[1]!=null?String(+P[1]):''};
@@ -747,7 +748,7 @@ function playerSheet(teamId,i){
       <div class="avgs">${f.map(([k,,ab])=>`<div><b>${(r[k]/r.gp).toFixed(1)}</b><span>${ab}</span></div>`).join('')}<div><b>${Math.round(r.minutes/r.gp)}</b><span>MIN</span></div></div></div>`}).join('')
       :`<div class="card empty small" style="box-shadow:none">No official games played yet.</div>`}</div>
     ${lockNote(isMe?'Others see only this card. Your personal logs, notes and practice sessions stay private.':'Only public info and official team stats are shown. Personal logs stay private.')}
-  </div>`,{kind:'player',id:t.id,i});
+  </div>`,{kind:'player',id:t.id,i,teamId:t.id,from:modalCtx?.from});
 }
 function schoolSheet(id){
   const sc=school(id);if(!sc)return;const f=modalCtx?.kind==='school'&&modalCtx.id===id?modalCtx.f:'all';
@@ -770,7 +771,7 @@ function gameDetail(id){
     <div><div class="eyebrow" style="margin-bottom:8px">Box score</div>${rows.length?`<div class="card tablewrap" style="box-shadow:none"><table class="tbl"><thead><tr><th>Player</th>${f.map(x=>`<th title="${x[1]}">${x[2]}</th>`).join('')}<th>MIN</th></tr></thead><tbody>
       ${rows.map(([n,b])=>`<tr class="${!isCoach()&&isMeName(t,n)?'me':''}"><td>${esc(n)}</td>${f.map(x=>`<td>${+b[x[0]]||0}</td>`).join('')}<td>${+b.minutes||0}</td></tr>`).join('')}</tbody></table></div>`:`<div class="card empty small">No player stats entered.</div>`}</div>
     ${canEdit?`<div id="delZone" class="actions"><button class="btn danger" data-act="gDelAsk">Delete</button><button class="btn primary" data-act="editGame" data-id="${g.id}">Edit game</button></div>`:lockNote('Official stats can only be changed by the team’s coach.')}
-  </div>`,{kind:'game',id});
+  </div>`,{kind:'game',id,teamId:t.id,from:modalCtx?.teamId===t.id||modalCtx?.id===t.id?modalCtx.from:null});
 }
 function gameForm(teamId,existing){
   const t=S.teams.find(x=>x.id===teamId);const g=existing||{date:today(),opponent:'',us:'',them:'',result:'W',location:'Home',box:{}};
@@ -823,7 +824,7 @@ function render(){
 
 document.addEventListener('click',e=>{
   const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act,v=b.dataset.v;
-  if(a==='scrim'){if(e.target===b)closeModal();return}
+  if(a==='scrim'){if(e.target===b)dismiss();return}
   const team=()=>S.teams.find(x=>x.id===(b.dataset.id||modalCtx?.id));
   switch(a){
     case 'tab':UI.tab=b.dataset.tab;closeModal();render();window.scrollTo(0,0);break;
@@ -842,7 +843,7 @@ document.addEventListener('click',e=>{
     case 'signOutNo':render();break;
     case 'signOut':signOut();break;
     case 'log':logForm(v);break;
-    case 'close':closeModal();break;
+    case 'close':dismiss();break;
     case 'logType':{const cur=readLogForm();cur.type=v;const ed=modalCtx.editId;if(ed){cur.id=ed;logForm(v,cur)}else logForm(v,null,cur);break}
     case 'rate':modalCtx.rating=+v;b.parentElement.querySelectorAll('button').forEach(x=>{x.setAttribute('aria-pressed',x===b);x.classList.toggle('on',+x.dataset.v<=+v)});b.parentElement.querySelector('.rlab').textContent=RATE_LAB[+v];break;
     case 'openLog':logDetail(b.dataset.id);break;
@@ -988,7 +989,8 @@ document.addEventListener('submit',e=>{
     save();closeModal();render();toast('Profile saved');
   }
 });
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('modal').innerHTML)closeModal()});
+function dismiss(){const c=modalCtx;if(c&&c.kind==='team'&&c.from)return schoolSheet(c.from);closeModal()}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('modal').innerHTML)dismiss()});
 /* ---------- cloud sync (Firestore) ---------- */
 let db=null;
 const subs={};
