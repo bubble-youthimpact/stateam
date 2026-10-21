@@ -164,6 +164,14 @@ select.mini{background:var(--surface2);border:1px solid var(--line);border-radiu
 .arow:first-child{border-top:0}
 .arow .t{font-weight:700}.arow .m{color:var(--muted);font-size:12px;overflow-wrap:anywhere}
 .aact{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.offtag{color:var(--coach);font-weight:700}
+.crow{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:12px 16px;border-top:1px solid var(--line)}
+.crow:first-child{border-top:0}.crow .t{font-weight:700}
+.rmzone{display:flex;align-items:center;gap:10px;padding-right:14px;flex-wrap:wrap;justify-content:flex-end}
+.rmzone.confirming{grid-column:1/-1;padding:0 14px 12px 16px;background:var(--bad-soft);padding-top:10px}
+html.modal-open,html.modal-open body{overflow:hidden;overscroll-behavior:none}
+.sheet{overscroll-behavior:contain}
+.scrim{overscroll-behavior:contain}
 .avatars{display:flex}
 .avatars span{width:26px;height:26px;border-radius:50%;background:var(--surface2);border:2px solid var(--surface);font-size:10px;font-weight:700;display:grid;place-items:center;margin-left:-6px}
 .avatars span:first-child{margin-left:0}
@@ -396,18 +404,36 @@ function applyTheme(){const r=document.documentElement;const th=S?.theme||lsGet(
 let toastT;function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2200)}
 
 /* ---------- derived ---------- */
-const sportsUsed=()=>{const s=new Set(S.logs.map(l=>l.sport));joinedTeams().forEach(t=>s.add(t.sport));return Object.keys(SPORTS).filter(k=>s.has(k))};
+/* Personal logs + official games the player appears in. A personal log for the same team, date and
+   opponent as an official game is merged into it, so each game counts once and the coach's numbers win. */
+const norm=x=>String(x||'').trim().toLowerCase();
+function myRosterName(t){if(!t)return null;if(cloud())return Object.keys(t.ruid||{}).find(k=>t.ruid[k]===USER.uid)||null;return t.roster.includes(S.profile.name)?S.profile.name:null}
+const coached=t=>!!t&&(cloud()?!!t.coachUid:!!(t.coach||t.managed));
+function officialEntries(){
+  if(isCoach())return [];const out=[];
+  joinedTeams().forEach(t=>{const n=myRosterName(t);if(!n)return;
+    S.games.filter(g=>g.teamId===t.id).forEach(g=>{const b=g.box?.[n];if(!played(b))return;const {minutes,...st}=b;
+      out.push({id:'off:'+g.id,official:true,gameId:g.id,type:'match',sport:t.sport,teamId:t.id,date:g.date,opponent:g.opponent,us:g.us,them:g.them,result:g.result,minutes:+minutes||0,stats:st,me:n})})});
+  return out;
+}
+const sameGame=(o,l)=>l.type==='match'&&l.date===o.date&&norm(l.opponent)===norm(o.opponent)&&(l.teamId===o.teamId||(!l.teamId&&l.sport===o.sport));
+function entries(){
+  const off=officialEntries(),used=new Set();
+  off.forEach(o=>{const l=S.logs.find(x=>!used.has(x.id)&&sameGame(o,x));if(l){used.add(l.id);o.mine=l;o.notes=l.notes||''}});
+  return [...off,...S.logs.filter(l=>!used.has(l.id))];
+}
+const sportsUsed=()=>{const s=new Set(entries().map(l=>l.sport));joinedTeams().forEach(t=>s.add(t.sport));return Object.keys(SPORTS).filter(k=>s.has(k))};
 const curSport=()=>{const u=sportsUsed();if(!u.length)return null;if(!UI.sport||!u.includes(UI.sport))UI.sport=u.includes(S.profile.sport)?S.profile.sport:u[0];return UI.sport};
 function sorted(arr){return [...arr].sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:0)}
 const initials=n=>(n||'?').trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase()||'?';
 
 function summary(sport,type='all'){
-  const logs=S.logs.filter(l=>l.sport===sport&&(type==='all'||l.type===type));
+  const logs=entries().filter(l=>l.sport===sport&&(type==='all'||l.type===type));
   const matches=logs.filter(l=>l.type==='match');const wins=matches.filter(l=>l.result==='W').length;const unit=SPORTS[sport].unit;
   return {logs,matches,practices:logs.filter(l=>l.type==='practice'),winRate:matches.length?Math.round(wins/matches.length*100):null,
     avg:matches.length?matches.reduce((s,l)=>s+(+l.stats?.[unit]||0),0)/matches.length:0,minutes:logs.reduce((s,l)=>s+(+l.minutes||0),0)};
 }
-function records(sport){return SPORTS[sport].fields.map(([k,lab])=>{let best=null;S.logs.filter(l=>l.sport===sport&&l.type==='match').forEach(l=>{const v=+l.stats?.[k]||0;if(!best||v>best.v)best={v,l}});return {k,lab,best}})}
+function records(sport){const E=entries();return SPORTS[sport].fields.map(([k,lab])=>{let best=null;E.filter(l=>l.sport===sport&&l.type==='match').forEach(l=>{const v=+l.stats?.[k]||0;if(!best||v>best.v)best={v,l}});return {k,lab,best}})}
 function teamRecord(id){const g=S.games.filter(x=>x.teamId===id);const c=r=>g.filter(x=>x.result===r).length;return {n:g.length,W:c('W'),L:c('L'),D:c('D'),pf:g.reduce((s,x)=>s+(+x.us||0),0),pa:g.reduce((s,x)=>s+(+x.them||0),0)}}
 const recStr=r=>r.n?`${r.W}–${r.L}${r.D?'–'+r.D:''}`:'0–0';
 const played=b=>b&&Object.values(b).some(v=>+v>0);
@@ -417,7 +443,7 @@ function seasonTotals(t){
 }
 
 function achievements(){
-  const L=sorted(S.logs).reverse();const matches=L.filter(l=>l.type==='match');
+  const L=sorted(entries()).reverse();const matches=L.filter(l=>l.type==='match');
   const tot=(sp,k)=>matches.filter(l=>!sp||l.sport===sp).reduce((s,l)=>s+(+l.stats?.[k]||0),0);
   let streak=0;Object.keys(SPORTS).forEach(sp=>{let c=0;matches.filter(m=>m.sport===sp).forEach(m=>{c=m.result==='W'?c+1:0;streak=Math.max(streak,c)})});
   const mins=L.reduce((s,l)=>s+(+l.minutes||0),0),wins=matches.filter(m=>m.result==='W').length;
@@ -466,7 +492,7 @@ function playerChart(sp){
   const fields=[...SPORTS[sp].fields,['minutes','Minutes']];
   if(!UI.metric||!fields.some(f=>f[0]===UI.metric))UI.metric=SPORTS[sp].unit;
   const k=UI.metric,lab=fields.find(f=>f[0]===k)[1];
-  const src=k==='minutes'?S.logs.filter(l=>l.sport===sp&&(UI.type==='all'||l.type===UI.type)):S.logs.filter(l=>l.sport===sp&&l.type==='match');
+  const E=entries();const src=k==='minutes'?E.filter(l=>l.sport===sp&&(UI.type==='all'||l.type===UI.type)):E.filter(l=>l.sport===sp&&l.type==='match');
   const pts=sorted(src).reverse().slice(-10).map(l=>({d:l.date,v:k==='minutes'?+l.minutes||0:+l.stats?.[k]||0,mark:l.type==='practice'?'P':''}));
   return chartCard({title:'Performance trend',sub:`${k==='minutes'?'Minutes per session':lab+' per match'} · last ${pts.length}`,pts,avgLabel:`Avg. ${k==='minutes'?'minutes':lab.toLowerCase()}`,
     select:`<select class="mini" id="metricSel" aria-label="Metric">${fields.map(([fk,fl])=>`<option value="${fk}" ${fk===k?'selected':''}>${fl}</option>`).join('')}</select>`,empty:`Log at least two ${k==='minutes'?'sessions':'matches'} to see a trend.`});
@@ -474,6 +500,9 @@ function playerChart(sp){
 function sportChips(){return `<div class="chips" role="group" aria-label="Sport">${sportsUsed().map(k=>`<button class="chip" data-act="sport" data-v="${k}" aria-pressed="${k===curSport()}">${SPORTS[k].name}</button>`).join('')}</div>`}
 function logRow(l){
   const sp=SPORTS[l.sport],u=sp.unit;
+  if(l.official)return `<button class="row" data-act="openGame" data-id="${l.gameId}"><span class="glyph off">${ic('ball_'+l.sport)}</span>
+      <span style="min-width:0"><div class="t">vs. ${esc(l.opponent||'Opponent')}</div><div class="m num">${fmtDate(l.date)} · ${l.us}–${l.them} · <span class="offtag">Official</span></div></span>
+      <span class="r"><b>${+l.stats?.[u]||0}<small>${u}</small></b><span class="pill ${l.result}">${RES[l.result]}</span></span></button>`;
   if(l.type==='match')return `<button class="row" data-act="openLog" data-id="${l.id}"><span class="glyph">${ic('ball_'+l.sport)}</span>
       <span style="min-width:0"><div class="t">vs. ${esc(l.opponent||'Opponent')}</div><div class="m num">${fmtDate(l.date)} · ${l.us??'–'}–${l.them??'–'} · ${sp.name}</div></span>
       <span class="r"><b>${+l.stats?.[u]||0}<small>${u}</small></b><span class="pill ${l.result}">${RES[l.result]}</span></span></button>`;
@@ -490,7 +519,7 @@ function gameRow(g,showTeam){
 const logoOr=(t,cls='')=>{const sc=school(t.schoolId);return sc?`<img class="logo ${cls}" src="${sc.logo}" alt="${sc.id} logo">`:`<span class="glyph ${cls}">${ic('shield',24)}</span>`};
 function teamCard(t){
   const r=teamRecord(t.id);const sc=school(t.schoolId);
-  const extra=isCoach()?`${r.n} official games · ${recStr(r)}`:`${S.logs.filter(l=>l.teamId===t.id).length} of your sessions logged here`;
+  const extra=isCoach()?`${r.n} official games · ${recStr(r)}`:`${entries().filter(l=>l.teamId===t.id).length} of your sessions are with this team`;
   return `<button class="card team" data-act="openTeam" data-id="${t.id}">${logoOr(t)}
     <span style="min-width:0"><div style="font-weight:800;font-size:16px;line-height:1.3">${esc(teamTitle(t))}</div>
     <div class="small muted">${sc?esc(sc.name)+' · ':''}${t.roster.length} players</div>
@@ -511,7 +540,7 @@ function startCard(){return `<div class="card pad stack" style="gap:12px"><div s
   <button class="btn primary block" data-act="joinCode">${ic('key',18)}Join with a code</button>
   <div class="grid2"><button class="btn" data-act="log" data-v="match">${ic('plus',18)}Log a match</button><button class="btn" data-act="log" data-v="practice">${ic('cone',18)}Log practice</button></div></div>`}
 function vHomePlayer(){
-  const sp=curSport(),first=(S.profile.name||'').split(' ')[0],recent=sorted(S.logs).slice(0,3),s=sp?summary(sp):null;
+  const sp=curSport(),first=(S.profile.name||'').split(' ')[0],recent=sorted(entries()).slice(0,3),s=sp?summary(sp):null;
   const A=achievements(),done=A.filter(a=>a.done).length,next=A.filter(a=>!a.done).sort((a,b)=>b.pct-a.pct)[0];
   return `<h1>${first?`Let’s make progress, ${esc(first)}.`:'Let’s make progress.'}</h1>
   <p class="sub">${esc(S.profile.school||'Your school')}${S.profile.grade?' · '+esc(S.profile.grade):''}</p>${sampleBadge()}
@@ -564,6 +593,7 @@ function vHomeCoach(){
   ${approved()?'':`<div class="callout" style="margin-bottom:14px">${ic('lock',24)}<span><b>Waiting for approval</b><div class="small muted">Your coach account needs to be approved before you can manage teams and post official stats. Ask the Stateam admin to approve it.</div></span></div>`}
   <div class="stack"><div class="kpis">${tile('teams','Teams managed',T.length)}${tile('profile','Players',players)}${tile('whistle','Official games',games.length)}${tile('trophy','Win rate',games.length?Math.round(W/games.length*100)+'%':'–')}</div>
   <button class="btn primary block" data-act="newGame">${ic('whistle',18)}Log team game</button></div>
+  ${T.map(t=>{const n=(S.corrections||[]).filter(c=>c.teamId===t.id&&c.status==='open').length;return n?`<button class="callout" data-act="openTeam" data-id="${t.id}" style="text-align:left;cursor:pointer;font:inherit;color:inherit;margin-top:14px;width:100%">${ic('edit',24)}<span><b>${n} correction request${n>1?'s':''}</b><div class="small muted">${esc(teamTitle(t))} · review on the team page</div></span></button>`:''}).join('')}
   <section class="sec"><div class="sechead"><h2>Teams you manage <span class="muted small num">${T.length}</span></h2><button class="link" data-act="tab" data-tab="teams">All teams</button></div>
     ${T.length?T.map(teamCard).join(''):`<div class="card empty"><b>You don’t manage a team yet</b>Find your school on the Teams tab and choose the team you coach.</div>`}</section>
   <section class="sec"><div class="sechead"><h2>Recent official games</h2><button class="link" data-act="tab" data-tab="stats">Team stats</button></div>
@@ -603,7 +633,7 @@ function vTeams(){
 function vProfile(){
   const c=isCoach(),P=me();
   const trio=c?[['Teams',managedTeams().length],['Players',new Set(managedTeams().flatMap(t=>t.roster)).size],['Games',S.games.filter(g=>managedTeams().some(t=>t.id===g.teamId)).length]]
-    :[['Jersey',P.jersey?'#'+esc(P.jersey):'–'],['Teams',joinedTeams().length],['Sessions',S.logs.length]];
+    :[['Jersey',P.jersey?'#'+esc(P.jersey):'–'],['Teams',joinedTeams().length],['Sessions',entries().length]];
   return `<h1>${c?'Your coach profile.':'Your athlete profile.'}</h1><p class="sub">This is how ${c?'players and other coaches':'teammates and coaches'} see you.</p>${sampleBadge()}
   <div class="card profile-hero"><div class="cover"></div><div class="pad" style="padding-top:0">
     <div style="display:flex;justify-content:space-between;align-items:flex-end"><div class="av">${initials(P.name)}</div><span class="pill ${c?'coach':'a'}">${c?'Coach':'Athlete'}</span></div>
@@ -645,11 +675,10 @@ function openModal(html,ctx){
   }
   modalCtx=ctx||null;m.innerHTML=`<div class="scrim" data-act="scrim"><div class="sheet" role="dialog" aria-modal="true">${html}</div></div>`;
   const sh=m.querySelector('.sheet');
-  if(same||restored){sh.style.animation='none';sh.scrollTop=top;return}
-  if(['team','school','player','game','detail'].includes(ctx?.kind))return;
-  const f=m.querySelector('input,select,textarea');f&&f.focus({preventScroll:true});
+  document.documentElement.classList.add('modal-open');
+  if(same||restored){sh.style.animation='none';sh.scrollTop=top}
 }
-function closeModal(){document.getElementById('modal').innerHTML='';modalCtx=null;modalStack=[]}
+function closeModal(){document.getElementById('modal').innerHTML='';modalCtx=null;modalStack=[];document.documentElement.classList.remove('modal-open')}
 function back(){
   while(modalStack.length){
     const e=modalStack.pop(),before=modalCtx;navBack=true;navTop=e.top;
@@ -689,7 +718,8 @@ function logForm(type,existing,draft){
     <div class="grid2"><div class="f"><label for="lf-min">Minutes</label><input id="lf-min" name="minutes" type="number" min="0" inputmode="numeric" value="${l.minutes??''}"></div>
       <div class="f"><label for="lf-team">Team</label><select id="lf-team" name="teamId"><option value="">No team</option>${teamOpts.map(t=>`<option value="${t.id}" ${l.teamId===t.id?'selected':''}>${esc(teamTitle(t))}</option>`).join('')}</select></div></div>
     <div class="f"><label for="lf-notes">Notes</label><textarea id="lf-notes" name="notes" placeholder="What went well? What will you work on next?">${esc(l.notes||'')}</textarea></div>
-    <div class="small muted">This goes to your personal record only. Official team stats are entered by your coach.</div>
+    <div id="lf-offnote" class="notice" ${type==='match'&&coached(S.teams.find(t=>t.id===l.teamId))?'':'hidden'}>Your coach posts official stats for this team. When the official game is posted, its numbers count in your stats and this log keeps your notes.</div>
+    <div class="small muted">This goes to your personal record. Official team stats come from your coach.</div>
     <div id="lf-err" class="err" hidden></div>
     <div class="actions"><button type="button" class="btn" data-act="close">Cancel</button><button class="btn primary" type="submit">${existing?'Save changes':type==='match'?'Save match':'Save practice'}</button></div>
   </form>`,{kind:'log',type,rating:l.rating||3,editId:existing?.id});
@@ -733,10 +763,11 @@ function teamDetail(id,lb){
     <dl class="kv"><dt>Coach</dt><dd>${esc(t.coach||'Not set yet')}</dd><dt>Practices</dt><dd>${esc(t.meets||'Not set yet')}</dd><dt>Record</dt><dd>${recStr(r)}${r.D?' (W–L–D)':''}</dd><dt>Players</dt><dd>${cloud()&&!t.rosterLoaded?'…':t.roster.length}</dd></dl></div>
     ${canEdit?`<div class="card pad" style="box-shadow:none;background:var(--surface2)"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><div><div class="eyebrow">Invite code · only you can see this</div><div class="code">${t.code||'······'}</div></div><button class="btn sm" data-act="copy" data-v="${t.code}" ${t.code?'':'disabled'}>${ic('copy',16)}Copy</button></div>
       <div id="codeZone" class="small muted" style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px">Share it only with players on this team.<button class="link small" data-act="regenAsk">New code</button></div></div>`:''}
+    ${canEdit?corrList(t):''}
     ${leaderboard(t,lb)}
     <div><div class="sechead" style="margin-bottom:8px"><div class="eyebrow">Official games</div>${canEdit?`<button class="link small" data-act="newGame" data-id="${t.id}">+ Log game</button>`:''}</div>
       <div class="card list" style="box-shadow:none">${games.length?games.slice(0,5).map(g=>gameRow(g)).join(''):`<div class="empty small">No official games yet.${canEdit?'':' Your coach adds these.'}</div>`}</div></div>
-    <div><div class="eyebrow" style="margin-bottom:8px">Roster</div><div class="card list" style="box-shadow:none">${t.roster.length?'':'<div class="empty small">No players yet.</div>'}${t.roster.map((n,i)=>`<div class="prow"><button class="pbtn" data-act="openPlayer" data-i="${i}"><span class="avatars"><span style="width:32px;height:32px;font-size:11px">${initials(n)}</span></span><span style="min-width:0"><span class="t">${esc(n)}</span>${!c&&isMeName(t,n)?' <span class="muted small">(you)</span>':''}${pubInfo(n)?`<div class="m">${esc(pubInfo(n))}</div>`:''}</span><span class="chev">${ic('chev',16)}</span></button>${canEdit?`<button class="link small" style="color:var(--bad);padding-right:14px" data-act="rmPlayer" data-i="${i}">Remove</button>`:''}</div>`).join('')}</div>
+    <div><div class="eyebrow" style="margin-bottom:8px">Roster</div><div class="card list" style="box-shadow:none">${t.roster.length?'':'<div class="empty small">No players yet.</div>'}${t.roster.map((n,i)=>`<div class="prow"><button class="pbtn" data-act="openPlayer" data-i="${i}"><span class="avatars"><span style="width:32px;height:32px;font-size:11px">${initials(n)}</span></span><span style="min-width:0"><span class="t">${esc(n)}</span>${!c&&isMeName(t,n)?' <span class="muted small">(you)</span>':''}${pubInfo(n)?`<div class="m">${esc(pubInfo(n))}</div>`:''}</span><span class="chev">${ic('chev',16)}</span></button>${canEdit?`<span class="rmzone" id="rm-${i}"><button class="link small" style="color:var(--bad)" data-act="rmAsk" data-i="${i}">Remove</button></span>`:''}</div>`).join('')}</div>
       ${canEdit?`<form id="addPlayer" class="addcard" novalidate><div class="eyebrow">Add a player</div>
         <div class="f"><label for="ap-name">Full name</label><input id="ap-name" name="name" autocomplete="off" placeholder="e.g. Minho Lee"></div>
         <div class="addgrid"><div class="f"><label for="ap-pos">Position</label><select id="ap-pos" name="position"><option value="">Choose</option>${POSITIONS[t.sport].map(x=>`<option>${x}</option>`).join('')}</select></div>
@@ -786,6 +817,67 @@ function schoolSheet(id,fa){
   ${own?'':lockNote(me().school?`You can view these teams, but only ${isCoach()?'coaches':'students'} at ${esc(sc.name)} can ${isCoach()?'manage':'join'} them.`:'Add your school in Profile to join its teams.')}
   ${group('Men’s')}${group('Women’s')}</div>`,{kind:'school',id,f});
 }
+/* ---------- corrections ---------- */
+const CORR_LAB={open:['Waiting for coach','P'],applied:['Coach updated the stats','W'],dismissed:['Coach kept the original stats','n']};
+const myCorr=gameId=>(S.corrections||[]).find(c=>c.gameId===gameId&&(cloud()?c.uid===USER.uid:c.mine));
+const statLine=(f,st)=>[...f.map(([k,,ab])=>`${+st?.[k]||0} ${ab}`),`${+st?.minutes||0} MIN`].join(' · ');
+function myGamePanel(g,t,f){
+  const n=myRosterName(t);if(!n||!t.joined||!played(g.box?.[n]))return '';
+  const o=entries().find(e=>e.gameId===g.id),mine=o?.mine,c=myCorr(g.id);
+  const diff=mine&&f.some(([k])=>(+mine.stats?.[k]||0)!==(+g.box[n][k]||0));
+  return `<div class="card pad stack" style="box-shadow:none;gap:10px">
+    <div class="eyebrow">Your game</div>
+    ${mine?`<div class="small">${diff?`You logged <b>${esc(statLine(f,{...mine.stats,minutes:mine.minutes}))}</b>. Your stats use your coach’s official numbers.`:'Your log matches the official stats.'}</div>
+      ${mine.notes?`<div class="small" style="background:var(--surface2);border-radius:10px;padding:10px 12px"><b>Your notes</b><br>${esc(mine.notes)}</div>`:''}`:''}
+    ${c?`<div class="small"><span class="pill ${CORR_LAB[c.status][1]}">${CORR_LAB[c.status][0]}</span> You asked for ${esc(statLine(f,c.stats))}${c.message?` · “${esc(c.message)}”`:''}</div>`:''}
+    <div class="actions" style="justify-content:flex-start;flex-wrap:wrap">
+      ${!c||c.status!=='open'?`<button class="btn sm" data-act="corrForm" data-id="${g.id}">${ic('edit',16)}Request a correction</button>`:`<button class="btn sm" data-act="corrForm" data-id="${g.id}">Edit request</button>`}
+      ${mine?`<button class="btn sm" data-act="editLog" data-id="${mine.id}">Edit my notes</button>`:''}
+    </div></div>`;
+}
+function corrForm(gameId){
+  const g=S.games.find(x=>x.id===gameId);const t=S.teams.find(x=>x.id===g.teamId);const f=SPORTS[t.sport].fields;const n=myRosterName(t);
+  const cur=g.box[n]||{},c=myCorr(gameId),o=entries().find(e=>e.gameId===gameId),mine=o?.mine;
+  const val=k=>c?.status==='open'?(+c.stats?.[k]||0):(+cur[k]||0);
+  openModal(`${sheetHead('Request a correction')}<form id="corrForm" novalidate>
+    <p class="small muted" style="margin:0">vs. ${esc(g.opponent)} · ${fmtDate(g.date)}. Enter what your stats should be. Your coach will review it and update the official game if it’s right.</p>
+    <div class="small">Official now: <b>${esc(statLine(f,cur))}</b>${mine?`<br>You logged: <b>${esc(statLine(f,{...mine.stats,minutes:mine.minutes}))}</b>`:''}</div>
+    <div class="grid2">${[...f.map(([k,lab])=>[k,lab]),['minutes','Minutes']].map(([k,lab])=>`<div class="f"><label for="cr-${k}">${lab}</label><input id="cr-${k}" name="${k}" type="number" min="0" inputmode="numeric" value="${val(k)}"></div>`).join('')}</div>
+    <div class="f"><label for="cr-msg">Note for your coach (optional)</label><textarea id="cr-msg" name="message" placeholder="e.g. I had 2 more rebounds in the 4th quarter">${esc(c?.status==='open'?c.message:'')}</textarea></div>
+    <div id="cr-err" class="err" hidden></div>
+    <div class="actions"><button type="button" class="btn" data-act="close">Cancel</button><button class="btn primary" type="submit">Send to coach</button></div>
+  </form>`,{kind:'corr',id:gameId,teamId:t.id});
+}
+function saveCorrection(gameId,stats,message){
+  const g=S.games.find(x=>x.id===gameId),t=S.teams.find(x=>x.id===g.teamId),name=myRosterName(t);
+  if(cloud()){
+    db.doc(`teams/${t.id}/corrections/${gameId}_${USER.uid}`).set({uid:USER.uid,name,gameId,stats,message,status:'open',createdAt:now()}).catch(cfail);
+  }else{
+    S.corrections=(S.corrections||[]).filter(c=>!(c.gameId===gameId&&c.mine));
+    S.corrections.push({id:gameId+'_me',teamId:t.id,gameId,name,stats,message,status:'open',mine:true});save();
+  }
+}
+function corrList(t,gameId){
+  const open=(S.corrections||[]).filter(c=>c.teamId===t.id&&c.status==='open'&&(!gameId||c.gameId===gameId));
+  if(!open.length)return '';const f=SPORTS[t.sport].fields;
+  return `<div><div class="eyebrow" style="margin-bottom:8px">Correction requests · ${open.length}</div><div class="card list" style="box-shadow:none">${open.map(c=>{
+    const g=S.games.find(x=>x.id===c.gameId);if(!g)return '';const cur=g.box?.[c.name]||{};
+    const ch=[...f.map(([k,,ab])=>[k,ab]),['minutes','MIN']].filter(([k])=>(+cur[k]||0)!==(+c.stats?.[k]||0)).map(([k,ab])=>`${ab} ${+cur[k]||0} → <b>${+c.stats?.[k]||0}</b>`);
+    return `<div class="crow"><div style="min-width:0"><div class="t">${esc(c.name)} <span class="muted small">· vs. ${esc(g.opponent)}, ${fmtDate(g.date)}</span></div>
+      <div class="small">${ch.length?ch.join(' · '):'No number changes'}</div>${c.message?`<div class="small muted">“${esc(c.message)}”</div>`:''}</div>
+      <div class="aact"><button class="link small" data-act="corrNo" data-id="${c.id}">Dismiss</button><button class="btn sm primary" data-act="corrYes" data-id="${c.id}">Apply</button></div></div>`}).join('')}</div></div>`;
+}
+function resolveCorrection(cid,apply){
+  const c=(S.corrections||[]).find(x=>x.id===cid);if(!c)return;const g=S.games.find(x=>x.id===c.gameId);const t=S.teams.find(x=>x.id===c.teamId);
+  if(!isCoach()||!t?.managed)return;
+  if(cloud()){
+    if(apply&&g){const rid=g.boxRid?.[c.name]||t.rids?.[c.name];if(rid)db.doc(`teams/${t.id}/games/${g.id}`).update({['box.'+rid]:{name:c.name,...c.stats}}).catch(cfail)}
+    db.doc(`teams/${t.id}/corrections/${cid}`).update({status:apply?'applied':'dismissed',resolvedAt:now()}).catch(cfail);
+  }else{
+    if(apply&&g)g.box[c.name]={...c.stats};c.status=apply?'applied':'dismissed';save();refreshModal();render();
+  }
+  toast(apply?'Stats updated':'Request dismissed');
+}
 function gameDetail(id){
   const g=S.games.find(x=>x.id===id);if(!g)return;const t=S.teams.find(x=>x.id===g.teamId);const f=SPORTS[t.sport].fields;
   const canEdit=isCoach()&&t.managed;const rows=Object.entries(g.box||{}).filter(([,b])=>played(b));
@@ -795,7 +887,8 @@ function gameDetail(id){
     <dl class="kv"><dt>Date</dt><dd>${new Date(g.date+'T00:00').toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric',year:'numeric'})}</dd><dt>Venue</dt><dd>${g.location||'–'}</dd></dl>
     <div><div class="eyebrow" style="margin-bottom:8px">Box score</div>${rows.length?`<div class="card tablewrap" style="box-shadow:none"><table class="tbl"><thead><tr><th>Player</th>${f.map(x=>`<th title="${x[1]}">${x[2]}</th>`).join('')}<th>MIN</th></tr></thead><tbody>
       ${rows.map(([n,b])=>`<tr class="${!isCoach()&&isMeName(t,n)?'me':''}"><td>${esc(n)}</td>${f.map(x=>`<td>${+b[x[0]]||0}</td>`).join('')}<td>${+b.minutes||0}</td></tr>`).join('')}</tbody></table></div>`:`<div class="card empty small">No player stats entered.</div>`}</div>
-    ${canEdit?`<div id="delZone" class="actions"><button class="btn danger" data-act="gDelAsk">Delete</button><button class="btn primary" data-act="editGame" data-id="${g.id}">Edit game</button></div>`:lockNote('Official stats can only be changed by the team’s coach.')}
+    ${!isCoach()?myGamePanel(g,t,f):''}
+    ${canEdit?`${corrList(t,g.id)}<div id="delZone" class="actions"><button class="btn danger" data-act="gDelAsk">Delete</button><button class="btn primary" data-act="editGame" data-id="${g.id}">Edit game</button></div>`:lockNote('Official stats can only be changed by the team’s coach.')}
   </div>`,{kind:'game',id,teamId:t.id});
 }
 function gameForm(teamId,existing){
@@ -887,6 +980,9 @@ document.addEventListener('click',e=>{
     case 'manage':{const t=team();if(!isCoach()||!sameSchool(t,S.coach.school))return;if(cloud())return cloudClaim(t);t.managed=true;if(!t.coach)t.coach=S.coach.name||'Coach';save();render();teamDetail(t.id);toast('You now manage '+teamTitle(t));break}
     case 'unmanage':{const t=team();if(cloud())return cloudUnclaim(t);t.managed=false;save();back();render();toast('Stopped managing '+teamTitle(t));break}
     case 'editTeam':teamForm(team());break;
+    case 'rmAsk':{const t=team();const n=t.roster[+b.dataset.i];const linked=cloud()?!!t.ruid?.[n]:false;
+      const z=document.getElementById('rm-'+b.dataset.i);z.classList.add('confirming');z.innerHTML=`<span class="small muted" style="margin-right:auto">Remove ${esc(n)} from the roster?${linked?' They’ll lose access to this team.':''}</span><button class="link small" data-act="rmNo">Cancel</button><button class="btn sm danger" data-act="rmPlayer" data-i="${b.dataset.i}">Remove</button>`;break}
+    case 'rmNo':teamDetail(modalCtx.id,modalCtx.lb);break;
     case 'rmPlayer':{const t=team();if(!t?.managed||!isCoach())return;if(cloud()){const n=t.roster[+b.dataset.i];cloudRemovePlayer(t,n);toast(`Removed ${n}`);break}const n=t.roster.splice(+b.dataset.i,1)[0];save();teamDetail(t.id);render();toast(`Removed ${n}`);break}
     case 'newGame':if(!isCoach())return;b.dataset.id?gameForm(b.dataset.id):pickTeamForGame();break;
     case 'openGame':gameDetail(b.dataset.id);break;
@@ -899,6 +995,9 @@ document.addEventListener('click',e=>{
     case 'revokeNo':render();break;
     case 'revokeYes':if(isAdmin())setApproval(b.dataset.id,false);break;
     case 'delAcct':deleteSheet();break;
+    case 'corrForm':corrForm(b.dataset.id);break;
+    case 'corrYes':resolveCorrection(b.dataset.id,true);break;
+    case 'corrNo':resolveCorrection(b.dataset.id,false);break;
     case 'copy':navigator.clipboard?.writeText(v).then(()=>toast('Code copied'),()=>toast('Select the code to copy it'));break;
     case 'joinCode':{const jt=S.teams.find(x=>x.id===b.dataset.id);openModal(`${sheetHead(jt?'Join '+esc(teamTitle(jt)):'Join with a code')}<form id="joinForm" novalidate><p class="small muted" style="margin:0">Teams are invite-only. Your coach shares the 6-character code with players at ${esc(S.profile.school||'your school')}.</p>
       <div class="f"><label for="jc">Invite code</label><input id="jc" name="code" autocomplete="off" autocapitalize="characters" placeholder="6 characters" maxlength="6" style="text-transform:uppercase;letter-spacing:.2em;font-weight:700"></div>
@@ -918,6 +1017,7 @@ document.addEventListener('click',e=>{
 document.addEventListener('change',e=>{
   const id=e.target.id;
   if(id==='metricSel'){UI.metric=e.target.value;render()}
+  if(id==='lf-team'){const n=document.getElementById('lf-offnote');if(n)n.hidden=!(modalCtx?.type==='match'&&coached(S.teams.find(t=>t.id===e.target.value)))}
   if((id==='au-agree'||id==='ob-agree')&&e.target.checked&&/agree/.test(AUTH.err))authMsg();
   if(e.target.dataset.opp){const x=document.getElementById(e.target.dataset.opp+'-oppx');x.hidden=e.target.value!=='__other';if(!x.hidden)x.focus()}
   if(id==='lf-sport'){const cur=readLogForm();cur.teamId='';cur.stats={};const ed=modalCtx.editId;if(ed){cur.id=ed;logForm(cur.type,cur)}else logForm(cur.type,null,cur)}
@@ -928,6 +1028,11 @@ document.addEventListener('change',e=>{
 document.addEventListener('submit',e=>{
   e.preventDefault();const id=e.target.id;const fd=new FormData(e.target);
   if(id==='authForm')return doAuth(fd);
+  if(id==='corrForm'){const g=S.games.find(x=>x.id===modalCtx.id),t=S.teams.find(x=>x.id===g.teamId);const st={};
+    [...SPORTS[t.sport].fields.map(x=>x[0]),'minutes'].forEach(k=>st[k]=Math.max(0,+fd.get(k)||0));
+    const cur=g.box[myRosterName(t)]||{};const msg=(fd.get('message')||'').trim();
+    if(Object.keys(st).every(k=>st[k]===(+cur[k]||0))&&!msg){const x=document.getElementById('cr-err');x.textContent='Change at least one number, or add a note for your coach.';x.hidden=false;return}
+    saveCorrection(g.id,st,msg);back();toast('Sent to your coach');return}
   if(id==='delForm')return deleteAccount(fd);
   if(id==='onbForm'){const name=(fd.get('name')||'').trim(),school=fd.get('school')||'';
     if(!name)return authMsg('Enter your full name.');if(!school)return authMsg('Choose your school.');
@@ -1055,9 +1160,11 @@ function watchTeam(id){
   sub('t:'+id,db.doc('teams/'+id),s=>{
     const d=s.data()||{};t.exists=s.exists;t.coach=d.coachName||'';t.coachUid=d.coachUid||null;t.meets=d.meets||'';
     t.managed=!!t.coachUid&&t.coachUid===USER.uid;
-    if(t.managed&&isCoach())sub('i:'+id,db.doc(`teams/${id}/private/invite`),x=>{t.code=x.data()?.code||'';refresh()});
+    if(t.managed&&isCoach()){sub('i:'+id,db.doc(`teams/${id}/private/invite`),x=>{t.code=x.data()?.code||'';refresh()});
+      sub('ca:'+id,db.collection(`teams/${id}/corrections`),x=>setCorr(id,x))}
     refresh();
   });
+  if(!isCoach())sub('cm:'+id,db.collection(`teams/${id}/corrections`).where('uid','==',USER.uid),x=>setCorr(id,x));
   sub('r:'+id,db.collection(`teams/${id}/roster`),s=>{
     const rows=s.docs.map(d=>({rid:d.id,...d.data()})).sort((a,b)=>(+a.jersey||0)-(+b.jersey||0)||String(a.name).localeCompare(b.name));
     t.roster=rows.map(r=>r.name);t.rids={};t.ruid={};t.rosterLoaded=true;
@@ -1072,6 +1179,7 @@ function watchTeam(id){
     refresh();
   });
 }
+function setCorr(teamId,snap){S.corrections=(S.corrections||[]).filter(c=>c.teamId!==teamId).concat(snap.docs.map(d=>({...d.data(),id:d.id,teamId})));refresh()}
 function watchSchool(schoolId){
   if(!cloud())return;
   sub('s:'+schoolId,db.collection('teams').where('schoolId','==',schoolId),s=>{
