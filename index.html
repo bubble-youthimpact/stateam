@@ -767,7 +767,7 @@ function teamDetail(id,lb){
     ${leaderboard(t,lb)}
     <div><div class="sechead" style="margin-bottom:8px"><div class="eyebrow">Official games</div>${canEdit?`<button class="link small" data-act="newGame" data-id="${t.id}">+ Log game</button>`:''}</div>
       <div class="card list" style="box-shadow:none">${games.length?games.slice(0,5).map(g=>gameRow(g)).join(''):`<div class="empty small">No official games yet.${canEdit?'':' Your coach adds these.'}</div>`}</div></div>
-    <div><div class="eyebrow" style="margin-bottom:8px">Roster</div><div class="card list" style="box-shadow:none">${t.roster.length?'':'<div class="empty small">No players yet.</div>'}${t.roster.map((n,i)=>`<div class="prow"><button class="pbtn" data-act="openPlayer" data-i="${i}"><span class="avatars"><span style="width:32px;height:32px;font-size:11px">${initials(n)}</span></span><span style="min-width:0"><span class="t">${esc(n)}</span>${!c&&isMeName(t,n)?' <span class="muted small">(you)</span>':''}${pubInfo(n)?`<div class="m">${esc(pubInfo(n))}</div>`:''}</span><span class="chev">${ic('chev',16)}</span></button>${canEdit?`<span class="rmzone" id="rm-${i}"><button class="link small" style="color:var(--bad)" data-act="rmAsk" data-i="${i}">Remove</button></span>`:''}</div>`).join('')}</div>
+    <div><div class="eyebrow" style="margin-bottom:8px">Roster</div><div class="card list" style="box-shadow:none">${t.roster.length?'':'<div class="empty small">No players yet.</div>'}${t.roster.map((n,i)=>`<div class="prow"><button class="pbtn" data-act="openPlayer" data-i="${i}"><span class="avatars"><span style="width:32px;height:32px;font-size:11px">${initials(n)}</span></span><span style="min-width:0"><span class="t">${esc(n)}</span>${!c&&isMeName(t,n)?' <span class="muted small">(you)</span>':''}${canEdit&&cloud()?(t.ruid?.[n]?' <span class="pill W">Joined</span>':' <span class="pill n">Not signed up</span>'):''}${pubInfo(n)?`<div class="m">${esc(pubInfo(n))}</div>`:''}</span><span class="chev">${ic('chev',16)}</span></button>${canEdit?`<span class="rmzone" id="rm-${i}">${cloud()&&t.ruid?.[n]?`<button class="link small" data-act="unlinkAsk" data-i="${i}">Unlink</button>`:''}<button class="link small" style="color:var(--bad)" data-act="rmAsk" data-i="${i}">Remove</button></span>`:''}</div>`).join('')}</div>
       ${canEdit?`<form id="addPlayer" class="addcard" novalidate><div class="eyebrow">Add a player</div>
         <div class="f"><label for="ap-name">Full name</label><input id="ap-name" name="name" autocomplete="off" placeholder="e.g. Minho Lee"></div>
         <div class="addgrid"><div class="f"><label for="ap-pos">Position</label><select id="ap-pos" name="position"><option value="">Choose</option>${POSITIONS[t.sport].map(x=>`<option>${x}</option>`).join('')}</select></div>
@@ -942,7 +942,7 @@ function render(){
 
 document.addEventListener('click',e=>{
   const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act,v=b.dataset.v;
-  if(a==='scrim'){if(e.target===b)dismiss();return}
+  if(a==='scrim')return;
   const team=()=>S.teams.find(x=>x.id===(b.dataset.id||modalCtx?.id));
   switch(a){
     case 'tab':UI.tab=b.dataset.tab;closeModal();render();window.scrollTo(0,0);break;
@@ -980,9 +980,15 @@ document.addEventListener('click',e=>{
     case 'manage':{const t=team();if(!isCoach()||!sameSchool(t,S.coach.school))return;if(cloud())return cloudClaim(t);t.managed=true;if(!t.coach)t.coach=S.coach.name||'Coach';save();render();teamDetail(t.id);toast('You now manage '+teamTitle(t));break}
     case 'unmanage':{const t=team();if(cloud())return cloudUnclaim(t);t.managed=false;save();back();render();toast('Stopped managing '+teamTitle(t));break}
     case 'editTeam':teamForm(team());break;
+    case 'postAnyway':modalCtx.allowDup=true;document.getElementById(v).requestSubmit();break;
+    case 'showAddSelf':{modalCtx.showAdd=true;b.hidden=true;const f=document.getElementById('addSelf');f.hidden=false;f.scrollIntoView({block:'nearest',behavior:'smooth'});break}
     case 'rmAsk':{const t=team();const n=t.roster[+b.dataset.i];const linked=cloud()?!!t.ruid?.[n]:false;
       const z=document.getElementById('rm-'+b.dataset.i);z.classList.add('confirming');z.innerHTML=`<span class="small muted" style="margin-right:auto">Remove ${esc(n)} from the roster?${linked?' They’ll lose access to this team.':''}</span><button class="link small" data-act="rmNo">Cancel</button><button class="btn sm danger" data-act="rmPlayer" data-i="${b.dataset.i}">Remove</button>`;break}
     case 'rmNo':teamDetail(modalCtx.id,modalCtx.lb);break;
+    case 'unlinkAsk':{const t=team();const n=t.roster[+b.dataset.i];const z=document.getElementById('rm-'+b.dataset.i);z.classList.add('confirming');
+      z.innerHTML=`<span class="small muted" style="margin-right:auto">Unlink ${esc(n)}’s account? The spot and its stats stay. They’ll need the invite code to join again.</span><button class="link small" data-act="rmNo">Cancel</button><button class="btn sm" data-act="unlink" data-i="${b.dataset.i}">Unlink</button>`;break}
+    case 'unlink':{const t=team();if(!isCoach()||!t?.managed||!cloud())return;const n=t.roster[+b.dataset.i],rid=t.rids?.[n],u=t.ruid?.[n];if(!rid||!u)return;
+      db.doc(`teams/${t.id}/roster/${rid}`).update({uid:null}).catch(cfail);db.doc(`teams/${t.id}/joins/${u}`).delete().catch(()=>{});toast(`Unlinked ${n}`);break}
     case 'rmPlayer':{const t=team();if(!t?.managed||!isCoach())return;if(cloud()){const n=t.roster[+b.dataset.i];cloudRemovePlayer(t,n);toast(`Removed ${n}`);break}const n=t.roster.splice(+b.dataset.i,1)[0];save();teamDetail(t.id);render();toast(`Removed ${n}`);break}
     case 'newGame':if(!isCoach())return;b.dataset.id?gameForm(b.dataset.id):pickTeamForGame();break;
     case 'openGame':gameDetail(b.dataset.id);break;
@@ -1044,6 +1050,8 @@ document.addEventListener('submit',e=>{
     const o=readLogForm();
     if(o.type==='match'&&!o.opponent)return fail('lf-err','Choose the opponent so you can find this match later.');
     if(o.type==='practice'&&!o.focus)return fail('lf-err','Add what you worked on, even a few words like “shooting drills”.');
+    if(o.type==='match'){const dupL=S.logs.find(x=>x.id!==modalCtx.editId&&x.type==='match'&&x.sport===o.sport&&x.date===o.date&&norm(x.opponent)===norm(o.opponent));
+      if(dupL&&!modalCtx.allowDup){const x=document.getElementById('lf-err');x.innerHTML=`You already logged a match vs. ${esc(o.opponent)} on ${fmtDate(o.date)}. <button type="button" class="link small" data-act="editLog" data-id="${dupL.id}">Edit that match</button>, or if you played them twice that day, <button type="button" class="link small" data-act="postAnyway" data-v="logForm">log it anyway</button>.`;x.hidden=false;return}}
     if(cloud()){const col=db.collection(`users/${USER.uid}/logs`);(modalCtx.editId?col.doc(modalCtx.editId):col.doc()).set({...o,updatedAt:now()}).catch(cfail)}
     else if(modalCtx.editId){const i=S.logs.findIndex(l=>l.id===modalCtx.editId);S.logs[i]={...S.logs[i],...o}}else S.logs.push({id:uid(),...o});
     UI.sport=o.sport;save();back();render();toast(o.type==='match'?'Match saved':'Practice saved');
@@ -1055,6 +1063,8 @@ document.addEventListener('submit',e=>{
     const keys=[...SPORTS[t.sport].fields.map(x=>x[0]),'minutes'];const box={};
     modalCtx.names.forEach((n,i)=>{const row={};let any=false;keys.forEach(k=>{const v=fd.get(`b_${i}_${k}`);row[k]=Math.max(0,+v||0);if(v!=='')any=true});if(any)box[n]=row});
     const g={teamId:t.id,date:fd.get('date')||today(),opponent:opp,us:+fd.get('us'),them:+fd.get('them'),result:fd.get('result'),location:fd.get('location'),box};
+    const dupG=S.games.find(x=>x.teamId===t.id&&x.id!==modalCtx.editId&&x.date===g.date&&norm(x.opponent)===norm(g.opponent));
+    if(dupG&&!modalCtx.allowDup){const x=document.getElementById('gf-err');x.innerHTML=`${esc(teamTitle(t))} already has a game vs. ${esc(g.opponent)} on ${fmtDate(g.date)} (${dupG.us}–${dupG.them}). <button type="button" class="link small" data-act="openGame" data-id="${dupG.id}">Open that game</button> to edit it, or if this is a second game (like a tournament rematch), <button type="button" class="link small" data-act="postAnyway" data-v="gameForm">post anyway</button>.`;x.hidden=false;return}
     if(cloud())cloudSaveGame(t,g,modalCtx.editId,S.games.find(x=>x.id===modalCtx.editId));
     else if(modalCtx.editId){const i=S.games.findIndex(x=>x.id===modalCtx.editId);S.games[i]={...S.games[i],...g}}else S.games.push({id:uid(),...g});
     const wasEdit=!!modalCtx.editId;UI.team=t.id;save();back();render();toast(wasEdit?'Game updated':'Game published to '+teamTitle(t));
@@ -1167,19 +1177,22 @@ function watchTeam(id){
   if(!isCoach())sub('cm:'+id,db.collection(`teams/${id}/corrections`).where('uid','==',USER.uid),x=>setCorr(id,x));
   sub('r:'+id,db.collection(`teams/${id}/roster`),s=>{
     const rows=s.docs.map(d=>({rid:d.id,...d.data()})).sort((a,b)=>(+a.jersey||0)-(+b.jersey||0)||String(a.name).localeCompare(b.name));
-    t.roster=rows.map(r=>r.name);t.rids={};t.ruid={};t.rosterLoaded=true;
+    t.roster=rows.map(r=>r.name);t.rids={};t.ruid={};t.rosterLoaded=true;t.ridName=Object.fromEntries(rows.map(r=>[r.rid,r.name]));
     rows.forEach(r=>{t.rids[r.name]=r.rid;t.ruid[r.name]=r.uid||null;S.people[r.name]=[r.position||'',r.jersey!=null&&r.jersey!==''?String(r.jersey):'']});
     t.joined=rows.some(r=>r.uid===USER.uid);
-    refresh();
+    nameBoxes(t);refresh();
   });
   sub('g:'+id,db.collection(`teams/${id}/games`),s=>{
-    S.games=S.games.filter(g=>g.teamId!==id).concat(s.docs.map(d=>{const x=d.data();const box={},boxRid={};
-      Object.entries(x.box||{}).forEach(([rid,b])=>{const n=b.name||rid;const {name,...st}=b;box[n]=st;boxRid[n]=rid});
-      return {id:d.id,teamId:id,date:x.date,opponent:x.opponent,us:x.us,them:x.them,result:x.result,location:x.location,box,boxRid}}));
-    refresh();
+    S.games=S.games.filter(g=>g.teamId!==id).concat(s.docs.map(d=>{const x=d.data();
+      return {id:d.id,teamId:id,date:x.date,opponent:x.opponent,us:x.us,them:x.them,result:x.result,location:x.location,raw:x.box||{},box:{},boxRid:{}}}));
+    nameBoxes(t);refresh();
   });
 }
 function setCorr(teamId,snap){S.corrections=(S.corrections||[]).filter(c=>c.teamId!==teamId).concat(snap.docs.map(d=>({...d.data(),id:d.id,teamId})));refresh()}
+// Box scores are stored by roster spot id. Show each one under the spot's current name, so renaming
+// a player (or a player renaming themselves) keeps their past games linked.
+function nameBoxes(t){S.games.filter(g=>g.teamId===t.id&&g.raw).forEach(g=>{const box={},boxRid={};
+  Object.entries(g.raw).forEach(([rid,b])=>{const {name,...st}=b;const n=t.ridName?.[rid]||name||rid;box[n]=st;boxRid[n]=rid});g.box=box;g.boxRid=boxRid})}
 function watchSchool(schoolId){
   if(!cloud())return;
   sub('s:'+schoolId,db.collection('teams').where('schoolId','==',schoolId),s=>{
@@ -1370,19 +1383,21 @@ async function cloudJoin(code,hintId){
 function claimSheet(teamId){
   const t=S.teams.find(x=>x.id===teamId);if(!t)return;
   const open=t.roster.filter(n=>!t.ruid?.[n]);
-  const mine=S.profile.name.trim().toLowerCase();
+  const mine=S.profile.name.trim().toLowerCase();const showAdd=modalCtx?.kind==='claim'&&modalCtx.id===teamId&&!!modalCtx.showAdd;
   const sorted=[...open].sort((a,b)=>(b.trim().toLowerCase()===mine)-(a.trim().toLowerCase()===mine));
   openModal(`${sheetHead('Which one is you?')}<div class="stack">
     <p class="small muted" style="margin:0">Code accepted for <b>${esc(teamTitle(t))}</b>. Pick your spot on the roster so your official stats link to your account.</p>
     ${!t.rosterLoaded?`<div class="card empty small" style="box-shadow:none">Loading the roster…</div>`:open.length?`<div class="card list" style="box-shadow:none">${sorted.map(n=>{const P=S.people[n]||[];const match=n.trim().toLowerCase()===mine;
       return `<button class="row srow" data-act="claimSpot" data-v="${esc(n)}"><span class="avatars"><span style="width:40px;height:40px;font-size:12px">${initials(n)}</span></span><span style="min-width:0"><div class="sname">${esc(n)}${match?' <span class="pill W" style="margin-left:4px">Looks like you</span>':''}</div><div class="m">${esc([P[0],P[1]?'#'+P[1]:''].filter(Boolean).join(' · '))}</div></span><span class="chev">${ic('chev',18)}</span></button>`}).join('')}</div>`
       :`<div class="card empty small" style="box-shadow:none">Your coach hasn’t added any open spots yet.</div>`}
-    <form id="addSelf" class="addcard" novalidate><div class="eyebrow">Not on the list? Add yourself</div>
+    ${open.length&&!showAdd?`<button type="button" class="link small" style="align-self:center" data-act="showAddSelf">${open.some(n=>norm(n)===mine)?'That’s not me. Add me as a new player':'I’m not on the list'}</button>`:''}
+    <form id="addSelf" class="addcard" novalidate ${open.length&&!showAdd?'hidden':''}><div class="eyebrow">${open.length?'Add yourself as a new player':'Not on the list? Add yourself'}</div>
+      ${open.length?'<p class="small muted" style="margin:0">Only do this if none of the spots above is you. Stats your coach already entered for your spot won’t move to a new one.</p>':''}
       <div class="addgrid"><div class="f"><label for="as-pos">Position</label><select id="as-pos" name="position"><option value="">Choose</option>${POSITIONS[t.sport].map(x=>`<option ${S.profile.position===x?'selected':''}>${x}</option>`).join('')}</select></div>
       <div class="f"><label for="as-num">Jersey #</label><input id="as-num" name="jersey" type="number" min="0" max="99" inputmode="numeric" value="${esc(S.profile.jersey||'')}"></div></div>
       <div id="as-err" class="err" hidden></div>
       <button class="btn block">${ic('plus',18)}Add me as ${esc(S.profile.name)}</button></form>
-  </div>`,{kind:'claim',id:teamId});
+  </div>`,{kind:'claim',id:teamId,showAdd});
 }
 async function finishJoin(t){
   try{await db.doc('users/'+USER.uid).update({teams:FV().arrayUnion(t.id)})}catch(e){}
