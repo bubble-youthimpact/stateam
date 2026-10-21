@@ -157,6 +157,13 @@ select.mini{background:var(--surface2);border:1px solid var(--line);border-radiu
 .notice{font-size:13px;color:var(--muted);background:var(--surface2);border-radius:10px;padding:10px 12px}
 .demo{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:18px}
 .btn:disabled{opacity:.6;cursor:default}
+.agree{display:grid;grid-template-columns:20px 1fr;gap:10px;align-items:start;font-size:14px;color:var(--muted);cursor:pointer}
+.agree input{width:18px;height:18px;margin:2px 0 0;accent-color:var(--accent)}
+.agree a{color:var(--accent);font-weight:600}
+.arow{display:grid;grid-template-columns:40px 1fr auto;gap:12px;align-items:center;padding:12px 16px;border-top:1px solid var(--line)}
+.arow:first-child{border-top:0}
+.arow .t{font-weight:700}.arow .m{color:var(--muted);font-size:12px;overflow-wrap:anywhere}
+.aact{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
 .avatars{display:flex}
 .avatars span{width:26px;height:26px;border-radius:50%;background:var(--surface2);border:2px solid var(--surface);font-size:10px;font-weight:700;display:grid;place-items:center;margin-left:-6px}
 .avatars span:first-child{margin-left:0}
@@ -266,6 +273,7 @@ const I={
   stats:'<path d="M3 3v17h18"/><path d="M8 16v-4M12 16V7M16 16v-6M20 16v-9"/>',
   awards:'<path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3M12 14v3M8 21h8M9 17h6v4H9z"/>',
   profile:'<circle cx="12" cy="8" r="4"/><path d="M4 21c.8-4 4-6.5 8-6.5s7.2 2.5 8 6.5"/>',
+  admin:'<path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
   plus:'<path d="M12 5v14M5 12h14"/>',
   x:'<path d="M6 6l12 12M18 6L6 18"/>',
   shield:'<path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/>',
@@ -382,7 +390,7 @@ const myTeams=()=>isCoach()?managedTeams():joinedTeams();
 const teamGames=id=>sorted(S.games.filter(g=>g.teamId===id));
 
 const UI={tab:'home',sport:null,type:'all',metric:null,achFilter:'all',team:null};
-const tabsFor=()=>isCoach()?['home','teams','stats','profile']:['home','teams','stats','awards','profile'];
+const tabsFor=()=>[...(isCoach()?['home','teams','stats','profile']:['home','teams','stats','awards','profile']),...(typeof isAdmin==='function'&&isAdmin()?['admin']:[])];
 
 function applyTheme(){const r=document.documentElement;const th=S?.theme||lsGet('stateam.theme');if(th==='light'||th==='dark')r.setAttribute('data-theme',th);else r.removeAttribute('data-theme')}
 let toastT;function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2200)}
@@ -807,7 +815,7 @@ function pickTeamForGame(){
 function render(){
   applyTheme();if(!S)return;
   if(!tabsFor().includes(UI.tab))UI.tab='home';
-  const V={home:isCoach()?vHomeCoach:vHomePlayer,stats:isCoach()?vStatsCoach:vStatsPlayer,teams:vTeams,awards:vAwards,profile:vProfile};
+  const V={home:isCoach()?vHomeCoach:vHomePlayer,stats:isCoach()?vStatsCoach:vStatsPlayer,teams:vTeams,awards:vAwards,profile:vProfile,admin:vAdmin};
   document.getElementById('view').innerHTML=V[UI.tab]();
   const tabs=tabsFor();const el=document.getElementById('tabs');el.style.gridTemplateColumns=`repeat(${tabs.length},1fr)`;
   el.innerHTML=tabs.map(k=>`<button data-act="tab" data-tab="${k}" ${UI.tab===k?'aria-current="page"':''}>${ic(k,22)}${k[0].toUpperCase()+k.slice(1)}</button>`).join('');
@@ -860,6 +868,10 @@ document.addEventListener('click',e=>{
     case 'gDelAsk':document.getElementById('delZone').innerHTML=`<span class="small muted" style="margin-right:auto;align-self:center">Delete this official game?</span><button class="btn" data-act="close">Keep</button><button class="btn danger" data-act="gDelYes">Delete</button>`;break;
     case 'gDelYes':if(cloud()){const g=S.games.find(x=>x.id===modalCtx.id);db.doc(`teams/${g.teamId}/games/${g.id}`).delete().catch(cfail);closeModal();toast('Game deleted');break}S.games=S.games.filter(g=>g.id!==modalCtx.id);save();closeModal();render();toast('Game deleted');break;
     case 'claimSpot':{const t=S.teams.find(x=>x.id===modalCtx.id);cloudClaimSpot(t,v);break}
+    case 'approve':if(isAdmin()){b.disabled=true;b.textContent='Approving…';setApproval(b.dataset.id,true)}break;
+    case 'revokeAsk':document.getElementById('ap-'+b.dataset.id).innerHTML=`<button class="link small" data-act="revokeNo">Cancel</button><button class="btn sm danger" data-act="revokeYes" data-id="${b.dataset.id}">Remove approval</button>`;break;
+    case 'revokeNo':render();break;
+    case 'revokeYes':if(isAdmin())setApproval(b.dataset.id,false);break;
     case 'copy':navigator.clipboard?.writeText(v).then(()=>toast('Code copied'),()=>toast('Select the code to copy it'));break;
     case 'joinCode':{const jt=S.teams.find(x=>x.id===b.dataset.id);openModal(`${sheetHead(jt?'Join '+esc(teamTitle(jt)):'Join with a code')}<form id="joinForm" novalidate><p class="small muted" style="margin:0">Teams are invite-only. Your coach shares the 6-character code with players at ${esc(S.profile.school||'your school')}.</p>
       <div class="f"><label for="jc">Invite code</label><input id="jc" name="code" autocomplete="off" autocapitalize="characters" placeholder="6 characters" maxlength="6" style="text-transform:uppercase;letter-spacing:.2em;font-weight:700"></div>
@@ -879,6 +891,7 @@ document.addEventListener('click',e=>{
 document.addEventListener('change',e=>{
   const id=e.target.id;
   if(id==='metricSel'){UI.metric=e.target.value;render()}
+  if((id==='au-agree'||id==='ob-agree')&&e.target.checked&&/agree/.test(AUTH.err))authMsg();
   if(e.target.dataset.opp){const x=document.getElementById(e.target.dataset.opp+'-oppx');x.hidden=e.target.value!=='__other';if(!x.hidden)x.focus()}
   if(id==='lf-sport'){const cur=readLogForm();cur.teamId='';cur.stats={};const ed=modalCtx.editId;if(ed){cur.id=ed;logForm(cur.type,cur)}else logForm(cur.type,null,cur)}
   const auto=(a,b,r)=>{const u=document.getElementById(a)?.value,t=document.getElementById(b)?.value;if(u!==''&&t!=='')document.getElementById(r).value=resOf(+u,+t)};
@@ -890,7 +903,8 @@ document.addEventListener('submit',e=>{
   if(id==='authForm')return doAuth(fd);
   if(id==='onbForm'){const name=(fd.get('name')||'').trim(),school=fd.get('school')||'';
     if(!name)return authMsg('Enter your full name.');if(!school)return authMsg('Choose your school.');
-    if(db&&!USER.demo){S=cloudBlank();createUserDoc({role:AUTH.role,name,school}).then(startSync).then(()=>{showApp();toast('Welcome to Stateam')}).catch(e=>{console.warn(e);authMsg('Couldn’t create your profile. Check your connection and try again.')});return}
+    if(!fd.get('agree'))return authMsg('To continue, agree to the Privacy Policy and Terms of Service.');
+    if(db&&!USER.demo){S=cloudBlank();createUserDoc({role:AUTH.role,name,school,agreed:true}).then(startSync).then(()=>{showApp();toast('Welcome to Stateam')}).catch(e=>{console.warn(e);authMsg('Couldn’t create your profile. Check your connection and try again.')});return}
     S=newAccount({role:AUTH.role,name,school,email:USER.email});save();showApp();toast('Welcome to Stateam');return}
   const fail=(el,msg)=>{const x=document.getElementById(el);x.textContent=msg;x.hidden=false};
   if(id==='logForm'){
@@ -1042,11 +1056,13 @@ function startSync(){
     sub('u',db.doc('users/'+USER.uid),s=>{if(!s.exists)return;applyUser(s.data());if(first){first=false;res()}refresh()});
     sub('logs',db.collection(`users/${USER.uid}/logs`),s=>{S.logs=s.docs.map(d=>({...d.data(),id:d.id}));refresh()});
     sub('mine',db.collection('teams').where('coachUid','==',USER.uid),s=>{s.docs.forEach(d=>watchTeam(d.id));refresh()});
+    watchAdmin();
   });
 }
 async function createUserDoc(a){
   const sc=SCHOOLS.find(x=>x.name===a.school);
-  await db.doc('users/'+USER.uid).set({role:a.role,name:a.name,school:a.school,schoolId:sc?.id||'',sport:'basketball',position:'',jersey:'',grade:'',title:a.role==='coach'?'Coach':'',teams:[],createdAt:now()});
+  await db.doc('users/'+USER.uid).set({role:a.role,name:a.name,school:a.school,schoolId:sc?.id||'',sport:'basketball',position:'',jersey:'',grade:'',title:a.role==='coach'?'Coach':'',teams:[],createdAt:now(),agreedToPolicies:POLICY_VERSION,agreedAt:now()});
+  saveContact();
 }
 async function enterCloud(user){
   USER=user;closeModal();unsubAll();S=cloudBlank();
@@ -1056,12 +1072,44 @@ async function enterCloud(user){
   catch(e){console.warn(e);AUTH.err='Couldn’t load your account. Check your connection and try again.';S=null;USER=null;return showAuth()}
   if(!snap.exists){
     const p=AUTH.pending;AUTH.pending=null;
-    if(!(p&&p.school&&(p.name||user.name)))return showOnboarding();
+    if(!(p&&p.school&&p.agreed&&(p.name||user.name)))return showOnboarding();
     try{await createUserDoc({...p,name:p.name||user.name})}catch(e){cfail(e);return showOnboarding()}
   }
-  await startSync();showApp();
+  saveContact();await startSync();showApp();
 }
 
+/* --- admin --- */
+const ADMIN_EMAIL='jilim1995@gmail.com';
+const isAdmin=()=>cloud()&&(USER.email||'').toLowerCase()===ADMIN_EMAIL;
+function saveContact(){if(db&&USER&&!USER.demo&&USER.email)db.doc(`users/${USER.uid}/private/contact`).set({email:USER.email},{merge:true}).catch(()=>{})}
+function watchAdmin(){
+  if(!isAdmin())return;S.admin=S.admin||{coaches:[],emails:{},loaded:false};
+  sub('admin',db.collection('users').where('role','==','coach'),s=>{
+    S.admin.coaches=s.docs.map(d=>({uid:d.id,...d.data()}));S.admin.loaded=true;
+    S.admin.coaches.forEach(c=>{if(c.uid in S.admin.emails)return;S.admin.emails[c.uid]=null;
+      db.doc(`users/${c.uid}/private/contact`).get().then(x=>{S.admin.emails[c.uid]=x.data()?.email||'';refresh()}).catch(()=>{S.admin.emails[c.uid]=''})});
+    refresh();
+  });
+}
+function setApproval(uid,val){db.doc('users/'+uid).update({coachApproved:val}).then(()=>toast(val?'Coach approved':'Approval removed')).catch(cfail)}
+function vAdmin(){
+  const A=S.admin||{coaches:[],emails:{},loaded:false};
+  const when=c=>{const t=c.createdAt;const d=typeof t==='number'?new Date(t):t?.toDate?t.toDate():null;return d?d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):''};
+  const managed=uid=>S.teams.filter(t=>t.coachUid===uid).length;
+  const row=(c,pending)=>`<div class="arow"><div class="avatars"><span style="width:40px;height:40px;font-size:12px">${initials(c.name)}</span></div>
+    <div style="min-width:0"><div class="t">${esc(c.name||'No name')}</div>
+      <div class="m">${esc(A.emails[c.uid]===null?'Loading email…':A.emails[c.uid]||'Email not saved yet')}</div>
+      <div class="m">${esc(c.school||'No school')}${when(c)?' · Signed up '+when(c):''}</div></div>
+    <div id="ap-${c.uid}" class="aact">${pending?`<button class="btn sm primary" data-act="approve" data-id="${c.uid}">Approve</button>`:`<button class="link small" style="color:var(--bad)" data-act="revokeAsk" data-id="${c.uid}">Remove</button>`}</div></div>`;
+  const waiting=A.coaches.filter(c=>!c.coachApproved),ok=A.coaches.filter(c=>c.coachApproved);
+  return `<h1>Admin.</h1><p class="sub">Approve coach accounts so they can manage teams and post official stats. Only you can see this page.</p>
+  <div class="kpis">${tile('lock','Waiting',A.loaded?waiting.length:'…')}${tile('whistle','Approved coaches',A.loaded?ok.length:'…')}</div>
+  <section class="sec"><h2>Waiting for approval <span class="muted small num">${waiting.length}</span></h2>
+    <div class="card list">${!A.loaded?'<div class="empty">Loading coaches…</div>':waiting.length?waiting.map(c=>row(c,true)).join(''):'<div class="empty"><b>All caught up</b>New coach sign-ups will appear here.</div>'}</div>
+    <p class="small muted" style="margin:0">Check the email before approving. An approved coach can manage any team at their school that doesn’t have a coach yet.</p></section>
+  <section class="sec"><h2>Approved coaches <span class="muted small num">${ok.length}</span></h2>
+    <div class="card list">${ok.length?ok.map(c=>row(c,false)).join(''):'<div class="empty">No approved coaches yet.</div>'}</div></section>`;
+}
 /* --- coach actions --- */
 async function cloudClaim(t){
   if(!S.coachApproved)return toast('Your coach account is waiting for approval.');
@@ -1263,6 +1311,8 @@ const roleCards=()=>`<div class="f"><label>I’m a</label><div class="roles" rol
 ].map(([k,i,t,d])=>`<button type="button" class="rolecard" data-act="authRole" data-v="${k}" aria-pressed="${AUTH.role===k}"><span class="ri">${ic(i,20)}</span><b>${t}</b><span class="small muted">${d}</span></button>`).join('')}</div></div>`;
 const msgs=()=>`<div id="auth-err" class="err" ${AUTH.err?'':'hidden'}>${esc(AUTH.err)}</div><div id="auth-info" class="okmsg" ${AUTH.info?'':'hidden'}>${esc(AUTH.info)}</div>`;
 
+const POLICY_VERSION='2026-10-21';
+const agreeBox=id=>`<label class="agree" for="${id}"><input type="checkbox" id="${id}" name="agree" value="1"><span>I agree to the <a href="privacy" target="_blank" rel="noopener">Privacy Policy</a> and <a href="terms" target="_blank" rel="noopener">Terms of Service</a>.</span></label>`;
 function renderAuth(loading){
   const el=document.getElementById('auth');
   if(loading){el.innerHTML=`<div class="auth"><div class="authbrand">${LOGO}Stateam</div><p class="muted">Loading…</p></div>`;return}
@@ -1279,6 +1329,7 @@ function renderAuth(loading){
       <div class="f"><label for="au-email">Email</label><input id="au-email" name="email" type="email" autocomplete="email" inputmode="email" value="${email}" placeholder="you@school.org"></div>
       <div class="f"><div class="sechead"><label for="au-pw">Password</label>${su?'':`<button type="button" class="link small" data-act="forgot">Forgot password?</button>`}</div>
         <div class="pwrap"><input id="au-pw" name="password" type="password" autocomplete="${su?'new-password':'current-password'}" placeholder="${su?'At least 8 characters':''}"><button type="button" class="link small" data-act="pwToggle" aria-label="Show password">Show</button></div></div>
+      ${su?`<div class="f"><label for="au-pw2">Confirm password</label><input id="au-pw2" name="password2" type="password" autocomplete="new-password" placeholder="Type it again"></div>${agreeBox('au-agree')}`:''}
       ${msgs()}
       <button class="btn primary block" id="au-submit" type="submit">${su?'Create account':'Log in'}</button>
     </form>
@@ -1297,6 +1348,7 @@ function showOnboarding(){
     <form id="onbForm" novalidate>${roleCards()}
       <div class="f"><label for="ob-name">Full name</label><input id="ob-name" name="name" autocomplete="name" value="${esc(USER.name||'')}"></div>
       <div class="f"><label for="ob-school">School</label><select id="ob-school" name="school">${schoolOptions('')}</select></div>
+      ${agreeBox('ob-agree')}
       ${msgs()}
       <button class="btn primary block" type="submit">Continue</button></form>
     <button type="button" class="link small" style="align-self:center" data-act="signOut">Use a different account</button>
@@ -1320,7 +1372,9 @@ async function doAuth(fd){
     if(!school)return authMsg('Choose your school.');
     if(!/^\S+@\S+\.\S+$/.test(email))return authMsg('Enter a valid email address.');
     if(pw.length<8)return authMsg('Use at least 8 characters for your password.');
-    AUTH.pending={role:AUTH.role,name,school};
+    if(pw!==(fd.get('password2')||''))return authMsg('The two passwords don’t match.');
+    if(!fd.get('agree'))return authMsg('To create an account, agree to the Privacy Policy and Terms of Service.');
+    AUTH.pending={role:AUTH.role,name,school,agreed:true};
   }else{
     if(!/^\S+@\S+\.\S+$/.test(email))return authMsg('Enter a valid email address.');
     if(!pw)return authMsg('Enter your password.');
@@ -1337,7 +1391,8 @@ async function doAuth(fd){
 async function googleAuth(){
   if(!useFirebase)return authMsg('Google sign-in turns on once the Firebase config is added. Use email for now, or try a demo.');
   if(AUTH.mode==='signup'){const f=document.getElementById('authForm');const fd=new FormData(f);
-    if(fd.get('school'))AUTH.pending={role:AUTH.role,name:(fd.get('name')||'').trim(),school:fd.get('school')}}
+    if(!fd.get('agree'))return authMsg('To sign up with Google, first agree to the Privacy Policy and Terms of Service.');
+    if(fd.get('school'))AUTH.pending={role:AUTH.role,name:(fd.get('name')||'').trim(),school:fd.get('school'),agreed:true}}
   authMsg();
   try{await fbAuth.signInWithPopup(new firebase.auth.GoogleAuthProvider())}
   catch(e){AUTH.pending=null;authMsg(AUTH_ERR[e?.code]||'Google sign-in didn’t finish. Try again.')}
