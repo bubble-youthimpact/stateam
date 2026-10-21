@@ -376,7 +376,7 @@ function sample(){
   return st;
 }
 function blank(prev){return ensureSchoolTeams({sample:false,role:prev?.role||'player',theme:prev?.theme||'system',
-  profile:{name:'',school:'',grade:'',sport:'basketball',position:'',jersey:''},coach:{name:'',school:'',title:'',sport:'basketball'},teams:[],logs:[],games:[]})}
+  profile:{name:'',school:'',grade:'',sport:'',position:'',jersey:''},coach:{name:'',school:'',title:'',sport:''},teams:[],logs:[],games:[]})}
 
 let S=null;
 const save=()=>{if(USER&&S&&!S.cloud)lsSet(dataKey(USER.uid),S)};
@@ -396,8 +396,8 @@ function applyTheme(){const r=document.documentElement;const th=S?.theme||lsGet(
 let toastT;function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2200)}
 
 /* ---------- derived ---------- */
-const sportsUsed=()=>{const s=new Set(S.logs.map(l=>l.sport));joinedTeams().forEach(t=>s.add(t.sport));s.add(S.profile.sport||'basketball');return Object.keys(SPORTS).filter(k=>s.has(k))};
-const curSport=()=>{const u=sportsUsed();if(!UI.sport||!u.includes(UI.sport))UI.sport=u.includes(S.profile.sport)?S.profile.sport:u[0];return UI.sport};
+const sportsUsed=()=>{const s=new Set(S.logs.map(l=>l.sport));joinedTeams().forEach(t=>s.add(t.sport));return Object.keys(SPORTS).filter(k=>s.has(k))};
+const curSport=()=>{const u=sportsUsed();if(!u.length)return null;if(!UI.sport||!u.includes(UI.sport))UI.sport=u.includes(S.profile.sport)?S.profile.sport:u[0];return UI.sport};
 function sorted(arr){return [...arr].sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:0)}
 const initials=n=>(n||'?').trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase()||'?';
 
@@ -507,15 +507,18 @@ function sampleBadge(){return S.sample&&UI.tab==='profile'?`<span class="pill n"
 const roleBadge=()=>`<span class="pill ${isCoach()?'coach':'a'}">${isCoach()?'Coach account':'Player account'}</span>`;
 
 /* ---------- player views ---------- */
+function startCard(){return `<div class="card pad stack" style="gap:12px"><div style="display:flex;gap:12px;align-items:center"><span class="glyph" style="width:44px;height:44px">${ic('teams',22)}</span><div><b style="font-size:17px">Join your team to get started</b><div class="small muted">Your sports and stats show up here once you join a team or log your first session.</div></div></div>
+  <button class="btn primary block" data-act="joinCode">${ic('key',18)}Join with a code</button>
+  <div class="grid2"><button class="btn" data-act="log" data-v="match">${ic('plus',18)}Log a match</button><button class="btn" data-act="log" data-v="practice">${ic('cone',18)}Log practice</button></div></div>`}
 function vHomePlayer(){
-  const sp=curSport(),first=(S.profile.name||'').split(' ')[0],recent=sorted(S.logs).slice(0,3),s=summary(sp);
+  const sp=curSport(),first=(S.profile.name||'').split(' ')[0],recent=sorted(S.logs).slice(0,3),s=sp?summary(sp):null;
   const A=achievements(),done=A.filter(a=>a.done).length,next=A.filter(a=>!a.done).sort((a,b)=>b.pct-a.pct)[0];
   return `<h1>${first?`Let’s make progress, ${esc(first)}.`:'Let’s make progress.'}</h1>
   <p class="sub">${esc(S.profile.school||'Your school')}${S.profile.grade?' · '+esc(S.profile.grade):''}</p>${sampleBadge()}
-  <div class="stack">${sportChips()}
+  ${!sp?startCard():`<div class="stack">${sportChips()}
   <div class="kpis">${tile('pulse','Sessions',s.logs.length,`${s.matches.length} M · ${s.practices.length} P`)}${tile('trophy','Win rate',s.winRate==null?'–':s.winRate+'%')}${tile('target','Avg. '+SPORTS[sp].unit,s.matches.length?s.avg.toFixed(1):'–','/ match')}${tile('clock','Time logged',s.minutes,'min')}</div>
   ${playerChart(sp)}
-  <div class="grid2"><button class="btn primary" data-act="log" data-v="match">${ic('plus',18)}Log a match</button><button class="btn" data-act="log" data-v="practice">${ic('cone',18)}Log practice</button></div></div>
+  <div class="grid2"><button class="btn primary" data-act="log" data-v="match">${ic('plus',18)}Log a match</button><button class="btn" data-act="log" data-v="practice">${ic('cone',18)}Log practice</button></div></div>`}
   <section class="sec"><div class="sechead"><h2>Recent sessions</h2><button class="link" data-act="tab" data-tab="stats">See all</button></div>
     <div class="card list">${recent.length?recent.map(logRow).join(''):`<div class="empty"><b>No sessions yet</b>Log a match or a practice to start your record.</div>`}</div></section>
   <section class="sec"><div class="sechead"><h2>Your teams <span class="muted small num">${joinedTeams().length}</span></h2><button class="link" data-act="tab" data-tab="teams">Manage</button></div>
@@ -524,7 +527,8 @@ function vHomePlayer(){
     <span><b>${done} achievements unlocked</b><div class="small muted">${next?`Up next: ${next.name} · ${next.have} / ${next.need} ${next.unit}`:'You’ve unlocked everything.'}</div></span></button></section>`;
 }
 function vStatsPlayer(){
-  const sp=curSport(),s=summary(sp,UI.type),logs=sorted(s.logs);
+  const sp=curSport();if(!sp)return `<h1>Your game, in numbers.</h1><p class="sub">Your personal stats. Official team stats come from your coach.</p>${startCard()}`;
+  const s=summary(sp,UI.type),logs=sorted(s.logs);
   return `<h1>Your game, in numbers.</h1><p class="sub">Your personal stats. Official team stats come from your coach.</p>${sampleBadge()}
   <div class="stack">${sportChips()}
   <div class="seg" role="group" aria-label="Session type">${[['all','All'],['match','Matches'],['practice','Practice']].map(([k,l])=>`<button data-act="type" data-v="${k}" aria-pressed="${UI.type===k}">${l}</button>`).join('')}</div>
@@ -604,7 +608,7 @@ function vProfile(){
   <div class="card profile-hero"><div class="cover"></div><div class="pad" style="padding-top:0">
     <div style="display:flex;justify-content:space-between;align-items:flex-end"><div class="av">${initials(P.name)}</div><span class="pill ${c?'coach':'a'}">${c?'Coach':'Athlete'}</span></div>
     <div style="font-size:22px;font-weight:800;margin-top:8px">${esc(P.name||'Your name')}</div>
-    <div class="muted">${c?esc(P.title||'Coach'):''}${c?' · ':''}${SPORTS[P.sport]?.name||''}${!c&&P.position?' · '+esc(P.position):''}</div>
+    <div class="muted">${[c?esc(P.title||'Coach'):'',SPORTS[P.sport]?.name||'',!c?esc(P.position||''):''].filter(Boolean).join(' · ')||'&nbsp;'}</div>
     <div class="small muted">${esc(P.school||'Add your school')}${!c&&P.grade?' · '+esc(P.grade):''}</div>
     <div class="trio">${trio.map(([k,v])=>`<div><span class="eyebrow">${k}</span><b>${v}</b></div>`).join('')}</div>
     <button class="btn block" style="margin-top:14px" data-act="editProfile">Edit profile</button></div></div>
@@ -645,7 +649,7 @@ function oppField(pfx,val){
 }
 const readOpp=fd=>{const v=fd.get('oppSel');return (v==='__other'?fd.get('oppOther')||'':v||'').trim()};
 function logForm(type,existing,draft){
-  const l=existing||draft||{type,sport:curSport(),date:today(),minutes:type==='match'?'':60,stats:{},rating:3,result:'W'};
+  const l=existing||draft||{type,sport:curSport()||S.profile.sport||joinedTeams()[0]?.sport||'basketball',date:today(),minutes:type==='match'?'':60,stats:{},rating:3,result:'W'};
   type=l.type;const sp=l.sport;const teamOpts=joinedTeams().filter(t=>t.sport===sp);
   openModal(`${sheetHead(existing?'Edit session':type==='match'?'Log a match':'Log practice')}
   <form id="logForm" novalidate>
@@ -835,7 +839,7 @@ document.addEventListener('click',e=>{
     case 'theme':S.theme=v;lsSet('stateam.theme',v);save();render();break;
     case 'authMode':AUTH.mode=v;AUTH.err='';AUTH.info='';renderAuth();break;
     case 'authRole':AUTH.role=v;document.querySelectorAll('.rolecard').forEach(x=>x.setAttribute('aria-pressed',x.dataset.v===v));break;
-    case 'pwToggle':{const i=document.getElementById('au-pw');const show=i.type==='password';i.type=show?'text':'password';b.textContent=show?'Hide':'Show';b.setAttribute('aria-label',show?'Hide password':'Show password');break}
+    case 'pwToggle':{const i=document.getElementById(b.dataset.for||'au-pw');const show=i.type==='password';i.type=show?'text':'password';b.textContent=show?'Hide':'Show';b.setAttribute('aria-label',show?'Hide password':'Show password');break}
     case 'google':googleAuth();break;
     case 'forgot':forgotPw();break;
     case 'demo':enterDemo(v);break;
@@ -880,8 +884,8 @@ document.addEventListener('click',e=>{
     case 'editProfile':{const c=isCoach(),P=me();openModal(`${sheetHead('Edit profile')}<form id="profForm" novalidate>
       <div class="f"><label for="pf-name">Name</label><input id="pf-name" name="name" value="${esc(P.name)}"></div>
       <div class="f"><label for="pf-school">School</label><select id="pf-school" name="school"><option value="">Choose your school</option>${SCHOOLS.map(s=>`<option ${P.school===s.name?'selected':''}>${esc(s.name)}</option>`).join('')}</select></div>
-      ${c?`<div class="grid2"><div class="f"><label for="pf-title">Role</label><input id="pf-title" name="title" value="${esc(P.title)}" placeholder="Head coach, Team manager"></div><div class="f"><label for="pf-sport">Main sport</label><select id="pf-sport" name="sport">${Object.entries(SPORTS).map(([k,s])=>`<option value="${k}" ${k===P.sport?'selected':''}>${s.name}</option>`).join('')}</select></div></div>`
-      :`<div class="grid2"><div class="f"><label for="pf-grade">Grade</label><input id="pf-grade" name="grade" value="${esc(P.grade)}" placeholder="Grade 10"></div><div class="f"><label for="pf-sport">Main sport</label><select id="pf-sport" name="sport">${Object.entries(SPORTS).map(([k,s])=>`<option value="${k}" ${k===P.sport?'selected':''}>${s.name}</option>`).join('')}</select></div></div>
+      ${c?`<div class="grid2"><div class="f"><label for="pf-title">Role</label><input id="pf-title" name="title" value="${esc(P.title)}" placeholder="Head coach, Team manager"></div><div class="f"><label for="pf-sport">Main sport</label><select id="pf-sport" name="sport"><option value="">None</option>${Object.entries(SPORTS).map(([k,s])=>`<option value="${k}" ${k===P.sport?'selected':''}>${s.name}</option>`).join('')}</select></div></div>`
+      :`<div class="grid2"><div class="f"><label for="pf-grade">Grade</label><input id="pf-grade" name="grade" value="${esc(P.grade)}" placeholder="Grade 10"></div><div class="f"><label for="pf-sport">Main sport</label><select id="pf-sport" name="sport"><option value="">None</option>${Object.entries(SPORTS).map(([k,s])=>`<option value="${k}" ${k===P.sport?'selected':''}>${s.name}</option>`).join('')}</select></div></div>
       <div class="grid2"><div class="f"><label for="pf-pos">Position</label><input id="pf-pos" name="position" value="${esc(P.position)}"></div><div class="f"><label for="pf-jersey">Jersey #</label><input id="pf-jersey" name="jersey" inputmode="numeric" value="${esc(P.jersey)}"></div></div>`}
       <div class="actions"><button type="button" class="btn" data-act="close">Cancel</button><button class="btn primary">Save profile</button></div></form>`,{kind:'profile'});break}
     case 'startFresh':openModal(`${sheetHead('Start fresh?')}<div class="stack"><p style="margin:0">This removes every session, team membership and official game in this browser. This can’t be undone.</p><div class="actions"><button class="btn" data-act="close">Cancel</button><button class="btn danger" data-act="freshYes">Remove everything</button></div></div>`);break;
@@ -1017,7 +1021,7 @@ const isMeName=(t,n)=>cloud()?t?.ruid?.[n]===USER.uid:(!isCoach()&&n===S.profile
 function cloudBlank(){const st=blank({role:'player'});st.cloud=true;st.teams.forEach(t=>{t.code='';t.roster=[];t.rosterLoaded=false});st.people={};st.coachApproved=false;st.myTeamIds=[];return st}
 function applyUser(d){
   S.role=d.role==='coach'?'coach':'player';
-  const P={name:d.name||'',school:d.school||'',schoolId:d.schoolId||'',sport:d.sport||'basketball'};
+  const P={name:d.name||'',school:d.school||'',schoolId:d.schoolId||'',sport:d.sport||''};
   if(S.role==='coach'){S.coach={...S.coach,...P,title:d.title||'Coach'};S.coachApproved=!!d.coachApproved}
   else S.profile={...S.profile,...P,grade:d.grade||'',position:d.position||'',jersey:d.jersey||''};
   S.myTeamIds=d.teams||[];
@@ -1063,7 +1067,7 @@ function startSync(){
 }
 async function createUserDoc(a){
   const sc=SCHOOLS.find(x=>x.name===a.school);
-  await db.doc('users/'+USER.uid).set({role:a.role,name:a.name,school:a.school,schoolId:sc?.id||'',sport:'basketball',position:'',jersey:'',grade:'',title:a.role==='coach'?'Coach':'',teams:[],createdAt:now(),agreedToPolicies:POLICY_VERSION,agreedAt:now()});
+  await db.doc('users/'+USER.uid).set({role:a.role,name:a.name,school:a.school,schoolId:sc?.id||'',sport:'',position:'',jersey:'',grade:'',title:a.role==='coach'?'Coach':'',teams:[],createdAt:now(),agreedToPolicies:POLICY_VERSION,agreedAt:now()});
   saveContact();
 }
 async function enterCloud(user){
@@ -1216,7 +1220,7 @@ async function cloudLeave(t){
 }
 function cloudSaveProfile(P){
   const sc=SCHOOLS.find(x=>x.name===P.school);
-  const d={name:P.name,school:P.school,schoolId:sc?.id||'',sport:P.sport||'basketball'};
+  const d={name:P.name,school:P.school,schoolId:sc?.id||'',sport:P.sport||''};
   if(isCoach())d.title=P.title||'';else Object.assign(d,{grade:P.grade||'',position:P.position||'',jersey:P.jersey||''});
   db.doc('users/'+USER.uid).update(d).catch(cfail);
   if(!isCoach())joinedTeams().forEach(t=>{const n=Object.keys(t.ruid||{}).find(k=>t.ruid[k]===USER.uid);const rid=n&&t.rids[n];
@@ -1331,7 +1335,7 @@ function renderAuth(loading){
       <div class="f"><label for="au-email">Email</label><input id="au-email" name="email" type="email" autocomplete="email" inputmode="email" value="${email}" placeholder="you@school.org"></div>
       <div class="f"><div class="sechead"><label for="au-pw">Password</label>${su?'':`<button type="button" class="link small" data-act="forgot">Forgot password?</button>`}</div>
         <div class="pwrap"><input id="au-pw" name="password" type="password" autocomplete="${su?'new-password':'current-password'}" placeholder="${su?'At least 8 characters':''}"><button type="button" class="link small" data-act="pwToggle" aria-label="Show password">Show</button></div></div>
-      ${su?`<div class="f"><label for="au-pw2">Confirm password</label><input id="au-pw2" name="password2" type="password" autocomplete="new-password" placeholder="Type it again"></div>${agreeBox('au-agree')}`:''}
+      ${su?`<div class="f"><label for="au-pw2">Confirm password</label><div class="pwrap"><input id="au-pw2" name="password2" type="password" autocomplete="new-password" placeholder="Type it again"><button type="button" class="link small" data-act="pwToggle" data-for="au-pw2" aria-label="Show password">Show</button></div></div>${agreeBox('au-agree')}`:''}
       ${msgs()}
       <button class="btn primary block" id="au-submit" type="submit">${su?'Create account':'Log in'}</button>
     </form>
