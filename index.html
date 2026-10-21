@@ -424,11 +424,11 @@ function officialEntries(){
       out.push({id:'off:'+g.id,official:true,gameId:g.id,type:'match',sport:t.sport,teamId:t.id,date:g.date,opponent:g.opponent,us:g.us,them:g.them,result:g.result,minutes:+minutes||0,stats:st,me:n})})});
   return out;
 }
-const sameGame=(o,l)=>l.type==='match'&&l.date===o.date&&norm(l.opponent)===norm(o.opponent)&&(l.teamId===o.teamId||(!l.teamId&&l.sport===o.sport));
+const sameGame=(o,l)=>l.type==='match'&&(l.gameId?l.gameId===o.gameId:true)&&l.date===o.date&&norm(l.opponent)===norm(o.opponent)&&(l.teamId===o.teamId||(!l.teamId&&l.sport===o.sport));
 function entries(){
   const off=officialEntries(),used=new Set();
-  off.forEach(o=>{const l=S.logs.find(x=>!used.has(x.id)&&sameGame(o,x));if(l){used.add(l.id);o.mine=l;o.notes=l.notes||''}});
-  return [...off,...S.logs.filter(l=>!used.has(l.id))];
+  off.forEach(o=>{const l=S.logs.find(x=>!used.has(x.id)&&x.gameId===o.gameId)||S.logs.find(x=>!used.has(x.id)&&sameGame(o,x));if(l){used.add(l.id);o.mine=l;o.notes=l.notes||''}});
+  return [...off,...S.logs.filter(l=>!used.has(l.id)&&!l.notesOnly)];
 }
 const sportsUsed=()=>{const s=new Set(entries().map(l=>l.sport));joinedTeams().forEach(t=>s.add(t.sport));return Object.keys(SPORTS).filter(k=>s.has(k))};
 const curSport=()=>{const u=sportsUsed();if(!u.length)return null;if(!UI.sport||!u.includes(UI.sport))UI.sport=u.includes(S.profile.sport)?S.profile.sport:u[0];return UI.sport};
@@ -709,7 +709,8 @@ function oppField(pfx,val){
 const readOpp=fd=>{const v=fd.get('oppSel');return (v==='__other'?fd.get('oppOther')||'':v||'').trim()};
 function logForm(type,existing,draft){
   const l=existing||draft||{type,sport:curSport()||S.profile.sport||joinedTeams()[0]?.sport||'basketball',date:today(),minutes:type==='match'?'':60,stats:{},rating:3,result:'W'};
-  type=l.type;const sp=l.sport;const teamOpts=joinedTeams().filter(t=>t.sport===sp);
+  type=l.type;const sp=l.sport;const teamOpts=joinedTeams().filter(t=>t.sport===sp&&(type!=='match'||!coached(t)||t.id===l.teamId));
+  const coachedTeams=joinedTeams().filter(coached);
   openModal(`${sheetHead(existing?'Edit session':type==='match'?'Log a match':'Log practice')}
   <form id="logForm" novalidate>
     <div class="seg" role="group" aria-label="Session type">${[['match','Match'],['practice','Practice']].map(([k,lab])=>`<button type="button" data-act="logType" data-v="${k}" aria-pressed="${type===k}">${lab}</button>`).join('')}</div>
@@ -726,8 +727,8 @@ function logForm(type,existing,draft){
     <div class="grid2"><div class="f"><label for="lf-min">Minutes</label><input id="lf-min" name="minutes" type="number" min="0" inputmode="numeric" value="${l.minutes??''}"></div>
       <div class="f"><label for="lf-team">Team</label><select id="lf-team" name="teamId"><option value="">No team</option>${teamOpts.map(t=>`<option value="${t.id}" ${l.teamId===t.id?'selected':''}>${esc(teamTitle(t))}</option>`).join('')}</select></div></div>
     <div class="f"><label for="lf-notes">Notes</label><textarea id="lf-notes" name="notes" placeholder="What went well? What will you work on next?">${esc(l.notes||'')}</textarea></div>
-    <div id="lf-offnote" class="notice" ${!existing&&type==='match'&&coached(S.teams.find(t=>t.id===l.teamId))?'':'hidden'}>Your coach posts official stats for this team. When the official game is posted, its numbers count in your stats and this log keeps your notes.</div>
-    <div class="small muted">This goes to your personal record. Official team stats come from your coach.</div>
+    ${type==='match'&&coachedTeams.length&&!existing?`<div class="notice">Games for ${coachedTeams.length===1?esc(teamTitle(coachedTeams[0])):'your school teams'} are posted by your coach and show up in your stats automatically. Use this for club, pickup or other games. To add notes to a team game, open it from your stats.</div>`:''}
+    <div class="small muted">This goes to your personal record only.</div>
     <div id="lf-err" class="err" hidden></div>
     <div class="actions"><button type="button" class="btn" data-act="close">Cancel</button><button class="btn primary" type="submit">${existing?'Save changes':type==='match'?'Save match':'Save practice'}</button></div>
   </form>`,{kind:'log',type,rating:l.rating||3,editId:existing?.id});
@@ -837,13 +838,33 @@ function myGamePanel(g,t,f){
   return `<div class="card pad stack" style="box-shadow:none;gap:10px">
     <div class="eyebrow">Your game</div>
     ${!inBox?'<div class="small">You’re not in the box score for this game. If you played, ask your coach to add your stats.</div>':''}
-    ${mine?`<div class="small">${diff?`You logged <b>${esc(statLine(f,{...mine.stats,minutes:mine.minutes}))}</b>. Your stats use your coach’s official numbers.`:'Your log matches the official stats.'}</div>
-      ${mine.notes?`<div class="small" style="background:var(--surface2);border-radius:10px;padding:10px 12px"><b>Your notes</b><br>${esc(mine.notes)}</div>`:''}`:''}
+    ${mine&&!mine.notesOnly?`<div class="small">${diff?`You logged <b>${esc(statLine(f,{...mine.stats,minutes:mine.minutes}))}</b>. Your stats use your coach’s official numbers.`:'Your log matches the official stats.'}</div>
+`:''}
+    ${mine?.notes?`<div class="small" style="background:var(--surface2);border-radius:10px;padding:10px 12px"><b>Your notes</b> <span class="muted">· only you can see these</span><br>${esc(mine.notes)}</div>`:''}
     ${c?`<div class="small" style="display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px"><span class="pill ${CORR_LAB[c.status][1]}">${CORR_LAB[c.status][0]}</span><span>You asked for ${esc(statLine(f,c.stats))}${c.message?` · “${esc(c.message)}”`:''}</span></div>`:''}
     <div class="actions" style="justify-content:flex-start;flex-wrap:wrap">
       ${!c||c.status!=='open'?`<button class="btn sm" data-act="corrForm" data-id="${g.id}">${ic('edit',16)}${inBox?'Request a correction':'Ask coach to add my stats'}</button>`:`<button class="btn sm" data-act="corrForm" data-id="${g.id}">Edit request</button>`}
-      ${mine?`<button class="btn sm" data-act="editLog" data-id="${mine.id}">Edit my notes</button>`:''}
+      <button class="btn sm" data-act="notesForm" data-id="${g.id}">${mine?.notes?'Edit my notes':'Add my notes'}</button>
     </div></div>`;
+}
+function notesForm(gameId){
+  const g=S.games.find(x=>x.id===gameId);if(!g)return;const t=S.teams.find(x=>x.id===g.teamId);const o=entries().find(e=>e.gameId===gameId);
+  openModal(`${sheetHead('My notes')}<form id="notesForm" novalidate>
+    <p class="small muted" style="margin:0">vs. ${esc(g.opponent)} · ${fmtDate(g.date)}. Only you can see these notes.</p>
+    <div class="f"><label for="nf-notes">Notes</label><textarea id="nf-notes" name="notes" placeholder="What went well? What will you work on next?">${esc(o?.mine?.notes||'')}</textarea></div>
+    <div class="actions"><button type="button" class="btn" data-act="close">Cancel</button><button class="btn primary" type="submit">Save notes</button></div>
+  </form>`,{kind:'notes',id:gameId,teamId:t.id});
+}
+function saveNotes(gameId,notes){
+  const g=S.games.find(x=>x.id===gameId),t=S.teams.find(x=>x.id===g.teamId),o=entries().find(e=>e.gameId===gameId),mine=o?.mine;
+  if(mine){
+    if(cloud())db.doc(`users/${USER.uid}/logs/${mine.id}`).update({notes,updatedAt:now()}).catch(cfail);
+    else{mine.notes=notes;save()}
+    return;
+  }
+  const d={type:'match',notesOnly:true,gameId,teamId:t.id,sport:t.sport,date:g.date,opponent:g.opponent,us:g.us,them:g.them,result:g.result,stats:{},minutes:0,notes};
+  if(cloud())db.doc(`users/${USER.uid}/logs/g_${gameId}`).set({...d,updatedAt:now()}).catch(cfail);
+  else{S.logs.push({id:'g_'+gameId,...d});save()}
 }
 function corrForm(gameId){
   const g=S.games.find(x=>x.id===gameId);const t=S.teams.find(x=>x.id===g.teamId);const f=SPORTS[t.sport].fields;const n=myRosterName(t);
@@ -1014,6 +1035,7 @@ document.addEventListener('click',e=>{
     case 'revokeNo':render();break;
     case 'revokeYes':if(isAdmin())setApproval(b.dataset.id,false);break;
     case 'delAcct':deleteSheet();break;
+    case 'notesForm':notesForm(b.dataset.id);break;
     case 'corrForm':corrForm(b.dataset.id);break;
     case 'corrYes':resolveCorrection(b.dataset.id,true);break;
     case 'corrNo':resolveCorrection(b.dataset.id,false);break;
@@ -1036,7 +1058,6 @@ document.addEventListener('click',e=>{
 document.addEventListener('change',e=>{
   const id=e.target.id;
   if(id==='metricSel'){UI.metric=e.target.value;render()}
-  if(id==='lf-team'){const n=document.getElementById('lf-offnote');if(n)n.hidden=!(!modalCtx?.editId&&modalCtx?.type==='match'&&coached(S.teams.find(t=>t.id===e.target.value)))}
   if((id==='au-agree'||id==='ob-agree')&&e.target.checked&&/agree/.test(AUTH.err))authMsg();
   if(e.target.dataset.opp){const x=document.getElementById(e.target.dataset.opp+'-oppx');x.hidden=e.target.value!=='__other';if(!x.hidden)x.focus()}
   if(id==='lf-sport'){const cur=readLogForm();cur.teamId='';cur.stats={};const ed=modalCtx.editId;if(ed){cur.id=ed;logForm(cur.type,cur)}else logForm(cur.type,null,cur)}
@@ -1047,6 +1068,7 @@ document.addEventListener('change',e=>{
 document.addEventListener('submit',e=>{
   e.preventDefault();const id=e.target.id;const fd=new FormData(e.target);
   if(id==='authForm')return doAuth(fd);
+  if(id==='notesForm'){saveNotes(modalCtx.id,(fd.get('notes')||'').trim());back();toast('Notes saved');return}
   if(id==='corrForm'){const g=S.games.find(x=>x.id===modalCtx.id),t=S.teams.find(x=>x.id===g.teamId);const st={};
     [...SPORTS[t.sport].fields.map(x=>x[0]),'minutes'].forEach(k=>st[k]=Math.max(0,+fd.get(k)||0));
     const cur=g.box[myRosterName(t)]||{};const msg=(fd.get('message')||'').trim();
@@ -1064,7 +1086,7 @@ document.addEventListener('submit',e=>{
     if(o.type==='match'&&!o.opponent)return fail('lf-err','Choose the opponent so you can find this match later.');
     if(o.type==='practice'&&!o.focus)return fail('lf-err','Add what you worked on, even a few words like “shooting drills”.');
     const orig=modalCtx.editId&&S.logs.find(x=>x.id===modalCtx.editId);const keySame=orig&&orig.date===o.date&&orig.sport===o.sport&&norm(orig.opponent)===norm(o.opponent);
-    if(o.type==='match'&&!keySame){const dupL=S.logs.find(x=>x.id!==modalCtx.editId&&x.type==='match'&&x.sport===o.sport&&x.date===o.date&&norm(x.opponent)===norm(o.opponent));
+    if(o.type==='match'&&!keySame){const dupL=S.logs.find(x=>x.id!==modalCtx.editId&&!x.notesOnly&&x.type==='match'&&x.sport===o.sport&&x.date===o.date&&norm(x.opponent)===norm(o.opponent));
       if(dupL&&!modalCtx.allowDup){const x=document.getElementById('lf-err');x.innerHTML=`<div>You already logged a match vs. ${esc(o.opponent)} on ${fmtDate(o.date)}. If you played them twice that day, you can still log this one.</div><div class="errbtns"><button type="button" class="btn sm go" data-act="editLog" data-id="${dupL.id}">Edit that match</button><button type="button" class="btn sm" data-act="postAnyway" data-v="logForm">Log it anyway</button></div>`;x.hidden=false;return}}
     if(cloud()){const col=db.collection(`users/${USER.uid}/logs`);(modalCtx.editId?col.doc(modalCtx.editId):col.doc()).set({...o,updatedAt:now()}).catch(cfail)}
     else if(modalCtx.editId){const i=S.logs.findIndex(l=>l.id===modalCtx.editId);S.logs[i]={...S.logs[i],...o}}else S.logs.push({id:uid(),...o});
