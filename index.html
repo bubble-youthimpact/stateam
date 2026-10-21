@@ -627,16 +627,37 @@ function vProfile(){
 
 /* ---------- modals ---------- */
 let modalCtx=null;
+// Sheets remember the window they were opened from, so X steps back one window at a time.
+let modalStack=[],navBack=false,navTop=0;
+const sameCtx=(a,b)=>!!a&&!!b&&a.kind===b.kind&&a.id===b.id&&(a.kind!=='player'||a.i===b.i);
+const REOPEN={team:c=>teamDetail(c.id,c.lb),school:c=>schoolSheet(c.id,c.f),player:c=>playerSheet(c.id,c.i),game:c=>gameDetail(c.id),detail:c=>logDetail(c.id),claim:c=>claimSheet(c.id)};
 function openModal(html,ctx){
-  const m=document.getElementById('modal');const old=m.querySelector('.sheet');
-  const same=old&&modalCtx&&ctx&&modalCtx.kind===ctx.kind&&modalCtx.id===ctx.id;const top=same?old.scrollTop:0;
+  const m=document.getElementById('modal');const old=m.querySelector('.sheet');const pc=modalCtx;
+  const same=!!old&&sameCtx(pc,ctx);let top=same?old.scrollTop:0,restored=false;
+  if(!old)modalStack=[];
+  else if(!same){
+    if(navBack){top=navTop;restored=true}
+    else{
+      const i=ctx?modalStack.findIndex(e=>sameCtx(e.ctx,ctx)):-1;
+      if(i>=0){top=modalStack[i].top;modalStack=modalStack.slice(0,i);restored=true}
+      else if(pc&&REOPEN[pc.kind])modalStack.push({ctx:pc,top:old.scrollTop});
+    }
+  }
   modalCtx=ctx||null;m.innerHTML=`<div class="scrim" data-act="scrim"><div class="sheet" role="dialog" aria-modal="true">${html}</div></div>`;
   const sh=m.querySelector('.sheet');
-  if(same){sh.style.animation='none';sh.scrollTop=top;return}
+  if(same||restored){sh.style.animation='none';sh.scrollTop=top;return}
   if(['team','school','player','game','detail'].includes(ctx?.kind))return;
   const f=m.querySelector('input,select,textarea');f&&f.focus({preventScroll:true});
 }
-function closeModal(){document.getElementById('modal').innerHTML='';modalCtx=null}
+function closeModal(){document.getElementById('modal').innerHTML='';modalCtx=null;modalStack=[]}
+function back(){
+  while(modalStack.length){
+    const e=modalStack.pop(),before=modalCtx;navBack=true;navTop=e.top;
+    try{REOPEN[e.ctx.kind](e.ctx)}finally{navBack=false}
+    if(modalCtx!==before)return;
+  }
+  closeModal();
+}
 const sheetHead=t=>`<div class="sheethead"><h2>${t}</h2><button class="iconbtn" data-act="close" aria-label="Close" style="flex:0 0 auto">${ic('x',18)}</button></div>`;
 const lockNote=msg=>`<div class="lock">${ic('lock',16)}<span>${msg}</span></div>`;
 
@@ -693,7 +714,6 @@ function logDetail(id){
 }
 
 function teamDetail(id,lb){
-  const pc=modalCtx;const from=pc?.kind==='school'?pc.id:((pc?.kind==='team'&&pc.id===id)||pc?.teamId===id)?pc.from:null;
   const t=S.teams.find(x=>x.id===id);if(!t)return;lb=lb||SPORTS[t.sport].unit;
   const sc=school(t.schoolId),c=isCoach(),mine=t.managed,games=teamGames(t.id),r=teamRecord(t.id);
   const canEdit=c&&mine;
@@ -724,7 +744,7 @@ function teamDetail(id,lb){
         <div id="ap-err" class="err" hidden></div>
         <button class="btn primary block">${ic('plus',18)}Add to roster</button></form>`:''}</div>
     ${!c&&t.joined?lockNote('Team info, roster and official stats are managed by the coach.'):''}
-    ${action}</div>`,{kind:'team',id,lb,from});
+    ${action}</div>`,{kind:'team',id,lb});
 }
 const POSITIONS={basketball:['Point guard','Shooting guard','Small forward','Power forward','Center'],football:['Goalkeeper','Defender','Midfielder','Forward'],volleyball:['Setter','Outside hitter','Opposite hitter','Middle blocker','Libero','Defensive specialist']};
 const pubJersey=n=>{const P=(!cloud()&&n===S.profile.name)?[S.profile.position,S.profile.jersey]:(S.people||{})[n];return P&&P[1]!==''&&P[1]!=null?String(+P[1]):''};
@@ -753,10 +773,10 @@ function playerSheet(teamId,i){
       <div class="avgs">${f.map(([k,,ab])=>`<div><b>${(r[k]/r.gp).toFixed(1)}</b><span>${ab}</span></div>`).join('')}<div><b>${Math.round(r.minutes/r.gp)}</b><span>MIN</span></div></div></div>`}).join('')
       :`<div class="card empty small" style="box-shadow:none">No official games played yet.</div>`}</div>
     ${lockNote(isMe?'Others see only this card. Your personal logs, notes and practice sessions stay private.':'Only public info and official team stats are shown. Personal logs stay private.')}
-  </div>`,{kind:'player',id:t.id,i,teamId:t.id,from:modalCtx?.from});
+  </div>`,{kind:'player',id:t.id,i,teamId:t.id});
 }
-function schoolSheet(id){
-  const sc=school(id);if(!sc)return;const f=modalCtx?.kind==='school'&&modalCtx.id===id?modalCtx.f:'all';
+function schoolSheet(id,fa){
+  const sc=school(id);if(!sc)return;const f=fa||(modalCtx?.kind==='school'&&modalCtx.id===id?modalCtx.f:'all');
   const teams=S.teams.filter(t=>t.schoolId===id&&(f==='all'||t.sport===f));
   const own=sameSchool({schoolId:id},me().school);
   const tag=t=>isCoach()?(t.managed?'<span class="pill coach">Managed</span>':own?'<span class="pill n">Manage</span>':''):(t.joined?'<span class="pill W">Member</span>':own?`<span class="pill n">${ic('lock',12)} Code</span>`:'');
@@ -776,7 +796,7 @@ function gameDetail(id){
     <div><div class="eyebrow" style="margin-bottom:8px">Box score</div>${rows.length?`<div class="card tablewrap" style="box-shadow:none"><table class="tbl"><thead><tr><th>Player</th>${f.map(x=>`<th title="${x[1]}">${x[2]}</th>`).join('')}<th>MIN</th></tr></thead><tbody>
       ${rows.map(([n,b])=>`<tr class="${!isCoach()&&isMeName(t,n)?'me':''}"><td>${esc(n)}</td>${f.map(x=>`<td>${+b[x[0]]||0}</td>`).join('')}<td>${+b.minutes||0}</td></tr>`).join('')}</tbody></table></div>`:`<div class="card empty small">No player stats entered.</div>`}</div>
     ${canEdit?`<div id="delZone" class="actions"><button class="btn danger" data-act="gDelAsk">Delete</button><button class="btn primary" data-act="editGame" data-id="${g.id}">Edit game</button></div>`:lockNote('Official stats can only be changed by the team’s coach.')}
-  </div>`,{kind:'game',id,teamId:t.id,from:modalCtx?.teamId===t.id||modalCtx?.id===t.id?modalCtx.from:null});
+  </div>`,{kind:'game',id,teamId:t.id});
 }
 function gameForm(teamId,existing){
   const t=S.teams.find(x=>x.id===teamId);const g=existing||{date:today(),opponent:'',us:'',them:'',result:'W',location:'Home',box:{}};
@@ -854,25 +874,25 @@ document.addEventListener('click',e=>{
     case 'openLog':logDetail(b.dataset.id);break;
     case 'editLog':logForm(null,S.logs.find(l=>l.id===b.dataset.id));break;
     case 'delAsk':document.getElementById('delZone').innerHTML=`<span class="small muted" style="margin-right:auto;align-self:center">Delete this session?</span><button class="btn" data-act="close">Keep</button><button class="btn danger" data-act="delYes">Delete</button>`;break;
-    case 'delYes':if(cloud()){db.doc(`users/${USER.uid}/logs/${modalCtx.id}`).delete().catch(cfail);closeModal();toast('Session deleted');break}S.logs=S.logs.filter(l=>l.id!==modalCtx.id);save();closeModal();render();toast('Session deleted');break;
+    case 'delYes':if(cloud()){db.doc(`users/${USER.uid}/logs/${modalCtx.id}`).delete().catch(cfail);back();toast('Session deleted');break}S.logs=S.logs.filter(l=>l.id!==modalCtx.id);save();back();render();toast('Session deleted');break;
     case 'openTeam':if(cloud())watchTeam(b.dataset.id);teamDetail(b.dataset.id);break;
     case 'openPlayer':playerSheet(modalCtx.id,+b.dataset.i);break;
     case 'lb':teamDetail(modalCtx.id,v);break;
     case 'openSchool':watchSchool(b.dataset.id);schoolSheet(b.dataset.id);break;
     case 'schoolF':modalCtx.f=v;schoolSheet(modalCtx.id);break;
-    case 'leave':{const t=team();if(cloud())return cloudLeave(t);t.joined=false;t.roster=t.roster.filter(n=>n!==S.profile.name&&n!=='You');save();closeModal();render();toast('Left '+teamTitle(t));break}
+    case 'leave':{const t=team();if(cloud())return cloudLeave(t);t.joined=false;t.roster=t.roster.filter(n=>n!==S.profile.name&&n!=='You');save();back();render();toast('Left '+teamTitle(t));break}
     case 'regenAsk':document.getElementById('codeZone').innerHTML=`<span>The old code will stop working.</span><span style="display:flex;gap:12px"><button class="link small" data-act="regenNo">Cancel</button><button class="link small" style="color:var(--bad)" data-act="regenYes">Replace code</button></span>`;break;
     case 'regenNo':teamDetail(modalCtx.id);break;
     case 'regenYes':{const t=S.teams.find(x=>x.id===modalCtx.id);if(!isCoach()||!t.managed)return;if(cloud()){cloudRegen(t);break}t.code=newCode();save();teamDetail(t.id);toast('New invite code created');break}
     case 'manage':{const t=team();if(!isCoach()||!sameSchool(t,S.coach.school))return;if(cloud())return cloudClaim(t);t.managed=true;if(!t.coach)t.coach=S.coach.name||'Coach';save();render();teamDetail(t.id);toast('You now manage '+teamTitle(t));break}
-    case 'unmanage':{const t=team();if(cloud())return cloudUnclaim(t);t.managed=false;save();closeModal();render();toast('Stopped managing '+teamTitle(t));break}
+    case 'unmanage':{const t=team();if(cloud())return cloudUnclaim(t);t.managed=false;save();back();render();toast('Stopped managing '+teamTitle(t));break}
     case 'editTeam':teamForm(team());break;
     case 'rmPlayer':{const t=team();if(!t?.managed||!isCoach())return;if(cloud()){const n=t.roster[+b.dataset.i];cloudRemovePlayer(t,n);toast(`Removed ${n}`);break}const n=t.roster.splice(+b.dataset.i,1)[0];save();teamDetail(t.id);render();toast(`Removed ${n}`);break}
     case 'newGame':if(!isCoach())return;b.dataset.id?gameForm(b.dataset.id):pickTeamForGame();break;
     case 'openGame':gameDetail(b.dataset.id);break;
     case 'editGame':{const g=S.games.find(x=>x.id===b.dataset.id);gameForm(g.teamId,g);break}
     case 'gDelAsk':document.getElementById('delZone').innerHTML=`<span class="small muted" style="margin-right:auto;align-self:center">Delete this official game?</span><button class="btn" data-act="close">Keep</button><button class="btn danger" data-act="gDelYes">Delete</button>`;break;
-    case 'gDelYes':if(cloud()){const g=S.games.find(x=>x.id===modalCtx.id);db.doc(`teams/${g.teamId}/games/${g.id}`).delete().catch(cfail);closeModal();toast('Game deleted');break}S.games=S.games.filter(g=>g.id!==modalCtx.id);save();closeModal();render();toast('Game deleted');break;
+    case 'gDelYes':if(cloud()){const g=S.games.find(x=>x.id===modalCtx.id);db.doc(`teams/${g.teamId}/games/${g.id}`).delete().catch(cfail);back();toast('Game deleted');break}S.games=S.games.filter(g=>g.id!==modalCtx.id);save();back();render();toast('Game deleted');break;
     case 'claimSpot':{const t=S.teams.find(x=>x.id===modalCtx.id);cloudClaimSpot(t,v);break}
     case 'approve':if(isAdmin()){b.disabled=true;b.textContent='Approving…';setApproval(b.dataset.id,true)}break;
     case 'revokeAsk':document.getElementById('ap-'+b.dataset.id).innerHTML=`<button class="link small" data-act="revokeNo">Cancel</button><button class="btn sm danger" data-act="revokeYes" data-id="${b.dataset.id}">Remove approval</button>`;break;
@@ -921,7 +941,7 @@ document.addEventListener('submit',e=>{
     if(o.type==='practice'&&!o.focus)return fail('lf-err','Add what you worked on, even a few words like “shooting drills”.');
     if(cloud()){const col=db.collection(`users/${USER.uid}/logs`);(modalCtx.editId?col.doc(modalCtx.editId):col.doc()).set({...o,updatedAt:now()}).catch(cfail)}
     else if(modalCtx.editId){const i=S.logs.findIndex(l=>l.id===modalCtx.editId);S.logs[i]={...S.logs[i],...o}}else S.logs.push({id:uid(),...o});
-    UI.sport=o.sport;save();closeModal();render();toast(o.type==='match'?'Match saved':'Practice saved');
+    UI.sport=o.sport;save();back();render();toast(o.type==='match'?'Match saved':'Practice saved');
   }
   if(id==='gameForm'){
     if(!isCoach())return;const t=S.teams.find(x=>x.id===modalCtx.teamId);if(!t.managed)return;
@@ -932,7 +952,7 @@ document.addEventListener('submit',e=>{
     const g={teamId:t.id,date:fd.get('date')||today(),opponent:opp,us:+fd.get('us'),them:+fd.get('them'),result:fd.get('result'),location:fd.get('location'),box};
     if(cloud())cloudSaveGame(t,g,modalCtx.editId,S.games.find(x=>x.id===modalCtx.editId));
     else if(modalCtx.editId){const i=S.games.findIndex(x=>x.id===modalCtx.editId);S.games[i]={...S.games[i],...g}}else S.games.push({id:uid(),...g});
-    const wasEdit=!!modalCtx.editId;UI.team=t.id;save();closeModal();render();toast(wasEdit?'Game updated':'Game published to '+teamTitle(t));
+    const wasEdit=!!modalCtx.editId;UI.team=t.id;save();back();render();toast(wasEdit?'Game updated':'Game published to '+teamTitle(t));
   }
   if(id==='teamForm'){
     if(!isCoach())return;
@@ -993,10 +1013,10 @@ document.addEventListener('submit',e=>{
     if(S.account){S.account.name=P.name;S.account.school=P.school}
     if(cloud()){P.schoolId=SCHOOLS.find(x=>x.name===P.school)?.id||'';cloudSaveProfile(P)}
     if(fbAuth?.currentUser&&!USER?.demo)fbAuth.currentUser.updateProfile({displayName:P.name}).catch(()=>{});
-    save();closeModal();render();toast('Profile saved');
+    save();back();render();toast('Profile saved');
   }
 });
-function dismiss(){const c=modalCtx;if(c&&c.kind==='team'&&c.from)return schoolSheet(c.from);closeModal()}
+function dismiss(){back()}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('modal').innerHTML)dismiss()});
 /* ---------- cloud sync (Firestore) ---------- */
 let db=null;
@@ -1013,7 +1033,7 @@ function refreshModal(){
   const c=modalCtx;if(!c)return;
   if(c.kind==='team')teamDetail(c.id,c.lb);
   else if(c.kind==='school')schoolSheet(c.id);
-  else if(c.kind==='game'){if(S.games.some(g=>g.id===c.id))gameDetail(c.id);else closeModal()}
+  else if(c.kind==='game'){if(S.games.some(g=>g.id===c.id))gameDetail(c.id);else back()}
   else if(c.kind==='player')playerSheet(c.id,c.i);
   else if(c.kind==='claim')claimSheet(c.id);
 }
@@ -1197,7 +1217,7 @@ async function cloudUnclaim(t){
     await db.doc(`teams/${t.id}/private/invite`).delete().catch(()=>{});
     await db.doc('teams/'+t.id).update({coachUid:null,coachName:''});
     ['i:'+t.id].forEach(k=>{if(subs[k]){subs[k]();delete subs[k]}});
-    t.code='';t.managed=false;closeModal();refresh();toast('Stopped managing '+teamTitle(t));
+    t.code='';t.managed=false;back();refresh();toast('Stopped managing '+teamTitle(t));
   }catch(e){cfail(e)}
 }
 async function cloudRegen(t){
@@ -1276,7 +1296,7 @@ async function cloudLeave(t){
     else if(rid)await db.doc(`teams/${t.id}/roster/${rid}`).update({uid:null});
     await db.doc(`teams/${t.id}/joins/${USER.uid}`).delete().catch(()=>{});
     await db.doc('users/'+USER.uid).update({teams:FV().arrayRemove(t.id)});
-    closeModal();refresh();toast('Left '+teamTitle(t));
+    back();refresh();toast('Left '+teamTitle(t));
   }catch(e){cfail(e)}
 }
 function cloudSaveProfile(P){
