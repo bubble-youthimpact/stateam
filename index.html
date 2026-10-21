@@ -315,6 +315,8 @@ const ic=(n,s=20)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="no
 const STAR=(z=16)=>`<svg width="${z}" height="${z}" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.8l2.8 5.8 6.3.9-4.6 4.4 1.1 6.3L12 17.2l-5.6 3 1.1-6.3L2.9 9.5l6.3-.9z"/></svg>`;
 const RATE_LAB=['','Rough','Not great','Okay','Good','Great'];
 const stars=n=>`<span class="stars" role="img" aria-label="Rated ${n} of 5">${[1,2,3,4,5].map(i=>`<span class="${i<=n?'on':''}">${STAR(14)}</span>`).join('')}</span>`;
+const gradeNum=g=>String(g??'').match(/\d+/)?.[0]||'';
+const gradeTxt=g=>gradeNum(g)?'Grade '+gradeNum(g):'';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 const SPORTS={
@@ -351,7 +353,7 @@ function sample(){
   const T='DIS-MV-BB';
   const st={
     sample:true,role:'player',theme:'system',
-    profile:{name:'Alex Lee',school:'Daegu International School',grade:'Grade 11',sport:'basketball',position:'Shooting guard',jersey:'27'},
+    profile:{name:'Alex Lee',school:'Daegu International School',grade:'11',sport:'basketball',position:'Shooting guard',jersey:'27'},
     coach:{name:'Coach Park',school:'Daegu International School',title:'Head coach',sport:'basketball'},
     teams:[{id:'club-wu',name:'Weekend United',sport:'football',level:'Club',coach:'Student-run',meets:'Sat, 10:00 am · Back field',code:newCode(),school:'Daegu International School',roster:['Alex Lee','Ryan Lee','Hyunwoo Jang','Sungmin Oh','Daniel Kang'],joined:true,managed:false}],
     logs:[
@@ -549,7 +551,7 @@ function vHomePlayer(){
   const sp=curSport(),first=(S.profile.name||'').split(' ')[0],recent=sorted(entries()).slice(0,3),s=sp?summary(sp):null;
   const A=achievements(),done=A.filter(a=>a.done).length,next=A.filter(a=>!a.done).sort((a,b)=>b.pct-a.pct)[0];
   return `<h1>${first?`Let’s make progress, ${esc(first)}.`:'Let’s make progress.'}</h1>
-  <p class="sub">${esc(S.profile.school||'Your school')}${S.profile.grade?' · '+esc(S.profile.grade):''}</p>${sampleBadge()}
+  <p class="sub">${esc(S.profile.school||'Your school')}${gradeTxt(S.profile.grade)?' · '+gradeTxt(S.profile.grade):''}</p>${sampleBadge()}
   ${!sp?startCard():`<div class="stack">${sportChips()}
   <div class="kpis">${tile('pulse','Sessions',s.logs.length,`${s.matches.length} M · ${s.practices.length} P`)}${tile('trophy','Win rate',s.winRate==null?'–':s.winRate+'%')}${tile('target','Avg. '+SPORTS[sp].unit,s.matches.length?s.avg.toFixed(1):'–','/ match')}${tile('clock','Time logged',s.minutes,'min')}</div>
   ${playerChart(sp)}
@@ -645,7 +647,7 @@ function vProfile(){
     <div style="display:flex;justify-content:space-between;align-items:flex-end"><div class="av">${initials(P.name)}</div><span class="pill ${c?'coach':'a'}">${c?'Coach':'Athlete'}</span></div>
     <div style="font-size:22px;font-weight:800;margin-top:8px">${esc(P.name||'Your name')}</div>
     <div class="muted">${[c?esc(P.title||'Coach'):'',SPORTS[P.sport]?.name||'',!c?esc(P.position||''):''].filter(Boolean).join(' · ')||'&nbsp;'}</div>
-    <div class="small muted">${esc(P.school||'Add your school')}${!c&&P.grade?' · '+esc(P.grade):''}</div>
+    <div class="small muted">${esc(P.school||'Add your school')}${!c&&gradeTxt(P.grade)?' · '+gradeTxt(P.grade):''}</div>
     <div class="trio">${trio.map(([k,v])=>`<div><span class="eyebrow">${k}</span><b>${v}</b></div>`).join('')}</div>
     <button class="btn block" style="margin-top:14px" data-act="editProfile">Edit profile</button></div></div>
   <section class="sec"><h2>Account</h2>
@@ -1023,9 +1025,9 @@ document.addEventListener('click',e=>{
       <div class="f"><label for="pf-name">Name</label><input id="pf-name" name="name" value="${esc(P.name)}"></div>
       <div class="f"><label for="pf-school">School</label><select id="pf-school" name="school"><option value="">Choose your school</option>${SCHOOLS.map(s=>`<option ${P.school===s.name?'selected':''}>${esc(s.name)}</option>`).join('')}</select></div>
       ${c?`<div class="grid2"><div class="f"><label for="pf-title">Role</label><input id="pf-title" name="title" value="${esc(P.title)}" placeholder="Head coach, Team manager"></div><div class="f"><label for="pf-sport">Main sport</label><select id="pf-sport" name="sport"><option value="">None</option>${Object.entries(SPORTS).map(([k,s])=>`<option value="${k}" ${k===P.sport?'selected':''}>${s.name}</option>`).join('')}</select></div></div>`
-      :`<div class="grid2"><div class="f"><label for="pf-grade">Grade</label><input id="pf-grade" name="grade" value="${esc(P.grade)}" placeholder="Grade 10"></div><div class="f"><label for="pf-sport">Main sport</label><select id="pf-sport" name="sport"><option value="">None</option>${Object.entries(SPORTS).map(([k,s])=>`<option value="${k}" ${k===P.sport?'selected':''}>${s.name}</option>`).join('')}</select></div></div>
+      :`<div class="grid2"><div class="f"><label for="pf-grade">Grade</label><input id="pf-grade" name="grade" type="number" min="1" max="12" step="1" inputmode="numeric" value="${esc(gradeNum(P.grade))}" placeholder="e.g. 10"></div><div class="f"><label for="pf-sport">Main sport</label><select id="pf-sport" name="sport"><option value="">None</option>${Object.entries(SPORTS).map(([k,s])=>`<option value="${k}" ${k===P.sport?'selected':''}>${s.name}</option>`).join('')}</select></div></div>
       <div class="grid2"><div class="f"><label for="pf-pos">Position</label><input id="pf-pos" name="position" value="${esc(P.position)}"></div><div class="f"><label for="pf-jersey">Jersey #</label><input id="pf-jersey" name="jersey" inputmode="numeric" value="${esc(P.jersey)}"></div></div>`}
-      <div class="actions"><button type="button" class="btn" data-act="close">Cancel</button><button class="btn primary">Save profile</button></div></form>`,{kind:'profile'});break}
+      <div id="pf-err" class="err" hidden></div><div class="actions"><button type="button" class="btn" data-act="close">Cancel</button><button class="btn primary">Save profile</button></div></form>`,{kind:'profile'});break}
     case 'startFresh':openModal(`${sheetHead('Start fresh?')}<div class="stack"><p style="margin:0">This removes every session, team membership and official game in this browser. This can’t be undone.</p><div class="actions"><button class="btn" data-act="close">Cancel</button><button class="btn danger" data-act="freshYes">Remove everything</button></div></div>`);break;
     case 'freshYes':{const th=S.theme;S=S.account?newAccount(S.account):blank(S);S.theme=th;save();closeModal();UI.tab='profile';render();toast('Cleared. Your account is ready for real stats.');break}
     case 'loadSample':{const keep={theme:S.theme,role:S.role,account:S.account};S=sample();Object.assign(S,keep);save();render();toast('Sample data loaded');break}
@@ -1136,6 +1138,8 @@ document.addEventListener('submit',e=>{
     t.joined=true;const nm=S.profile.name||'You';if(!t.roster.includes(nm))t.roster.push(nm);save();closeModal();UI.tab='teams';render();toast('Joined '+teamTitle(t));
   }
   if(id==='profForm'){
+    const gr=(fd.get('grade')??'').trim();if(fd.has('grade')&&gr!==''&&!(/^\d{1,2}$/.test(gr)&&+gr>=1&&+gr<=12))return fail('pf-err','Enter your grade as a number from 1 to 12.');
+    if(fd.has('grade'))fd.set('grade',gr===''?'':String(+gr));
     const P=me();['name','school','grade','sport','position','jersey','title'].forEach(k=>{if(fd.has(k))P[k]=(fd.get(k)||'').trim()});
     if(S.account){S.account.name=P.name;S.account.school=P.school}
     if(cloud()){P.schoolId=SCHOOLS.find(x=>x.name===P.school)?.id||'';cloudSaveProfile(P)}
