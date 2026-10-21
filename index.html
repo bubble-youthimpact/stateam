@@ -173,7 +173,7 @@ html.modal-open,html.modal-open body{overflow:hidden;overscroll-behavior:none}
 .sheet{overscroll-behavior:contain}
 .scrim{overscroll-behavior:contain}
 .errbtns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-.errbtns .btn{color:var(--fg)}
+.errbtns .btn{color:var(--bad)}
 .errbtns .btn.go{color:var(--accent)}
 .pbtn .pill{margin-left:8px;vertical-align:1px}
 .confirmbox{display:flex;flex-direction:column;gap:6px;background:var(--bad-soft);border-radius:var(--r);padding:14px}
@@ -432,7 +432,7 @@ function entries(){
 }
 const sportsUsed=()=>{const s=new Set(entries().map(l=>l.sport));joinedTeams().forEach(t=>s.add(t.sport));return Object.keys(SPORTS).filter(k=>s.has(k))};
 const curSport=()=>{const u=sportsUsed();if(!u.length)return null;if(!UI.sport||!u.includes(UI.sport))UI.sport=u.includes(S.profile.sport)?S.profile.sport:u[0];return UI.sport};
-function sorted(arr){return [...arr].sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:0)}
+function sorted(arr){return [...arr].sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:(!!b.official-!!a.official)||((b.type==='match')-(a.type==='match')))}
 const initials=n=>(n||'?').trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase()||'?';
 
 function summary(sport,type='all'){
@@ -475,6 +475,9 @@ function achievements(){
 
 /* ---------- shared pieces ---------- */
 const tile=(icon,lab,val,suf='')=>`<div class="card kpi"><div class="lab">${ic(icon,16)}${lab}</div><div class="val">${val}${suf?`<small>${suf}</small>`:''}</div></div>`;
+// One point per date: multiple games or sessions on the same day are added together.
+function byDay(list){const m=new Map();list.forEach(p=>{const x=m.get(p.d)||{d:p.d,v:0,marks:[]};x.v+=p.v;x.marks.push(p.mark);m.set(p.d,x)});
+  return [...m.values()].sort((a,b)=>a.d<b.d?-1:a.d>b.d?1:0).map(x=>({d:x.d,v:x.v,mark:x.marks.includes('L')?'L':x.marks.every(k=>k==='P')?'P':''}))}
 function lineSvg(pts,label){
   const W=320,H=150,L=30,R=10,T=10,B=24;
   const raw=Math.max(...pts.map(p=>p.v),1);const step=raw<=5?1:raw<=12?3:raw<=30?6:raw<=60?15:raw<=120?30:Math.ceil(raw/4/10)*10;
@@ -501,8 +504,8 @@ function playerChart(sp){
   if(!UI.metric||!fields.some(f=>f[0]===UI.metric))UI.metric=SPORTS[sp].unit;
   const k=UI.metric,lab=fields.find(f=>f[0]===k)[1];
   const E=entries();const src=k==='minutes'?E.filter(l=>l.sport===sp&&(UI.type==='all'||l.type===UI.type)):E.filter(l=>l.sport===sp&&l.type==='match');
-  const pts=sorted(src).reverse().slice(-10).map(l=>({d:l.date,v:k==='minutes'?+l.minutes||0:+l.stats?.[k]||0,mark:l.type==='practice'?'P':''}));
-  return chartCard({title:'Performance trend',sub:`${k==='minutes'?'Minutes per session':lab+' per match'} · last ${pts.length}`,pts,avgLabel:`Avg. ${k==='minutes'?'minutes':lab.toLowerCase()}`,
+  const pts=byDay(src.map(l=>({d:l.date,v:k==='minutes'?+l.minutes||0:+l.stats?.[k]||0,mark:l.type==='practice'?'P':''}))).slice(-10);
+  return chartCard({title:'Performance trend',sub:`${k==='minutes'?'Minutes':lab} per day · last ${pts.length} ${pts.length===1?'day':'days'}`,pts,avgLabel:`Avg. ${k==='minutes'?'minutes':lab.toLowerCase()} per day`,
     select:`<select class="mini" id="metricSel" aria-label="Metric">${fields.map(([fk,fl])=>`<option value="${fk}" ${fk===k?'selected':''}>${fl}</option>`).join('')}</select>`,empty:`Log at least two ${k==='minutes'?'sessions':'matches'} to see a trend.`});
 }
 function sportChips(){return `<div class="chips" role="group" aria-label="Sport">${sportsUsed().map(k=>`<button class="chip" data-act="sport" data-v="${k}" aria-pressed="${k===curSport()}">${SPORTS[k].name}</button>`).join('')}</div>`}
@@ -612,11 +615,11 @@ function vStatsCoach(){
   if(!T.length)return `<h1>Team stats.</h1><p class="sub">Official records for the teams you manage.</p><div class="card empty"><b>No teams to show</b>Choose the team you coach on the Teams tab first.</div>`;
   if(!UI.team||!T.some(t=>t.id===UI.team))UI.team=T[0].id;
   const t=T.find(x=>x.id===UI.team),r=teamRecord(t.id),games=teamGames(t.id),sp=SPORTS[t.sport],tot=seasonTotals(t);
-  const pts=[...games].reverse().slice(-10).map(g=>({d:g.date,v:+g.us||0,mark:g.result==='L'?'L':''}));
+  const pts=byDay(games.map(g=>({d:g.date,v:+g.us||0,mark:g.result==='L'?'L':''}))).slice(-10);
   return `<h1>Team stats.</h1><p class="sub">Official records for the teams you manage.</p>${sampleBadge()}
   <div class="stack"><div class="chips" role="group" aria-label="Team">${T.map(x=>`<button class="chip" data-act="pickTeam" data-v="${x.id}" aria-pressed="${x.id===t.id}">${esc(teamTitle(x))}</button>`).join('')}</div>
   <div class="kpis">${tile('trophy','Record',recStr(r),'W–L')}${tile('pulse','Win rate',r.n?Math.round(r.W/r.n*100)+'%':'–')}${tile('target','Avg. scored',r.n?(r.pf/r.n).toFixed(1):'–','/ game')}${tile('shield','Avg. allowed',r.n?(r.pa/r.n).toFixed(1):'–','/ game')}</div>
-  ${chartCard({title:'Team scoring',sub:`${sp.unit==='points'?'Points':sp.unit[0].toUpperCase()+sp.unit.slice(1)} scored per game · losses in red`,pts,avgLabel:'Avg. scored',empty:'Log at least two official games to see a trend.'})}</div>
+  ${chartCard({title:'Team scoring',sub:`${sp.unit==='points'?'Points':sp.unit[0].toUpperCase()+sp.unit.slice(1)} scored per day · days with a loss in red`,pts,avgLabel:'Avg. scored per day',empty:'Log at least two official games to see a trend.'})}</div>
   <section class="sec"><div class="sechead"><h2>Season leaders</h2></div><div class="prs">${sp.fields.map(([k,lab])=>{const b=[...tot].sort((a,c)=>c[k]-a[k])[0];return `<div class="card pr"><div class="eyebrow">${lab}</div><div class="v">${b&&b[k]?b[k]:'–'}</div><div class="d">${b&&b[k]?esc(b.name)+' · '+(b[k]/Math.max(b.gp,1)).toFixed(1)+'/g':'No stats yet'}</div></div>`}).join('')}</div></section>
   <section class="sec"><div class="sechead"><h2>Player totals</h2><span class="small muted">${games.length} games</span></div>${totalsTable(t,tot)}</section>
   <section class="sec"><div class="sechead"><h2>Official games</h2><button class="link" data-act="newGame" data-id="${t.id}">+ Log game</button></div>
@@ -709,7 +712,7 @@ function oppField(pfx,val){
 const readOpp=fd=>{const v=fd.get('oppSel');return (v==='__other'?fd.get('oppOther')||'':v||'').trim()};
 function logForm(type,existing,draft){
   const l=existing||draft||{type,sport:curSport()||S.profile.sport||joinedTeams()[0]?.sport||'basketball',date:today(),minutes:type==='match'?'':60,stats:{},rating:3,result:'W'};
-  type=l.type;const sp=l.sport;const teamOpts=joinedTeams().filter(t=>t.sport===sp&&(type!=='match'||!coached(t)||t.id===l.teamId));
+  type=l.type;const sp=l.sport;
   const coachedTeams=joinedTeams().filter(coached);
   openModal(`${sheetHead(existing?'Edit session':type==='match'?'Log a match':'Log practice')}
   <form id="logForm" novalidate>
@@ -724,8 +727,8 @@ function logForm(type,existing,draft){
     :`<div class="f"><label for="lf-focus">What did you work on?</label><input id="lf-focus" name="focus" value="${esc(l.focus||'')}" placeholder="e.g. Free throws, 100 reps"></div>
       <div class="f"><label>How did it go?</label><div class="rating" role="group" aria-label="Session rating, 1 to 5">${[1,2,3,4,5].map(n=>`<button type="button" data-act="rate" data-v="${n}" class="${n<=(l.rating||3)?'on':''}" aria-pressed="${(l.rating||3)===n}" aria-label="${n} of 5">${STAR(28)}</button>`).join('')}<span class="rlab">${RATE_LAB[l.rating||3]}</span></div></div>`}
     <div class="grid3">${SPORTS[sp].fields.map(([k,lab])=>`<div class="f"><label for="lf-${k}">${lab}</label><input id="lf-${k}" name="s_${k}" type="number" min="0" inputmode="numeric" value="${l.stats?.[k]??0}"></div>`).join('')}</div>
-    <div class="grid2"><div class="f"><label for="lf-min">Minutes</label><input id="lf-min" name="minutes" type="number" min="0" inputmode="numeric" value="${l.minutes??''}"></div>
-      <div class="f"><label for="lf-team">Team</label><select id="lf-team" name="teamId"><option value="">No team</option>${teamOpts.map(t=>`<option value="${t.id}" ${l.teamId===t.id?'selected':''}>${esc(teamTitle(t))}</option>`).join('')}</select></div></div>
+    <div class="grid2"><div class="f"><label for="lf-min">Minutes</label><input id="lf-min" name="minutes" type="number" min="0" inputmode="numeric" value="${l.minutes??''}"></div></div>
+    <input type="hidden" name="teamId" value="${esc(l.teamId||'')}">
     <div class="f"><label for="lf-notes">Notes</label><textarea id="lf-notes" name="notes" placeholder="What went well? What will you work on next?">${esc(l.notes||'')}</textarea></div>
     ${type==='match'&&coachedTeams.length&&!existing?`<div class="notice">Games for ${coachedTeams.length===1?esc(teamTitle(coachedTeams[0])):'your school teams'} are posted by your coach and show up in your stats automatically. Use this for club, pickup or other games. To add notes to a team game, open it from your stats.</div>`:''}
     <div class="small muted">This goes to your personal record only.</div>
