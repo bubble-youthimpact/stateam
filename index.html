@@ -172,6 +172,9 @@ select.mini{background:var(--surface2);border:1px solid var(--line);border-radiu
 html.modal-open,html.modal-open body{overflow:hidden;overscroll-behavior:none}
 .sheet{overscroll-behavior:contain}
 .scrim{overscroll-behavior:contain}
+.errbtns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.confirmbox{display:flex;flex-direction:column;gap:6px;background:var(--bad-soft);border-radius:var(--r);padding:14px}
+.confirmbox .actions{margin-top:6px}
 .avatars{display:flex}
 .avatars span{width:26px;height:26px;border-radius:50%;background:var(--surface2);border:2px solid var(--surface);font-size:10px;font-weight:700;display:grid;place-items:center;margin-left:-6px}
 .avatars span:first-child{margin-left:0}
@@ -718,7 +721,7 @@ function logForm(type,existing,draft){
     <div class="grid2"><div class="f"><label for="lf-min">Minutes</label><input id="lf-min" name="minutes" type="number" min="0" inputmode="numeric" value="${l.minutes??''}"></div>
       <div class="f"><label for="lf-team">Team</label><select id="lf-team" name="teamId"><option value="">No team</option>${teamOpts.map(t=>`<option value="${t.id}" ${l.teamId===t.id?'selected':''}>${esc(teamTitle(t))}</option>`).join('')}</select></div></div>
     <div class="f"><label for="lf-notes">Notes</label><textarea id="lf-notes" name="notes" placeholder="What went well? What will you work on next?">${esc(l.notes||'')}</textarea></div>
-    <div id="lf-offnote" class="notice" ${type==='match'&&coached(S.teams.find(t=>t.id===l.teamId))?'':'hidden'}>Your coach posts official stats for this team. When the official game is posted, its numbers count in your stats and this log keeps your notes.</div>
+    <div id="lf-offnote" class="notice" ${!existing&&type==='match'&&coached(S.teams.find(t=>t.id===l.teamId))?'':'hidden'}>Your coach posts official stats for this team. When the official game is posted, its numbers count in your stats and this log keeps your notes.</div>
     <div class="small muted">This goes to your personal record. Official team stats come from your coach.</div>
     <div id="lf-err" class="err" hidden></div>
     <div class="actions"><button type="button" class="btn" data-act="close">Cancel</button><button class="btn primary" type="submit">${existing?'Save changes':type==='match'?'Save match':'Save practice'}</button></div>
@@ -748,12 +751,12 @@ function teamDetail(id,lb){
   const sc=school(t.schoolId),c=isCoach(),mine=t.managed,games=teamGames(t.id),r=teamRecord(t.id);
   const canEdit=c&&mine;
   let action='';
-  if(c){action=mine?`<button class="btn block" data-act="unmanage" data-id="${t.id}">Stop managing this team</button>`
+  if(c){action=mine?`<div id="actZone" class="stack" style="gap:8px"><button class="btn block" data-act="unmanageAsk" data-id="${t.id}">Stop managing this team</button></div>`
     :t.coachUid?lockNote(`${esc(t.coach||'Another coach')} already manages this team.`)
     :!approved()?lockNote('Your coach account is waiting for approval. You can manage teams once the Stateam admin approves it.')
     :sameSchool(t,S.coach.school)?`<button class="btn block coachbtn" data-act="manage" data-id="${t.id}">${ic('whistle',18)}Manage this team</button>`
     :lockNote(S.coach.school?`Only coaches at ${esc(teamSchool(t))} can manage this team. Your profile school is ${esc(S.coach.school)}.`:'Add your school in Profile before managing a team.')}
-  else{action=t.joined?`<button class="btn block danger" data-act="leave" data-id="${t.id}">Leave team</button>`
+  else{action=t.joined?`<div id="actZone" class="stack" style="gap:8px"><button class="btn block danger" data-act="leaveAsk" data-id="${t.id}">Leave team</button></div>`
     :sameSchool(t,S.profile.school)?`${lockNote('This team is invite-only. Ask your coach for the code.')}<button class="btn block primary" data-act="joinCode" data-id="${t.id}">${ic('key',18)}Enter invite code</button>`
     :lockNote(S.profile.school?`Only students at ${esc(teamSchool(t))} can join this team.`:'Add your school in Profile to join its teams.')}
   openModal(`${sheetHead(esc(teamTitle(t)))}<div class="stack">
@@ -822,16 +825,18 @@ const CORR_LAB={open:['Waiting for coach','P'],applied:['Coach updated the stats
 const myCorr=gameId=>(S.corrections||[]).find(c=>c.gameId===gameId&&(cloud()?c.uid===USER.uid:c.mine));
 const statLine=(f,st)=>[...f.map(([k,,ab])=>`${+st?.[k]||0} ${ab}`),`${+st?.minutes||0} MIN`].join(' · ');
 function myGamePanel(g,t,f){
-  const n=myRosterName(t);if(!n||!t.joined||!played(g.box?.[n]))return '';
+  const n=myRosterName(t);if(!n||!t.joined)return '';
+  const inBox=played(g.box?.[n]);
   const o=entries().find(e=>e.gameId===g.id),mine=o?.mine,c=myCorr(g.id);
   const diff=mine&&f.some(([k])=>(+mine.stats?.[k]||0)!==(+g.box[n][k]||0));
   return `<div class="card pad stack" style="box-shadow:none;gap:10px">
     <div class="eyebrow">Your game</div>
+    ${!inBox?'<div class="small">You’re not in the box score for this game. If you played, ask your coach to add your stats.</div>':''}
     ${mine?`<div class="small">${diff?`You logged <b>${esc(statLine(f,{...mine.stats,minutes:mine.minutes}))}</b>. Your stats use your coach’s official numbers.`:'Your log matches the official stats.'}</div>
       ${mine.notes?`<div class="small" style="background:var(--surface2);border-radius:10px;padding:10px 12px"><b>Your notes</b><br>${esc(mine.notes)}</div>`:''}`:''}
-    ${c?`<div class="small"><span class="pill ${CORR_LAB[c.status][1]}">${CORR_LAB[c.status][0]}</span> You asked for ${esc(statLine(f,c.stats))}${c.message?` · “${esc(c.message)}”`:''}</div>`:''}
+    ${c?`<div class="small" style="display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px"><span class="pill ${CORR_LAB[c.status][1]}">${CORR_LAB[c.status][0]}</span><span>You asked for ${esc(statLine(f,c.stats))}${c.message?` · “${esc(c.message)}”`:''}</span></div>`:''}
     <div class="actions" style="justify-content:flex-start;flex-wrap:wrap">
-      ${!c||c.status!=='open'?`<button class="btn sm" data-act="corrForm" data-id="${g.id}">${ic('edit',16)}Request a correction</button>`:`<button class="btn sm" data-act="corrForm" data-id="${g.id}">Edit request</button>`}
+      ${!c||c.status!=='open'?`<button class="btn sm" data-act="corrForm" data-id="${g.id}">${ic('edit',16)}${inBox?'Request a correction':'Ask coach to add my stats'}</button>`:`<button class="btn sm" data-act="corrForm" data-id="${g.id}">Edit request</button>`}
       ${mine?`<button class="btn sm" data-act="editLog" data-id="${mine.id}">Edit my notes</button>`:''}
     </div></div>`;
 }
@@ -984,6 +989,9 @@ document.addEventListener('click',e=>{
     case 'showAddSelf':{modalCtx.showAdd=true;b.hidden=true;const f=document.getElementById('addSelf');f.hidden=false;f.scrollIntoView({block:'nearest',behavior:'smooth'});break}
     case 'rmAsk':{const t=team();const n=t.roster[+b.dataset.i];const linked=cloud()?!!t.ruid?.[n]:false;
       const z=document.getElementById('rm-'+b.dataset.i);z.classList.add('confirming');z.innerHTML=`<span class="small muted" style="margin-right:auto">Remove ${esc(n)} from the roster?${linked?' They’ll lose access to this team.':''}</span><button class="link small" data-act="rmNo">Cancel</button><button class="btn sm danger" data-act="rmPlayer" data-i="${b.dataset.i}">Remove</button>`;break}
+    case 'leaveAsk':{const t=team();document.getElementById('actZone').innerHTML=`<div class="confirmbox"><b>Leave ${esc(teamTitle(t))}?</b><span class="small muted">Your roster spot is freed and the team disappears from your stats. You’ll need the invite code to join again.</span><div class="actions"><button class="btn" data-act="actNo">Cancel</button><button class="btn danger" data-act="leave" data-id="${t.id}">Leave team</button></div></div>`;break}
+    case 'unmanageAsk':{const t=team();document.getElementById('actZone').innerHTML=`<div class="confirmbox"><b>Stop managing ${esc(teamTitle(t))}?</b><span class="small muted">The invite code stops working and you can’t edit the team anymore. Its roster and games stay for the next coach.</span><div class="actions"><button class="btn" data-act="actNo">Cancel</button><button class="btn danger" data-act="unmanage" data-id="${t.id}">Stop managing</button></div></div>`;break}
+    case 'actNo':teamDetail(modalCtx.id,modalCtx.lb);break;
     case 'rmNo':teamDetail(modalCtx.id,modalCtx.lb);break;
     case 'unlinkAsk':{const t=team();const n=t.roster[+b.dataset.i];const z=document.getElementById('rm-'+b.dataset.i);z.classList.add('confirming');
       z.innerHTML=`<span class="small muted" style="margin-right:auto">Unlink ${esc(n)}’s account? The spot and its stats stay. They’ll need the invite code to join again.</span><button class="link small" data-act="rmNo">Cancel</button><button class="btn sm" data-act="unlink" data-i="${b.dataset.i}">Unlink</button>`;break}
@@ -1023,7 +1031,7 @@ document.addEventListener('click',e=>{
 document.addEventListener('change',e=>{
   const id=e.target.id;
   if(id==='metricSel'){UI.metric=e.target.value;render()}
-  if(id==='lf-team'){const n=document.getElementById('lf-offnote');if(n)n.hidden=!(modalCtx?.type==='match'&&coached(S.teams.find(t=>t.id===e.target.value)))}
+  if(id==='lf-team'){const n=document.getElementById('lf-offnote');if(n)n.hidden=!(!modalCtx?.editId&&modalCtx?.type==='match'&&coached(S.teams.find(t=>t.id===e.target.value)))}
   if((id==='au-agree'||id==='ob-agree')&&e.target.checked&&/agree/.test(AUTH.err))authMsg();
   if(e.target.dataset.opp){const x=document.getElementById(e.target.dataset.opp+'-oppx');x.hidden=e.target.value!=='__other';if(!x.hidden)x.focus()}
   if(id==='lf-sport'){const cur=readLogForm();cur.teamId='';cur.stats={};const ed=modalCtx.editId;if(ed){cur.id=ed;logForm(cur.type,cur)}else logForm(cur.type,null,cur)}
@@ -1050,8 +1058,9 @@ document.addEventListener('submit',e=>{
     const o=readLogForm();
     if(o.type==='match'&&!o.opponent)return fail('lf-err','Choose the opponent so you can find this match later.');
     if(o.type==='practice'&&!o.focus)return fail('lf-err','Add what you worked on, even a few words like “shooting drills”.');
-    if(o.type==='match'){const dupL=S.logs.find(x=>x.id!==modalCtx.editId&&x.type==='match'&&x.sport===o.sport&&x.date===o.date&&norm(x.opponent)===norm(o.opponent));
-      if(dupL&&!modalCtx.allowDup){const x=document.getElementById('lf-err');x.innerHTML=`You already logged a match vs. ${esc(o.opponent)} on ${fmtDate(o.date)}. <button type="button" class="link small" data-act="editLog" data-id="${dupL.id}">Edit that match</button>, or if you played them twice that day, <button type="button" class="link small" data-act="postAnyway" data-v="logForm">log it anyway</button>.`;x.hidden=false;return}}
+    const orig=modalCtx.editId&&S.logs.find(x=>x.id===modalCtx.editId);const keySame=orig&&orig.date===o.date&&orig.sport===o.sport&&norm(orig.opponent)===norm(o.opponent);
+    if(o.type==='match'&&!keySame){const dupL=S.logs.find(x=>x.id!==modalCtx.editId&&x.type==='match'&&x.sport===o.sport&&x.date===o.date&&norm(x.opponent)===norm(o.opponent));
+      if(dupL&&!modalCtx.allowDup){const x=document.getElementById('lf-err');x.innerHTML=`<div>You already logged a match vs. ${esc(o.opponent)} on ${fmtDate(o.date)}. If you played them twice that day, you can still log this one.</div><div class="errbtns"><button type="button" class="btn sm" data-act="editLog" data-id="${dupL.id}">Edit that match</button><button type="button" class="btn sm" data-act="postAnyway" data-v="logForm">Log it anyway</button></div>`;x.hidden=false;return}}
     if(cloud()){const col=db.collection(`users/${USER.uid}/logs`);(modalCtx.editId?col.doc(modalCtx.editId):col.doc()).set({...o,updatedAt:now()}).catch(cfail)}
     else if(modalCtx.editId){const i=S.logs.findIndex(l=>l.id===modalCtx.editId);S.logs[i]={...S.logs[i],...o}}else S.logs.push({id:uid(),...o});
     UI.sport=o.sport;save();back();render();toast(o.type==='match'?'Match saved':'Practice saved');
@@ -1064,7 +1073,7 @@ document.addEventListener('submit',e=>{
     modalCtx.names.forEach((n,i)=>{const row={};let any=false;keys.forEach(k=>{const v=fd.get(`b_${i}_${k}`);row[k]=Math.max(0,+v||0);if(v!=='')any=true});if(any)box[n]=row});
     const g={teamId:t.id,date:fd.get('date')||today(),opponent:opp,us:+fd.get('us'),them:+fd.get('them'),result:fd.get('result'),location:fd.get('location'),box};
     const dupG=S.games.find(x=>x.teamId===t.id&&x.id!==modalCtx.editId&&x.date===g.date&&norm(x.opponent)===norm(g.opponent));
-    if(dupG&&!modalCtx.allowDup){const x=document.getElementById('gf-err');x.innerHTML=`${esc(teamTitle(t))} already has a game vs. ${esc(g.opponent)} on ${fmtDate(g.date)} (${dupG.us}–${dupG.them}). <button type="button" class="link small" data-act="openGame" data-id="${dupG.id}">Open that game</button> to edit it, or if this is a second game (like a tournament rematch), <button type="button" class="link small" data-act="postAnyway" data-v="gameForm">post anyway</button>.`;x.hidden=false;return}
+    if(dupG&&!modalCtx.allowDup){const x=document.getElementById('gf-err');x.innerHTML=`<div>${esc(teamTitle(t))} already has a game vs. ${esc(g.opponent)} on ${fmtDate(g.date)} (${dupG.us}–${dupG.them}). If this is a second game, like a tournament rematch, you can still post it.</div><div class="errbtns"><button type="button" class="btn sm" data-act="openGame" data-id="${dupG.id}">Open that game</button><button type="button" class="btn sm" data-act="postAnyway" data-v="gameForm">Post anyway</button></div>`;x.hidden=false;return}
     if(cloud())cloudSaveGame(t,g,modalCtx.editId,S.games.find(x=>x.id===modalCtx.editId));
     else if(modalCtx.editId){const i=S.games.findIndex(x=>x.id===modalCtx.editId);S.games[i]={...S.games[i],...g}}else S.games.push({id:uid(),...g});
     const wasEdit=!!modalCtx.editId;UI.team=t.id;save();back();render();toast(wasEdit?'Game updated':'Game published to '+teamTitle(t));
