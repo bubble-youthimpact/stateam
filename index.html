@@ -173,6 +173,9 @@ html.modal-open,html.modal-open body{overflow:hidden;overscroll-behavior:none}
 .sheet{overscroll-behavior:contain}
 .scrim{overscroll-behavior:contain}
 .errbtns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.errbtns .btn{color:var(--fg)}
+.errbtns .btn.go{color:var(--accent)}
+.pbtn .pill{margin-left:8px;vertical-align:1px}
 .confirmbox{display:flex;flex-direction:column;gap:6px;background:var(--bad-soft);border-radius:var(--r);padding:14px}
 .confirmbox .actions{margin-top:6px}
 .avatars{display:flex}
@@ -1060,7 +1063,7 @@ document.addEventListener('submit',e=>{
     if(o.type==='practice'&&!o.focus)return fail('lf-err','Add what you worked on, even a few words like “shooting drills”.');
     const orig=modalCtx.editId&&S.logs.find(x=>x.id===modalCtx.editId);const keySame=orig&&orig.date===o.date&&orig.sport===o.sport&&norm(orig.opponent)===norm(o.opponent);
     if(o.type==='match'&&!keySame){const dupL=S.logs.find(x=>x.id!==modalCtx.editId&&x.type==='match'&&x.sport===o.sport&&x.date===o.date&&norm(x.opponent)===norm(o.opponent));
-      if(dupL&&!modalCtx.allowDup){const x=document.getElementById('lf-err');x.innerHTML=`<div>You already logged a match vs. ${esc(o.opponent)} on ${fmtDate(o.date)}. If you played them twice that day, you can still log this one.</div><div class="errbtns"><button type="button" class="btn sm" data-act="editLog" data-id="${dupL.id}">Edit that match</button><button type="button" class="btn sm" data-act="postAnyway" data-v="logForm">Log it anyway</button></div>`;x.hidden=false;return}}
+      if(dupL&&!modalCtx.allowDup){const x=document.getElementById('lf-err');x.innerHTML=`<div>You already logged a match vs. ${esc(o.opponent)} on ${fmtDate(o.date)}. If you played them twice that day, you can still log this one.</div><div class="errbtns"><button type="button" class="btn sm go" data-act="editLog" data-id="${dupL.id}">Edit that match</button><button type="button" class="btn sm" data-act="postAnyway" data-v="logForm">Log it anyway</button></div>`;x.hidden=false;return}}
     if(cloud()){const col=db.collection(`users/${USER.uid}/logs`);(modalCtx.editId?col.doc(modalCtx.editId):col.doc()).set({...o,updatedAt:now()}).catch(cfail)}
     else if(modalCtx.editId){const i=S.logs.findIndex(l=>l.id===modalCtx.editId);S.logs[i]={...S.logs[i],...o}}else S.logs.push({id:uid(),...o});
     UI.sport=o.sport;save();back();render();toast(o.type==='match'?'Match saved':'Practice saved');
@@ -1073,7 +1076,7 @@ document.addEventListener('submit',e=>{
     modalCtx.names.forEach((n,i)=>{const row={};let any=false;keys.forEach(k=>{const v=fd.get(`b_${i}_${k}`);row[k]=Math.max(0,+v||0);if(v!=='')any=true});if(any)box[n]=row});
     const g={teamId:t.id,date:fd.get('date')||today(),opponent:opp,us:+fd.get('us'),them:+fd.get('them'),result:fd.get('result'),location:fd.get('location'),box};
     const dupG=S.games.find(x=>x.teamId===t.id&&x.id!==modalCtx.editId&&x.date===g.date&&norm(x.opponent)===norm(g.opponent));
-    if(dupG&&!modalCtx.allowDup){const x=document.getElementById('gf-err');x.innerHTML=`<div>${esc(teamTitle(t))} already has a game vs. ${esc(g.opponent)} on ${fmtDate(g.date)} (${dupG.us}–${dupG.them}). If this is a second game, like a tournament rematch, you can still post it.</div><div class="errbtns"><button type="button" class="btn sm" data-act="openGame" data-id="${dupG.id}">Open that game</button><button type="button" class="btn sm" data-act="postAnyway" data-v="gameForm">Post anyway</button></div>`;x.hidden=false;return}
+    if(dupG&&!modalCtx.allowDup){const x=document.getElementById('gf-err');x.innerHTML=`<div>${esc(teamTitle(t))} already has a game vs. ${esc(g.opponent)} on ${fmtDate(g.date)} (${dupG.us}–${dupG.them}). If this is a second game, like a tournament rematch, you can still post it.</div><div class="errbtns"><button type="button" class="btn sm go" data-act="openGame" data-id="${dupG.id}">Open that game</button><button type="button" class="btn sm" data-act="postAnyway" data-v="gameForm">Post anyway</button></div>`;x.hidden=false;return}
     if(cloud())cloudSaveGame(t,g,modalCtx.editId,S.games.find(x=>x.id===modalCtx.editId));
     else if(modalCtx.editId){const i=S.games.findIndex(x=>x.id===modalCtx.editId);S.games[i]={...S.games[i],...g}}else S.games.push({id:uid(),...g});
     const wasEdit=!!modalCtx.editId;UI.team=t.id;save();back();render();toast(wasEdit?'Game updated':'Game published to '+teamTitle(t));
