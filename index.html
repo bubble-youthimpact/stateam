@@ -616,7 +616,8 @@ function vProfile(){
     <div class="card pad stack" style="gap:12px">
       <dl class="kv"><dt>Signed in as</dt><dd style="overflow-wrap:anywhere">${USER?.demo?'Demo account':esc(USER?.email||S.account?.email||'')}</dd><dt>Account type</dt><dd>${c?'Coach / manager':'Player'}</dd>${c&&cloud()?`<dt>Coach status</dt><dd>${S.coachApproved?'<span class="pill W">Approved</span>':'<span class="pill P">Waiting for approval</span>'}</dd>`:''}</dl>
       <div class="small muted" style="display:grid;grid-template-columns:20px 1fr;gap:10px"><span style="color:${c?'var(--coach)':'var(--accent)'}">${ic(c?'whistle':'profile',18)}</span><span>${c?'You can create teams, edit team info and rosters, and post official game stats.':'You can log your own matches and practices and join teams at your school with an invite code. Official team stats come from your coach.'}</span></div>
-      <div id="outZone" class="actions" style="justify-content:stretch"><button class="btn block" data-act="signOutAsk">${USER?.demo?'Leave demo':'Log out'}</button></div></div></section>
+      <div id="outZone" class="actions" style="justify-content:stretch"><button class="btn block" data-act="signOutAsk">${USER?.demo?'Leave demo':'Log out'}</button></div>
+      ${USER?.demo?'':`<button class="link small" style="color:var(--bad);align-self:center" data-act="delAcct">Delete account</button>`}</div></section>
   <section class="sec"><h2>Appearance</h2>
     <div class="seg" role="group" aria-label="Theme">${[['system','System'],['light','Light'],['dark','Dark']].map(([k,l])=>`<button data-act="theme" data-v="${k}" aria-pressed="${S.theme===k}">${l}</button>`).join('')}</div></section>
   ${cloud()?`<section class="sec"><h2>Your data</h2><div class="card pad small muted">Your stats, teams and games are saved to your Stateam account and sync across your devices.</div></section>`:`<section class="sec"><h2>Your data</h2>
@@ -877,6 +878,7 @@ document.addEventListener('click',e=>{
     case 'revokeAsk':document.getElementById('ap-'+b.dataset.id).innerHTML=`<button class="link small" data-act="revokeNo">Cancel</button><button class="btn sm danger" data-act="revokeYes" data-id="${b.dataset.id}">Remove approval</button>`;break;
     case 'revokeNo':render();break;
     case 'revokeYes':if(isAdmin())setApproval(b.dataset.id,false);break;
+    case 'delAcct':deleteSheet();break;
     case 'copy':navigator.clipboard?.writeText(v).then(()=>toast('Code copied'),()=>toast('Select the code to copy it'));break;
     case 'joinCode':{const jt=S.teams.find(x=>x.id===b.dataset.id);openModal(`${sheetHead(jt?'Join '+esc(teamTitle(jt)):'Join with a code')}<form id="joinForm" novalidate><p class="small muted" style="margin:0">Teams are invite-only. Your coach shares the 6-character code with players at ${esc(S.profile.school||'your school')}.</p>
       <div class="f"><label for="jc">Invite code</label><input id="jc" name="code" autocomplete="off" autocapitalize="characters" placeholder="6 characters" maxlength="6" style="text-transform:uppercase;letter-spacing:.2em;font-weight:700"></div>
@@ -906,6 +908,7 @@ document.addEventListener('change',e=>{
 document.addEventListener('submit',e=>{
   e.preventDefault();const id=e.target.id;const fd=new FormData(e.target);
   if(id==='authForm')return doAuth(fd);
+  if(id==='delForm')return deleteAccount(fd);
   if(id==='onbForm'){const name=(fd.get('name')||'').trim(),school=fd.get('school')||'';
     if(!name)return authMsg('Enter your full name.');if(!school)return authMsg('Choose your school.');
     if(!fd.get('agree'))return authMsg('To continue, agree to the Privacy Policy and Terms of Service.');
@@ -1115,6 +1118,64 @@ function vAdmin(){
     <p class="small muted" style="margin:0">Check the email before approving. An approved coach can manage any team at their school that doesn’t have a coach yet.</p></section>
   <section class="sec"><h2>Approved coaches <span class="muted small num">${ok.length}</span></h2>
     <div class="card list">${ok.length?ok.map(c=>row(c,false)).join(''):'<div class="empty">No approved coaches yet.</div>'}</div></section>`;
+}
+/* --- delete account --- */
+function provider(){return fbAuth?.currentUser?.providerData?.[0]?.providerId||'password'}
+function deleteSheet(){
+  const c=isCoach(),cl=cloud(),pw=cl&&provider()==='password';
+  openModal(`${sheetHead('Delete your account?')}<form id="delForm" class="stack" novalidate>
+    <p style="margin:0">This permanently deletes:</p>
+    <ul class="small" style="margin:0;padding-left:20px;line-height:1.7">
+      <li>Your login and profile</li>
+      ${c?'<li>Your coach access. You’ll stop managing your teams, and their invite codes stop working. Rosters and games stay with the team for the next coach.</li>':'<li>All your personal matches, practices and notes</li><li>Your spots on team rosters</li>'}
+    </ul>
+    ${c?'':'<p class="small muted" style="margin:0">Official game stats your coach entered stay in the team’s records.</p>'}
+    ${pw?`<div class="f"><label for="del-pw">Enter your password to confirm</label><div class="pwrap"><input id="del-pw" name="password" type="password" autocomplete="current-password"><button type="button" class="link small" data-act="pwToggle" data-for="del-pw" aria-label="Show password">Show</button></div></div>`
+      :cl?'<p class="small muted" style="margin:0">To confirm, you’ll sign in with Google again.</p>':''}
+    <div id="del-err" class="err" hidden></div>
+    <p class="small" style="margin:0;font-weight:700;color:var(--bad)">This can’t be undone.</p>
+    <div class="actions"><button type="button" class="btn" data-act="close">Cancel</button><button class="btn danger" id="del-go" type="submit">Delete my account</button></div>
+  </form>`,{kind:'delete'});
+}
+async function deleteAccount(fd){
+  const err=m=>{const x=document.getElementById('del-err');if(x){x.textContent=m;x.hidden=false}};
+  const btn=document.getElementById('del-go');const busy=on=>{if(btn){btn.disabled=on;btn.textContent=on?'Deleting…':'Delete my account'}};
+  if(!cloud()){
+    const accts=lsGet('stateam.accounts')||{};const email=Object.keys(accts).find(k=>accts[k].uid===USER.uid);
+    if(email){delete accts[email];lsSet('stateam.accounts',accts)}
+    lsDel(dataKey(USER.uid));signOut();toast('Your account was deleted');return;
+  }
+  const u=fbAuth.currentUser;if(!u)return err('You’re signed out. Log in again, then try once more.');
+  busy(true);
+  try{
+    if(provider()==='password'){const pw=fd.get('password')||'';if(!pw){busy(false);return err('Enter your password.')}
+      await u.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(u.email,pw))}
+    else await u.reauthenticateWithPopup(new firebase.auth.GoogleAuthProvider());
+  }catch(e){busy(false);return err(AUTH_ERR[e?.code]||'Couldn’t confirm it’s you. Try again.')}
+  const uid=USER.uid;
+  try{
+    unsubAll();
+    if(isCoach()){
+      for(const t of managedTeams()){
+        if(t.code)await db.doc('codes/'+t.code).delete().catch(()=>{});
+        await db.doc(`teams/${t.id}/private/invite`).delete().catch(()=>{});
+        await db.doc('teams/'+t.id).update({coachUid:null,coachName:''}).catch(()=>{});
+      }
+    }else{
+      const ids=new Set([...(S.myTeamIds||[]),...joinedTeams().map(t=>t.id)]);
+      for(const id of ids){
+        const r=await db.collection(`teams/${id}/roster`).where('uid','==',uid).get().catch(()=>null);
+        for(const d of (r?.docs||[]))await (d.id===uid?d.ref.delete():d.ref.update({uid:null})).catch(()=>{});
+        await db.doc(`teams/${id}/joins/${uid}`).delete().catch(()=>{});
+      }
+      const logs=await db.collection(`users/${uid}/logs`).get();
+      for(const d of logs.docs)await d.ref.delete();
+    }
+    await db.doc(`users/${uid}/private/contact`).delete().catch(()=>{});
+    await db.doc('users/'+uid).delete();
+    await u.delete();
+  }catch(e){console.warn(e);busy(false);return err('Something went wrong while deleting. Check your connection and try again.')}
+  lsDel('stateam.session');USER=null;S=null;closeModal();AUTH.mode='login';AUTH.err='';AUTH.info='Your account and data were deleted.';showAuth();
 }
 /* --- coach actions --- */
 async function cloudClaim(t){
