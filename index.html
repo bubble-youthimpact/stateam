@@ -13,7 +13,7 @@
   --bg:#f2f4f8; --surface:#ffffff; --surface2:#eceff5; --line:#dce1ea;
   --fg:#0c1220; --muted:#5a6477; --accent:#2557d6; --accent-fg:#ffffff;
   --accent-soft:rgba(37,87,214,.10); --good:#17855a; --good-soft:rgba(23,133,90,.12);
-  --gold:#a8740a; --gold-soft:rgba(214,158,30,.14); --coach:#0c7f70; --coach-soft:rgba(12,127,112,.12); --bad:#c23a45; --bad-soft:rgba(194,58,69,.10); --warn:#a76a00; --warn-soft:rgba(167,106,0,.12);
+  --star:#f5a623; --gold:#a8740a; --gold-soft:rgba(214,158,30,.14); --coach:#0c7f70; --coach-soft:rgba(12,127,112,.12); --bad:#c23a45; --bad-soft:rgba(194,58,69,.10); --warn:#a76a00; --warn-soft:rgba(167,106,0,.12);
   --shadow:0 1px 2px rgba(12,18,32,.06),0 8px 24px rgba(12,18,32,.06);
   --font:"Manrope",ui-sans-serif,system-ui,-apple-system,"Segoe UI","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
   --r:16px; --r-sm:10px;
@@ -22,13 +22,13 @@
   --bg:#06080d; --surface:#10141c; --surface2:#171c27; --line:#242b38;
   --fg:#edf1f8; --muted:#8a94a7; --accent:#3a74f2; --accent-fg:#ffffff;
   --accent-soft:rgba(58,116,242,.16); --good:#4cc38a; --good-soft:rgba(76,195,138,.14);
-  --gold:#f2c14e; --gold-soft:rgba(242,193,78,.13); --coach:#3dc6b1; --coach-soft:rgba(61,198,177,.15); --bad:#f06b74; --bad-soft:rgba(240,107,116,.14); --warn:#e5ac3d; --warn-soft:rgba(229,172,61,.14);
+  --star:#f7b733; --gold:#f2c14e; --gold-soft:rgba(242,193,78,.13); --coach:#3dc6b1; --coach-soft:rgba(61,198,177,.15); --bad:#f06b74; --bad-soft:rgba(240,107,116,.14); --warn:#e5ac3d; --warn-soft:rgba(229,172,61,.14);
   --shadow:none; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#06080d; --surface:#10141c; --surface2:#171c27; --line:#242b38;
   --fg:#edf1f8; --muted:#8a94a7; --accent:#3a74f2; --accent-fg:#ffffff;
   --accent-soft:rgba(58,116,242,.16); --good:#4cc38a; --good-soft:rgba(76,195,138,.14);
-  --gold:#f2c14e; --gold-soft:rgba(242,193,78,.13); --coach:#3dc6b1; --coach-soft:rgba(61,198,177,.15); --bad:#f06b74; --bad-soft:rgba(240,107,116,.14); --warn:#e5ac3d; --warn-soft:rgba(229,172,61,.14);
+  --star:#f7b733; --gold:#f2c14e; --gold-soft:rgba(242,193,78,.13); --coach:#3dc6b1; --coach-soft:rgba(61,198,177,.15); --bad:#f06b74; --bad-soft:rgba(240,107,116,.14); --warn:#e5ac3d; --warn-soft:rgba(229,172,61,.14);
   --shadow:none; color-scheme:dark}
 
 *{box-sizing:border-box}
@@ -138,6 +138,25 @@ select.mini{background:var(--surface2);border:1px solid var(--line);border-radiu
 .avgs b{display:block;font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
 .avgs span{font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--muted)}
 .backlink{display:inline-flex;margin:-4px 0 6px}
+.auth{max-width:420px;margin:0 auto;padding-inline:16px;padding-block:36px 48px;display:flex;flex-direction:column;gap:18px}
+.auth h1{font-size:30px;margin:0}
+.authbrand{display:flex;align-items:center;gap:8px;font-weight:800;font-size:24px;letter-spacing:-.03em}
+.authbrand svg{color:var(--accent)}
+.gbtn{background:var(--surface);gap:10px}
+.or{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:13px}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+.roles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rolecard{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;padding:14px;border:1.5px solid var(--line);border-radius:14px;background:var(--surface);cursor:pointer;min-width:0}
+.rolecard .ri{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:var(--surface2);color:var(--muted);margin-bottom:6px}
+.rolecard[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.rolecard[aria-pressed="true"] .ri{background:var(--accent);color:var(--accent-fg)}
+.pwrap{position:relative}
+.pwrap input{padding-right:64px}
+.pwrap button{position:absolute;right:10px;top:50%;transform:translateY(-50%)}
+.okmsg{background:var(--good-soft);color:var(--good);border-radius:10px;padding:10px 12px;font-size:14px;font-weight:600}
+.notice{font-size:13px;color:var(--muted);background:var(--surface2);border-radius:10px;padding:10px 12px}
+.demo{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:18px}
+.btn:disabled{opacity:.6;cursor:default}
 .avatars{display:flex}
 .avatars span{width:26px;height:26px;border-radius:50%;background:var(--surface2);border:2px solid var(--surface);font-size:10px;font-weight:700;display:grid;place-items:center;margin-left:-6px}
 .avatars span:first-child{margin-left:0}
@@ -183,9 +202,14 @@ form{display:flex;flex-direction:column;gap:14px}
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .err{background:var(--bad-soft);color:var(--bad);border-radius:10px;padding:10px 12px;font-size:14px;font-weight:600}
 .actions{display:flex;gap:10px;justify-content:flex-end;padding-top:4px}
-.rating{display:flex;gap:6px}
-.rating button{flex:1;border:1px solid var(--line);background:var(--surface2);border-radius:10px;padding:9px 0;font-weight:700;cursor:pointer}
-.rating button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.rating{display:flex;align-items:center;gap:4px}
+.rating button{border:0;background:none;padding:4px;cursor:pointer;color:var(--line);line-height:0;border-radius:8px;transition:transform .12s}
+.rating button:hover{transform:scale(1.1)}
+.rating button.on{color:var(--star)}
+.rating .rlab{margin-left:8px;font-size:14px;font-weight:600;color:var(--muted)}
+.stars{display:inline-flex;gap:1px;color:var(--line)}
+.stars .on{color:var(--star)}
+@media (prefers-reduced-motion:reduce){.rating button{transition:none}}
 .kv{display:grid;grid-template-columns:auto 1fr;gap:8px 16px;font-size:14px}
 .kv dt{color:var(--muted)}
 .kv dd{margin:0;text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
@@ -214,6 +238,8 @@ form{display:flex;flex-direction:column;gap:14px}
 .tbl.entry td:first-child{padding-left:10px;font-size:13px}
 .tbl.entry input{width:52px;background:var(--surface2);border:1px solid var(--line);border-radius:8px;padding:7px 6px;text-align:right;min-height:36px}
 .tbl.entry input:focus{outline:none;border-color:var(--accent)}
+.addcard{margin-top:10px;padding:14px;border:1px dashed var(--line);border-radius:var(--r);gap:12px}
+.addgrid{display:grid;grid-template-columns:1.6fr 1fr;gap:10px}
 .addrow{flex-direction:row;gap:8px;margin-top:8px}
 .addrow input{flex:1;min-width:0;background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:8px 12px;min-height:40px}
 .score{display:flex;align-items:center;justify-content:center;gap:24px;text-align:center;padding:6px 0}
@@ -222,6 +248,7 @@ form{display:flex;flex-direction:column;gap:14px}
 </head>
 <body>
 
+<div id="auth" hidden></div>
 <div class="app">
   <header class="top">
     <div class="brand"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 3v17h18"/><path d="M8 16v-4M12 16V7M16 16v-6M20 16v-9"/></svg>Stateam</div>
@@ -257,9 +284,15 @@ const I={
   edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>',
   clip:'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h6M9 18h3"/>',
   lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
-  chev:'<path d="M9 6l6 6-6 6"/>'
+  chev:'<path d="M9 6l6 6-6 6"/>',
+  ball_basketball:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3v18M5.7 5.7C8 7.8 9.3 9.9 9.3 12s-1.3 4.2-3.6 6.3M18.3 5.7C16 7.8 14.7 9.9 14.7 12s1.3 4.2 3.6 6.3"/>',
+  ball_football:'<circle cx="12" cy="12" r="9"/><path d="M12 7.6l3.9 2.8-1.5 4.6H9.6l-1.5-4.6z"/><path d="M12 7.6V3.2M15.9 10.4l4.2-1.4M14.4 15l2.6 3.6M9.6 15L7 18.6M8.1 10.4L3.9 9"/>',
+  ball_volleyball:'<circle cx="12" cy="12" r="9"/><path d="M12 12c0-4 1.6-7 4.4-8M12 12c3.5 2 5.3 4.8 5.2 8M12 12c-3.5 2-6.7 2.2-9.1.5M12 12c-3.4-2-5-5-4.8-8.4M12 12c3.9.2 6.9 1.7 8.6 4.3"/>'
 };
 const ic=(n,s=20)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[n]}</svg>`;
+const STAR=(z=16)=>`<svg width="${z}" height="${z}" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.8l2.8 5.8 6.3.9-4.6 4.4 1.1 6.3L12 17.2l-5.6 3 1.1-6.3L2.9 9.5l6.3-.9z"/></svg>`;
+const RATE_LAB=['','Rough','Not great','Okay','Good','Great'];
+const stars=n=>`<span class="stars" role="img" aria-label="Rated ${n} of 5">${[1,2,3,4,5].map(i=>`<span class="${i<=n?'on':''}">${STAR(14)}</span>`).join('')}</span>`;
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 const SPORTS={
@@ -282,7 +315,7 @@ function schoolTeams(){
 function ensureSchoolTeams(st){const have=new Set(st.teams.map(t=>t.id));schoolTeams().forEach(t=>{if(!have.has(t.id))st.teams.push(t)});st.games=st.games||[];return st}
 const teamTitle=t=>t.schoolId?`${t.schoolId} ${t.name}`:t.name;
 
-const KEY='stateam.v6';
+const KEY='stateam.v7';
 const uid=()=>Math.random().toString(36).slice(2,9);
 const today=()=>{const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)};
 const fmtDate=d=>new Date(d+'T00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'});
@@ -337,10 +370,8 @@ function sample(){
 function blank(prev){return ensureSchoolTeams({sample:false,role:prev?.role||'player',theme:prev?.theme||'system',
   profile:{name:'',school:'',grade:'',sport:'basketball',position:'',jersey:''},coach:{name:'',school:'',title:'',sport:'basketball'},teams:[],logs:[],games:[]})}
 
-let S;
-try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
-if(!S||!S.logs||!S.coach)S=sample();else ensureSchoolTeams(S);
-const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+let S=null;
+const save=()=>{if(USER&&S&&!S.cloud)lsSet(dataKey(USER.uid),S)};
 
 const isCoach=()=>S.role==='coach';
 const me=()=>isCoach()?S.coach:S.profile;
@@ -352,9 +383,8 @@ const teamGames=id=>sorted(S.games.filter(g=>g.teamId===id));
 
 const UI={tab:'home',sport:null,type:'all',metric:null,achFilter:'all',team:null};
 const tabsFor=()=>isCoach()?['home','teams','stats','profile']:['home','teams','stats','awards','profile'];
-if(tabsFor().includes(location.hash.slice(1)))UI.tab=location.hash.slice(1);
 
-function applyTheme(){const r=document.documentElement;if(S.theme==='light'||S.theme==='dark')r.setAttribute('data-theme',S.theme);else r.removeAttribute('data-theme')}
+function applyTheme(){const r=document.documentElement;const th=S?.theme||lsGet('stateam.theme');if(th==='light'||th==='dark')r.setAttribute('data-theme',th);else r.removeAttribute('data-theme')}
 let toastT;function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2200)}
 
 /* ---------- derived ---------- */
@@ -430,22 +460,22 @@ function playerChart(sp){
   const k=UI.metric,lab=fields.find(f=>f[0]===k)[1];
   const src=k==='minutes'?S.logs.filter(l=>l.sport===sp&&(UI.type==='all'||l.type===UI.type)):S.logs.filter(l=>l.sport===sp&&l.type==='match');
   const pts=sorted(src).reverse().slice(-10).map(l=>({d:l.date,v:k==='minutes'?+l.minutes||0:+l.stats?.[k]||0,mark:l.type==='practice'?'P':''}));
-  return chartCard({title:'Performance trend',sub:`${k==='minutes'?'Minutes per session':lab+' per match'} · last ${pts.length}`,pts,avgLabel:`avg. ${k==='minutes'?'min':lab.toLowerCase()}`,
+  return chartCard({title:'Performance trend',sub:`${k==='minutes'?'Minutes per session':lab+' per match'} · last ${pts.length}`,pts,avgLabel:`Avg. ${k==='minutes'?'minutes':lab.toLowerCase()}`,
     select:`<select class="mini" id="metricSel" aria-label="Metric">${fields.map(([fk,fl])=>`<option value="${fk}" ${fk===k?'selected':''}>${fl}</option>`).join('')}</select>`,empty:`Log at least two ${k==='minutes'?'sessions':'matches'} to see a trend.`});
 }
 function sportChips(){return `<div class="chips" role="group" aria-label="Sport">${sportsUsed().map(k=>`<button class="chip" data-act="sport" data-v="${k}" aria-pressed="${k===curSport()}">${SPORTS[k].name}</button>`).join('')}</div>`}
 function logRow(l){
   const sp=SPORTS[l.sport],u=sp.unit;
-  if(l.type==='match')return `<button class="row" data-act="openLog" data-id="${l.id}"><span class="glyph">${ic('shield')}</span>
+  if(l.type==='match')return `<button class="row" data-act="openLog" data-id="${l.id}"><span class="glyph">${ic('ball_'+l.sport)}</span>
       <span style="min-width:0"><div class="t">vs. ${esc(l.opponent||'Opponent')}</div><div class="m num">${fmtDate(l.date)} · ${l.us??'–'}–${l.them??'–'} · ${sp.name}</div></span>
       <span class="r"><b>${+l.stats?.[u]||0}<small>${u}</small></b><span class="pill ${l.result}">${RES[l.result]}</span></span></button>`;
   return `<button class="row" data-act="openLog" data-id="${l.id}"><span class="glyph prac">${ic('cone')}</span>
     <span style="min-width:0"><div class="t">${esc(l.focus||'Practice')}</div><div class="m num">${fmtDate(l.date)} · ${l.minutes||0} min · ${sp.name}</div></span>
-    <span class="r"><b>${'●'.repeat(l.rating||0)}<small style="opacity:.5">${'●'.repeat(5-(l.rating||0))}</small></b><span class="pill P">Practice</span></span></button>`;
+    <span class="r">${stars(l.rating||0)}<span class="pill P">Practice</span></span></button>`;
 }
 function gameRow(g,showTeam){
   const t=S.teams.find(x=>x.id===g.teamId);
-  return `<button class="row" data-act="openGame" data-id="${g.id}"><span class="glyph off">${ic('whistle')}</span>
+  return `<button class="row" data-act="openGame" data-id="${g.id}"><span class="glyph off">${ic('ball_'+(t?.sport||'basketball'))}</span>
     <span style="min-width:0"><div class="t">vs. ${esc(g.opponent)}</div><div class="m num">${fmtDate(g.date)} · ${g.location||'–'}${showTeam&&t?' · '+esc(teamTitle(t)):''}</div></span>
     <span class="r"><b>${g.us}–${g.them}</b><span class="pill ${g.result}">${RES[g.result]}</span></span></button>`;
 }
@@ -519,23 +549,24 @@ function vHomeCoach(){
   const W=games.filter(g=>g.result==='W').length,players=new Set(T.flatMap(t=>t.roster)).size;
   return `<h1>${S.coach.name?`Welcome back, ${esc(S.coach.name)}.`:'Welcome back, coach.'}</h1>
   <p class="sub">${esc(S.coach.title||'Coach')}${S.coach.school?' · '+esc(S.coach.school):''}</p>${sampleBadge()}
+  ${approved()?'':`<div class="callout" style="margin-bottom:14px">${ic('lock',24)}<span><b>Waiting for approval</b><div class="small muted">Your coach account needs to be approved before you can manage teams and post official stats. Ask the Stateam admin to approve it.</div></span></div>`}
   <div class="stack"><div class="kpis">${tile('teams','Teams managed',T.length)}${tile('profile','Players',players)}${tile('whistle','Official games',games.length)}${tile('trophy','Win rate',games.length?Math.round(W/games.length*100)+'%':'–')}</div>
-  <div class="grid2"><button class="btn primary" data-act="newGame">${ic('whistle',18)}Log team game</button><button class="btn" data-act="createTeam">${ic('plus',18)}Create a team</button></div></div>
+  <button class="btn primary block" data-act="newGame">${ic('whistle',18)}Log team game</button></div>
   <section class="sec"><div class="sechead"><h2>Teams you manage <span class="muted small num">${T.length}</span></h2><button class="link" data-act="tab" data-tab="teams">All teams</button></div>
-    ${T.length?T.map(teamCard).join(''):`<div class="card empty"><b>You don’t manage a team yet</b>Find your school on the Teams tab and pick your team, or create one.</div>`}</section>
+    ${T.length?T.map(teamCard).join(''):`<div class="card empty"><b>You don’t manage a team yet</b>Find your school on the Teams tab and choose the team you coach.</div>`}</section>
   <section class="sec"><div class="sechead"><h2>Recent official games</h2><button class="link" data-act="tab" data-tab="stats">Team stats</button></div>
     <div class="card list">${games.length?games.slice(0,4).map(g=>gameRow(g,true)).join(''):`<div class="empty"><b>No official games yet</b>Log a game to publish scores and player stats to your team.</div>`}</div></section>`;
 }
 function vStatsCoach(){
   const T=managedTeams();
-  if(!T.length)return `<h1>Team stats.</h1><p class="sub">Official records for the teams you manage.</p><div class="card empty"><b>No teams to show</b>Manage or create a team first.</div>`;
+  if(!T.length)return `<h1>Team stats.</h1><p class="sub">Official records for the teams you manage.</p><div class="card empty"><b>No teams to show</b>Choose the team you coach on the Teams tab first.</div>`;
   if(!UI.team||!T.some(t=>t.id===UI.team))UI.team=T[0].id;
   const t=T.find(x=>x.id===UI.team),r=teamRecord(t.id),games=teamGames(t.id),sp=SPORTS[t.sport],tot=seasonTotals(t);
   const pts=[...games].reverse().slice(-10).map(g=>({d:g.date,v:+g.us||0,mark:g.result==='L'?'L':''}));
   return `<h1>Team stats.</h1><p class="sub">Official records for the teams you manage.</p>${sampleBadge()}
   <div class="stack"><div class="chips" role="group" aria-label="Team">${T.map(x=>`<button class="chip" data-act="pickTeam" data-v="${x.id}" aria-pressed="${x.id===t.id}">${esc(teamTitle(x))}</button>`).join('')}</div>
   <div class="kpis">${tile('trophy','Record',recStr(r),'W–L')}${tile('pulse','Win rate',r.n?Math.round(r.W/r.n*100)+'%':'–')}${tile('target','Avg. scored',r.n?(r.pf/r.n).toFixed(1):'–','/ game')}${tile('shield','Avg. allowed',r.n?(r.pa/r.n).toFixed(1):'–','/ game')}</div>
-  ${chartCard({title:'Team scoring',sub:`${sp.unit==='points'?'Points':sp.unit[0].toUpperCase()+sp.unit.slice(1)} scored per game · losses in red`,pts,avgLabel:'avg. scored',empty:'Log at least two official games to see a trend.'})}</div>
+  ${chartCard({title:'Team scoring',sub:`${sp.unit==='points'?'Points':sp.unit[0].toUpperCase()+sp.unit.slice(1)} scored per game · losses in red`,pts,avgLabel:'Avg. scored',empty:'Log at least two official games to see a trend.'})}</div>
   <section class="sec"><div class="sechead"><h2>Season leaders</h2></div><div class="prs">${sp.fields.map(([k,lab])=>{const b=[...tot].sort((a,c)=>c[k]-a[k])[0];return `<div class="card pr"><div class="eyebrow">${lab}</div><div class="v">${b&&b[k]?b[k]:'–'}</div><div class="d">${b&&b[k]?esc(b.name)+' · '+(b[k]/Math.max(b.gp,1)).toFixed(1)+'/g':'No stats yet'}</div></div>`}).join('')}</div></section>
   <section class="sec"><div class="sechead"><h2>Player totals</h2><span class="small muted">${games.length} games</span></div>${totalsTable(t,tot)}</section>
   <section class="sec"><div class="sechead"><h2>Official games</h2><button class="link" data-act="newGame" data-id="${t.id}">+ Log game</button></div>
@@ -552,7 +583,7 @@ function totalsTable(t,tot){
 function vTeams(){
   const T=myTeams();
   return `<h1>${isCoach()?'Run your teams.':'Better together.'}</h1><p class="sub">${isCoach()?'Rosters, schedules and official game stats.':'One place for the people you play with.'}</p>
-  ${isCoach()?`<button class="btn primary block" data-act="createTeam">${ic('plus',18)}Create a team</button>`:`<button class="btn primary block" data-act="joinCode">${ic('key',18)}Join with a code</button>`}
+  ${isCoach()?'':`<button class="btn primary block" data-act="joinCode">${ic('key',18)}Join with a code</button>`}
   <section class="sec"><h2>${isCoach()?'Teams you manage':'My teams'} <span class="muted small num">${T.length}</span></h2>
     ${T.length?T.map(teamCard).join(''):`<div class="card empty"><b>No teams yet</b>${isCoach()?'Pick your school below and choose the team you coach.':'Pick your school below, or enter your coach’s invite code.'}</div>`}</section>
   <section class="sec"><div class="sechead"><h2>Schools <span class="muted small num">${SCHOOLS.length}</span></h2></div><p class="small muted" style="margin:-4px 0 0">Tap a school to see its teams.</p>${schoolList()}</section>`;
@@ -569,22 +600,29 @@ function vProfile(){
     <div class="small muted">${esc(P.school||'Add your school')}${!c&&P.grade?' · '+esc(P.grade):''}</div>
     <div class="trio">${trio.map(([k,v])=>`<div><span class="eyebrow">${k}</span><b>${v}</b></div>`).join('')}</div>
     <button class="btn block" style="margin-top:14px" data-act="editProfile">Edit profile</button></div></div>
-  <section class="sec"><h2>Account type</h2>
-    <div class="seg" role="group" aria-label="Account type">${[['player','Player'],['coach','Coach / manager']].map(([k,l])=>`<button data-act="role" data-v="${k}" aria-pressed="${S.role===k}">${l}</button>`).join('')}</div>
-    <div class="card pad stack small" style="gap:10px">
-      <div style="display:grid;grid-template-columns:20px 1fr;gap:10px"><span style="color:var(--accent)">${ic('profile',18)}</span><span><b>Players</b> log their own matches and practices, track personal records, and join teams. They can view official team stats but can’t change them.</span></div>
-      <div style="display:grid;grid-template-columns:20px 1fr;gap:10px"><span style="color:var(--coach)">${ic('whistle',18)}</span><span><b>Coaches and managers</b> create teams, edit team info and rosters, and log official game scores and player stats.</span></div>
-      <div class="muted">This preview lets you switch to see both. In the live app, the type is chosen at sign-up and coach accounts are verified by the school.</div></div></section>
+  <section class="sec"><h2>Account</h2>
+    <div class="card pad stack" style="gap:12px">
+      <dl class="kv"><dt>Signed in as</dt><dd style="overflow-wrap:anywhere">${USER?.demo?'Demo account':esc(USER?.email||S.account?.email||'')}</dd><dt>Account type</dt><dd>${c?'Coach / manager':'Player'}</dd>${c&&cloud()?`<dt>Coach status</dt><dd>${S.coachApproved?'<span class="pill W">Approved</span>':'<span class="pill P">Waiting for approval</span>'}</dd>`:''}</dl>
+      <div class="small muted" style="display:grid;grid-template-columns:20px 1fr;gap:10px"><span style="color:${c?'var(--coach)':'var(--accent)'}">${ic(c?'whistle':'profile',18)}</span><span>${c?'You can create teams, edit team info and rosters, and post official game stats.':'You can log your own matches and practices and join teams at your school with an invite code. Official team stats come from your coach.'}</span></div>
+      <div id="outZone" class="actions" style="justify-content:stretch"><button class="btn block" data-act="signOutAsk">${USER?.demo?'Leave demo':'Log out'}</button></div></div></section>
   <section class="sec"><h2>Appearance</h2>
     <div class="seg" role="group" aria-label="Theme">${[['system','System'],['light','Light'],['dark','Dark']].map(([k,l])=>`<button data-act="theme" data-v="${k}" aria-pressed="${S.theme===k}">${l}</button>`).join('')}</div></section>
-  <section class="sec"><h2>Your data</h2>
+  ${cloud()?`<section class="sec"><h2>Your data</h2><div class="card pad small muted">Your stats, teams and games are saved to your Stateam account and sync across your devices.</div></section>`:`<section class="sec"><h2>Your data</h2>
     <div class="card pad stack"><div class="small muted">Everything is saved in this browser on this device.</div>
-    <div class="grid2"><button class="btn" data-act="startFresh">Start fresh</button><button class="btn" data-act="loadSample">Load sample data</button></div></div></section>`;
+    <div class="grid2"><button class="btn" data-act="startFresh">Start fresh</button><button class="btn" data-act="loadSample">Load sample data</button></div></div></section>`}`;
 }
 
 /* ---------- modals ---------- */
 let modalCtx=null;
-function openModal(html,ctx){modalCtx=ctx||null;const m=document.getElementById('modal');m.innerHTML=`<div class="scrim" data-act="scrim"><div class="sheet" role="dialog" aria-modal="true">${html}</div></div>`;const f=m.querySelector('input,select,textarea');f&&f.focus()}
+function openModal(html,ctx){
+  const m=document.getElementById('modal');const old=m.querySelector('.sheet');
+  const same=old&&modalCtx&&ctx&&modalCtx.kind===ctx.kind&&modalCtx.id===ctx.id;const top=same?old.scrollTop:0;
+  modalCtx=ctx||null;m.innerHTML=`<div class="scrim" data-act="scrim"><div class="sheet" role="dialog" aria-modal="true">${html}</div></div>`;
+  const sh=m.querySelector('.sheet');
+  if(same){sh.style.animation='none';sh.scrollTop=top;return}
+  if(['team','school','player','game','detail'].includes(ctx?.kind))return;
+  const f=m.querySelector('input,select,textarea');f&&f.focus({preventScroll:true});
+}
 function closeModal(){document.getElementById('modal').innerHTML='';modalCtx=null}
 const sheetHead=t=>`<div class="sheethead"><h2>${t}</h2><button class="iconbtn" data-act="close" aria-label="Close" style="flex:0 0 auto">${ic('x',18)}</button></div>`;
 const lockNote=msg=>`<div class="lock">${ic('lock',16)}<span>${msg}</span></div>`;
@@ -612,7 +650,7 @@ function logForm(type,existing,draft){
         <div class="f"><label for="lf-them">Their score</label><input id="lf-them" name="them" type="number" min="0" inputmode="numeric" value="${l.them??''}"></div>
         <div class="f"><label for="lf-res">Result</label><select id="lf-res" name="result">${Object.entries(RES).map(([k,v])=>`<option value="${k}" ${l.result===k?'selected':''}>${v}</option>`).join('')}</select></div></div>`
     :`<div class="f"><label for="lf-focus">What did you work on?</label><input id="lf-focus" name="focus" value="${esc(l.focus||'')}" placeholder="e.g. Free throws, 100 reps"></div>
-      <div class="f"><label>How did it go?</label><div class="rating" role="group" aria-label="Session rating, 1 to 5">${[1,2,3,4,5].map(n=>`<button type="button" data-act="rate" data-v="${n}" aria-pressed="${(l.rating||3)===n}">${n}</button>`).join('')}</div></div>`}
+      <div class="f"><label>How did it go?</label><div class="rating" role="group" aria-label="Session rating, 1 to 5">${[1,2,3,4,5].map(n=>`<button type="button" data-act="rate" data-v="${n}" class="${n<=(l.rating||3)?'on':''}" aria-pressed="${(l.rating||3)===n}" aria-label="${n} of 5">${STAR(28)}</button>`).join('')}<span class="rlab">${RATE_LAB[l.rating||3]}</span></div></div>`}
     <div class="grid3">${SPORTS[sp].fields.map(([k,lab])=>`<div class="f"><label for="lf-${k}">${lab}</label><input id="lf-${k}" name="s_${k}" type="number" min="0" inputmode="numeric" value="${l.stats?.[k]??0}"></div>`).join('')}</div>
     <div class="grid2"><div class="f"><label for="lf-min">Minutes</label><input id="lf-min" name="minutes" type="number" min="0" inputmode="numeric" value="${l.minutes??''}"></div>
       <div class="f"><label for="lf-team">Team</label><select id="lf-team" name="teamId"><option value="">No team</option>${teamOpts.map(t=>`<option value="${t.id}" ${l.teamId===t.id?'selected':''}>${esc(teamTitle(t))}</option>`).join('')}</select></div></div>
@@ -635,7 +673,7 @@ function logDetail(id){
   openModal(`${sheetHead(l.type==='match'?'vs. '+esc(l.opponent||'Opponent'):esc(l.focus||'Practice'))}
     <div class="stack"><div style="display:flex;gap:8px;flex-wrap:wrap">${l.type==='match'?`<span class="pill ${l.result}">${RES[l.result]}</span>`:`<span class="pill P">Practice</span>`}<span class="pill n">Personal</span><span class="pill n">${sp.name}</span>${team?`<span class="pill a">${esc(teamTitle(team))}</span>`:''}</div>
     <dl class="kv"><dt>Date</dt><dd>${new Date(l.date+'T00:00').toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric',year:'numeric'})}</dd>
-      ${l.type==='match'?`<dt>Final score</dt><dd>${l.us??'–'} – ${l.them??'–'}</dd>`:`<dt>Session rating</dt><dd>${l.rating} / 5</dd>`}
+      ${l.type==='match'?`<dt>Final score</dt><dd>${l.us??'–'} – ${l.them??'–'}</dd>`:`<dt>Session rating</dt><dd>${stars(l.rating||0)}</dd>`}
       <dt>Minutes</dt><dd>${l.minutes||0}</dd>${l.type==='match'?sp.fields.map(([k,lab])=>`<dt>${lab}</dt><dd>${+l.stats?.[k]||0}</dd>`).join(''):''}</dl>
     ${l.notes?`<div class="card pad small" style="box-shadow:none;background:var(--surface2)">${esc(l.notes)}</div>`:''}
     <div id="delZone" class="actions"><button class="btn danger" data-act="delAsk">Delete</button><button class="btn primary" data-act="editLog" data-id="${l.id}">Edit</button></div></div>`,{kind:'detail',id});
@@ -647,7 +685,9 @@ function teamDetail(id,lb){
   const canEdit=c&&mine;
   let action='';
   if(c){action=mine?`<button class="btn block" data-act="unmanage" data-id="${t.id}">Stop managing this team</button>`
-    :sameSchool(t,S.coach.school)?`<button class="btn block coachbtn" data-act="manage" data-id="${t.id}">${ic('whistle',18)}Manage this team</button><div class="small muted" style="text-align:center">In the live app, the school confirms you coach this team first.</div>`
+    :t.coachUid?lockNote(`${esc(t.coach||'Another coach')} already manages this team.`)
+    :!approved()?lockNote('Your coach account is waiting for approval. You can manage teams once the Stateam admin approves it.')
+    :sameSchool(t,S.coach.school)?`<button class="btn block coachbtn" data-act="manage" data-id="${t.id}">${ic('whistle',18)}Manage this team</button>`
     :lockNote(S.coach.school?`Only coaches at ${esc(teamSchool(t))} can manage this team. Your profile school is ${esc(S.coach.school)}.`:'Add your school in Profile before managing a team.')}
   else{action=t.joined?`<button class="btn block danger" data-act="leave" data-id="${t.id}">Leave team</button>`
     :sameSchool(t,S.profile.school)?`${lockNote('This team is invite-only. Ask your coach for the code.')}<button class="btn block primary" data-act="joinCode" data-id="${t.id}">${ic('key',18)}Enter invite code</button>`
@@ -656,30 +696,37 @@ function teamDetail(id,lb){
     ${sc?`<button class="card team" style="box-shadow:none;padding:12px;grid-template-columns:40px 1fr auto" data-act="openSchool" data-id="${sc.id}"><img class="logo" style="width:40px;height:40px" src="${sc.logo}" alt=""><span class="small" style="font-weight:700">${esc(sc.name)}</span><span class="small" style="color:var(--accent);font-weight:600">All teams</span></button>`:''}
     <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="pill a">${SPORTS[t.sport].name}</span><span class="pill n">${esc(t.gender?t.gender+' '+t.level:t.level)}</span>${!c&&t.joined?'<span class="pill W">Member</span>':''}${c&&mine?'<span class="pill coach">You manage this team</span>':''}</div>
     <div><div class="sechead" style="margin-bottom:8px"><div class="eyebrow">Team info</div>${canEdit?`<button class="link small" data-act="editTeam" data-id="${t.id}">${ic('edit',14)} Edit</button>`:''}</div>
-    <dl class="kv"><dt>Coach</dt><dd>${esc(t.coach||'Not set yet')}</dd><dt>Practices</dt><dd>${esc(t.meets||'Not set yet')}</dd><dt>Record</dt><dd>${recStr(r)}${r.D?' (W–L–D)':''}</dd><dt>Players</dt><dd>${t.roster.length}</dd></dl></div>
-    ${canEdit?`<div class="card pad" style="box-shadow:none;background:var(--surface2)"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><div><div class="eyebrow">Invite code · only you can see this</div><div class="code">${t.code}</div></div><button class="btn sm" data-act="copy" data-v="${t.code}">${ic('copy',16)}Copy</button></div>
+    <dl class="kv"><dt>Coach</dt><dd>${esc(t.coach||'Not set yet')}</dd><dt>Practices</dt><dd>${esc(t.meets||'Not set yet')}</dd><dt>Record</dt><dd>${recStr(r)}${r.D?' (W–L–D)':''}</dd><dt>Players</dt><dd>${cloud()&&!t.rosterLoaded?'…':t.roster.length}</dd></dl></div>
+    ${canEdit?`<div class="card pad" style="box-shadow:none;background:var(--surface2)"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><div><div class="eyebrow">Invite code · only you can see this</div><div class="code">${t.code||'······'}</div></div><button class="btn sm" data-act="copy" data-v="${t.code}" ${t.code?'':'disabled'}>${ic('copy',16)}Copy</button></div>
       <div id="codeZone" class="small muted" style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px">Share it only with players on this team.<button class="link small" data-act="regenAsk">New code</button></div></div>`:''}
     ${leaderboard(t,lb)}
     <div><div class="sechead" style="margin-bottom:8px"><div class="eyebrow">Official games</div>${canEdit?`<button class="link small" data-act="newGame" data-id="${t.id}">+ Log game</button>`:''}</div>
       <div class="card list" style="box-shadow:none">${games.length?games.slice(0,5).map(g=>gameRow(g)).join(''):`<div class="empty small">No official games yet.${canEdit?'':' Your coach adds these.'}</div>`}</div></div>
-    <div><div class="eyebrow" style="margin-bottom:8px">Roster</div><div class="card list" style="box-shadow:none">${t.roster.length?'':'<div class="empty small">No players yet.</div>'}${t.roster.map((n,i)=>`<div class="prow"><button class="pbtn" data-act="openPlayer" data-i="${i}"><span class="avatars"><span style="width:32px;height:32px;font-size:11px">${initials(n)}</span></span><span style="min-width:0"><span class="t">${esc(n)}</span>${!c&&n===S.profile.name?' <span class="muted small">(you)</span>':''}${pubInfo(n)?`<div class="m">${esc(pubInfo(n))}</div>`:''}</span><span class="chev">${ic('chev',16)}</span></button>${canEdit?`<button class="link small" style="color:var(--bad);padding-right:14px" data-act="rmPlayer" data-i="${i}">Remove</button>`:''}</div>`).join('')}</div>
-      ${canEdit?`<form id="addPlayer" class="addrow" novalidate><input id="ap-name" name="name" placeholder="Add a player by name" aria-label="Player name"><button class="btn sm">Add</button></form>`:''}</div>
+    <div><div class="eyebrow" style="margin-bottom:8px">Roster</div><div class="card list" style="box-shadow:none">${t.roster.length?'':'<div class="empty small">No players yet.</div>'}${t.roster.map((n,i)=>`<div class="prow"><button class="pbtn" data-act="openPlayer" data-i="${i}"><span class="avatars"><span style="width:32px;height:32px;font-size:11px">${initials(n)}</span></span><span style="min-width:0"><span class="t">${esc(n)}</span>${!c&&isMeName(t,n)?' <span class="muted small">(you)</span>':''}${pubInfo(n)?`<div class="m">${esc(pubInfo(n))}</div>`:''}</span><span class="chev">${ic('chev',16)}</span></button>${canEdit?`<button class="link small" style="color:var(--bad);padding-right:14px" data-act="rmPlayer" data-i="${i}">Remove</button>`:''}</div>`).join('')}</div>
+      ${canEdit?`<form id="addPlayer" class="addcard" novalidate><div class="eyebrow">Add a player</div>
+        <div class="f"><label for="ap-name">Full name</label><input id="ap-name" name="name" autocomplete="off" placeholder="e.g. Minho Lee"></div>
+        <div class="addgrid"><div class="f"><label for="ap-pos">Position</label><select id="ap-pos" name="position"><option value="">Choose</option>${POSITIONS[t.sport].map(x=>`<option>${x}</option>`).join('')}</select></div>
+        <div class="f"><label for="ap-num">Jersey #</label><input id="ap-num" name="jersey" type="number" min="0" max="99" inputmode="numeric" placeholder="0–99"></div></div>
+        <div id="ap-err" class="err" hidden></div>
+        <button class="btn primary block">${ic('plus',18)}Add to roster</button></form>`:''}</div>
     ${!c&&t.joined?lockNote('Team info, roster and official stats are managed by the coach.'):''}
     ${action}</div>`,{kind:'team',id,lb});
 }
-function pubInfo(n){const P=n===S.profile.name?[S.profile.position,S.profile.jersey]:(S.people||{})[n];if(!P)return '';return [P[0],P[1]?'#'+P[1]:''].filter(Boolean).join(' · ')}
+const POSITIONS={basketball:['Point guard','Shooting guard','Small forward','Power forward','Center'],football:['Goalkeeper','Defender','Midfielder','Forward'],volleyball:['Setter','Outside hitter','Opposite hitter','Middle blocker','Libero','Defensive specialist']};
+const pubJersey=n=>{const P=(!cloud()&&n===S.profile.name)?[S.profile.position,S.profile.jersey]:(S.people||{})[n];return P&&P[1]!==''&&P[1]!=null?String(+P[1]):''};
+function pubInfo(n){const P=(!cloud()&&n===S.profile.name)?[S.profile.position,S.profile.jersey]:(S.people||{})[n];if(!P)return '';return [P[0],P[1]?'#'+P[1]:''].filter(Boolean).join(' · ')}
 function leaderboard(t,lb){
   const f=SPORTS[t.sport].fields;const rows=seasonTotals(t).filter(r=>r.gp).sort((a,b)=>b[lb]-a[lb]||b[lb]/b.gp-a[lb]/a.gp);
   const lab=f.find(x=>x[0]===lb)[1];
-  return `<div><div class="sechead" style="margin-bottom:8px"><div class="eyebrow">Leaderboard</div><span class="small muted">official games</span></div>
+  return `<div><div class="sechead" style="margin-bottom:8px"><div class="eyebrow">Leaderboard</div><span class="small muted">Official games</span></div>
     ${rows.length?`<div class="chips" role="group" aria-label="Rank by" style="margin-bottom:10px">${f.map(([k,l])=>`<button class="chip sm" data-act="lb" data-v="${k}" aria-pressed="${k===lb}">${l}</button>`).join('')}</div>
-    <div class="card list" style="box-shadow:none">${rows.map((r,i)=>{const ri=t.roster.indexOf(r.name);const mine=!isCoach()&&r.name===S.profile.name;
+    <div class="card list" style="box-shadow:none">${rows.map((r,i)=>{const ri=t.roster.indexOf(r.name);const mine=!isCoach()&&isMeName(t,r.name);
       return `<button class="row lbrow ${mine?'me':''}" ${ri>=0?`data-act="openPlayer" data-i="${ri}"`:'disabled'}><span class="rank r${i+1}">${i+1}</span><span style="min-width:0"><div class="t">${esc(r.name)}${mine?' <span class="muted small">(you)</span>':''}</div><div class="m num">${r.gp} GP · ${(r[lb]/r.gp).toFixed(1)} per game</div></span><span class="r"><b>${r[lb]}<small>${lab.toLowerCase()}</small></b></span></button>`}).join('')}</div>`
     :`<div class="card empty small" style="box-shadow:none">Rankings appear once the coach logs an official game.</div>`}</div>`;
 }
 function playerSheet(teamId,i){
   const t=S.teams.find(x=>x.id===teamId);const n=t?.roster[i];if(!n)return;
-  const isMe=!isCoach()&&n===S.profile.name;const info=pubInfo(n);
+  const isMe=!isCoach()&&isMeName(t,n);const info=pubInfo(n);
   const teams=S.teams.filter(x=>x.roster.includes(n)&&(x.schoolId?teamSchool(x)===teamSchool(t):true));
   const seasons=teams.map(x=>{const r=seasonTotals(x).find(y=>y.name===n);return r&&r.gp?{x,r}:null}).filter(Boolean);
   openModal(`<div class="sheethead"><button class="link small" data-act="openTeam" data-id="${t.id}">‹ ${esc(teamTitle(t))}</button><button class="iconbtn" data-act="close" aria-label="Close" style="flex:0 0 auto">${ic('x',18)}</button></div>
@@ -692,14 +739,14 @@ function playerSheet(teamId,i){
       <div class="avgs">${f.map(([k,,ab])=>`<div><b>${(r[k]/r.gp).toFixed(1)}</b><span>${ab}</span></div>`).join('')}<div><b>${Math.round(r.minutes/r.gp)}</b><span>MIN</span></div></div></div>`}).join('')
       :`<div class="card empty small" style="box-shadow:none">No official games played yet.</div>`}</div>
     ${lockNote(isMe?'Others see only this card. Your personal logs, notes and practice sessions stay private.':'Only public info and official team stats are shown. Personal logs stay private.')}
-  </div>`,{kind:'player',id:t.id});
+  </div>`,{kind:'player',id:t.id,i});
 }
 function schoolSheet(id){
   const sc=school(id);if(!sc)return;const f=modalCtx?.kind==='school'&&modalCtx.id===id?modalCtx.f:'all';
   const teams=S.teams.filter(t=>t.schoolId===id&&(f==='all'||t.sport===f));
   const own=sameSchool({schoolId:id},me().school);
   const tag=t=>isCoach()?(t.managed?'<span class="pill coach">Managed</span>':own?'<span class="pill n">Manage</span>':''):(t.joined?'<span class="pill W">Member</span>':own?`<span class="pill n">${ic('lock',12)} Code</span>`:'');
-  const group=g=>{const ts=teams.filter(t=>t.gender===g);return ts.length?`<div><div class="eyebrow" style="margin-bottom:8px">${g} teams</div><div class="card list" style="box-shadow:none">${ts.map(t=>`<button class="row" data-act="openTeam" data-id="${t.id}"><span class="glyph">${ic('shield')}</span><span style="min-width:0"><div class="t">${t.level} ${SPORTS[t.sport].name}</div><div class="m">${t.roster.length} players${t.coach?' · '+esc(t.coach):''}</div></span>${tag(t)}</button>`).join('')}</div></div>`:''};
+  const group=g=>{const ts=teams.filter(t=>t.gender===g);return ts.length?`<div><div class="eyebrow" style="margin-bottom:8px">${g} teams</div><div class="card list" style="box-shadow:none">${ts.map(t=>`<button class="row" data-act="openTeam" data-id="${t.id}"><span class="glyph">${ic('shield')}</span><span style="min-width:0"><div class="t">${t.level} ${SPORTS[t.sport].name}</div><div class="m">${[(!cloud()||t.rosterLoaded)?t.roster.length+' players':'',t.coach?esc(t.coach):(cloud()?'No coach yet':'')].filter(Boolean).join(' · ')}</div></span>${tag(t)}</button>`).join('')}</div></div>`:''};
   openModal(`<div class="sheethead"><div style="display:flex;gap:12px;align-items:center;min-width:0"><img class="logo lg" src="${sc.logo}" alt="${sc.id} logo"><div style="min-width:0"><h2>${esc(sc.name)}</h2><div class="small muted">${sc.id} · ${sc.city} · ${S.teams.filter(t=>t.schoolId===id).length} teams</div></div></div><button class="iconbtn" data-act="close" aria-label="Close" style="flex:0 0 auto">${ic('x',18)}</button></div>
   <div class="stack"><div class="chips" role="group" aria-label="Sport">${[['all','All sports'],...Object.entries(SPORTS).map(([k,v])=>[k,v.name])].map(([k,l])=>`<button class="chip" data-act="schoolF" data-v="${k}" aria-pressed="${f===k}">${l}</button>`).join('')}</div>
   ${own?'':lockNote(me().school?`You can view these teams, but only ${isCoach()?'coaches':'students'} at ${esc(sc.name)} can ${isCoach()?'manage':'join'} them.`:'Add your school in Profile to join its teams.')}
@@ -713,7 +760,7 @@ function gameDetail(id){
     <div class="score"><div><div class="eyebrow">${esc(t.schoolId||'Us')}</div><b>${g.us}</b></div><span class="muted">–</span><div><div class="eyebrow">Opponent</div><b>${g.them}</b></div></div>
     <dl class="kv"><dt>Date</dt><dd>${new Date(g.date+'T00:00').toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric',year:'numeric'})}</dd><dt>Venue</dt><dd>${g.location||'–'}</dd></dl>
     <div><div class="eyebrow" style="margin-bottom:8px">Box score</div>${rows.length?`<div class="card tablewrap" style="box-shadow:none"><table class="tbl"><thead><tr><th>Player</th>${f.map(x=>`<th title="${x[1]}">${x[2]}</th>`).join('')}<th>MIN</th></tr></thead><tbody>
-      ${rows.map(([n,b])=>`<tr class="${!isCoach()&&n===S.profile.name?'me':''}"><td>${esc(n)}</td>${f.map(x=>`<td>${+b[x[0]]||0}</td>`).join('')}<td>${+b.minutes||0}</td></tr>`).join('')}</tbody></table></div>`:`<div class="card empty small">No player stats entered.</div>`}</div>
+      ${rows.map(([n,b])=>`<tr class="${!isCoach()&&isMeName(t,n)?'me':''}"><td>${esc(n)}</td>${f.map(x=>`<td>${+b[x[0]]||0}</td>`).join('')}<td>${+b.minutes||0}</td></tr>`).join('')}</tbody></table></div>`:`<div class="card empty small">No player stats entered.</div>`}</div>
     ${canEdit?`<div id="delZone" class="actions"><button class="btn danger" data-act="gDelAsk">Delete</button><button class="btn primary" data-act="editGame" data-id="${g.id}">Edit game</button></div>`:lockNote('Official stats can only be changed by the team’s coach.')}
   </div>`,{kind:'game',id});
 }
@@ -751,14 +798,14 @@ function teamForm(t){
 }
 function pickTeamForGame(){
   const T=managedTeams();
-  if(!T.length){toast('Manage or create a team first');return}
+  if(!T.length){toast('Choose the team you coach on the Teams tab first');return}
   if(T.length===1)return gameForm(T[0].id);
   openModal(`${sheetHead('Which team played?')}<div class="card list" style="box-shadow:none">${T.map(t=>`<button class="row srow" data-act="newGame" data-id="${t.id}">${logoOr(t)}<span style="min-width:0"><div class="sname">${esc(teamTitle(t))}</div><div class="m">${t.roster.length} players</div></span><span class="chev">${ic('chev',18)}</span></button>`).join('')}</div>`);
 }
 
 /* ---------- render ---------- */
 function render(){
-  applyTheme();
+  applyTheme();if(!S)return;
   if(!tabsFor().includes(UI.tab))UI.tab='home';
   const V={home:isCoach()?vHomeCoach:vHomePlayer,stats:isCoach()?vStatsCoach:vStatsPlayer,teams:vTeams,awards:vAwards,profile:vProfile};
   document.getElementById('view').innerHTML=V[UI.tab]();
@@ -771,44 +818,52 @@ document.addEventListener('click',e=>{
   if(a==='scrim'){if(e.target===b)closeModal();return}
   const team=()=>S.teams.find(x=>x.id===(b.dataset.id||modalCtx?.id));
   switch(a){
-    case 'tab':UI.tab=b.dataset.tab;closeModal();render();window.scrollTo(0,0);try{history.replaceState(null,'','#'+UI.tab)}catch(_){}break;
+    case 'tab':UI.tab=b.dataset.tab;closeModal();render();window.scrollTo(0,0);break;
     case 'sport':UI.sport=v;UI.metric=null;render();break;
     case 'type':UI.type=v;render();break;
     case 'pickTeam':UI.team=v;render();break;
     case 'achF':UI.achFilter=v;render();break;
-    case 'theme':S.theme=v;save();render();break;
-    case 'role':S.role=v;save();closeModal();render();toast(v==='coach'?'Switched to coach account':'Switched to player account');break;
+    case 'theme':S.theme=v;lsSet('stateam.theme',v);save();render();break;
+    case 'authMode':AUTH.mode=v;AUTH.err='';AUTH.info='';renderAuth();break;
+    case 'authRole':AUTH.role=v;document.querySelectorAll('.rolecard').forEach(x=>x.setAttribute('aria-pressed',x.dataset.v===v));break;
+    case 'pwToggle':{const i=document.getElementById('au-pw');const show=i.type==='password';i.type=show?'text':'password';b.textContent=show?'Hide':'Show';b.setAttribute('aria-label',show?'Hide password':'Show password');break}
+    case 'google':googleAuth();break;
+    case 'forgot':forgotPw();break;
+    case 'demo':enterDemo(v);break;
+    case 'signOutAsk':document.getElementById('outZone').innerHTML=`<span class="small muted" style="margin-right:auto;align-self:center">Log out of Stateam?</span><button class="btn" data-act="signOutNo">Cancel</button><button class="btn danger" data-act="signOut">Log out</button>`;break;
+    case 'signOutNo':render();break;
+    case 'signOut':signOut();break;
     case 'log':logForm(v);break;
     case 'close':closeModal();break;
     case 'logType':{const cur=readLogForm();cur.type=v;const ed=modalCtx.editId;if(ed){cur.id=ed;logForm(v,cur)}else logForm(v,null,cur);break}
-    case 'rate':modalCtx.rating=+v;b.parentElement.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));break;
+    case 'rate':modalCtx.rating=+v;b.parentElement.querySelectorAll('button').forEach(x=>{x.setAttribute('aria-pressed',x===b);x.classList.toggle('on',+x.dataset.v<=+v)});b.parentElement.querySelector('.rlab').textContent=RATE_LAB[+v];break;
     case 'openLog':logDetail(b.dataset.id);break;
     case 'editLog':logForm(null,S.logs.find(l=>l.id===b.dataset.id));break;
     case 'delAsk':document.getElementById('delZone').innerHTML=`<span class="small muted" style="margin-right:auto;align-self:center">Delete this session?</span><button class="btn" data-act="close">Keep</button><button class="btn danger" data-act="delYes">Delete</button>`;break;
-    case 'delYes':S.logs=S.logs.filter(l=>l.id!==modalCtx.id);save();closeModal();render();toast('Session deleted');break;
-    case 'openTeam':teamDetail(b.dataset.id);break;
+    case 'delYes':if(cloud()){db.doc(`users/${USER.uid}/logs/${modalCtx.id}`).delete().catch(cfail);closeModal();toast('Session deleted');break}S.logs=S.logs.filter(l=>l.id!==modalCtx.id);save();closeModal();render();toast('Session deleted');break;
+    case 'openTeam':if(cloud())watchTeam(b.dataset.id);teamDetail(b.dataset.id);break;
     case 'openPlayer':playerSheet(modalCtx.id,+b.dataset.i);break;
     case 'lb':teamDetail(modalCtx.id,v);break;
-    case 'openSchool':schoolSheet(b.dataset.id);break;
+    case 'openSchool':watchSchool(b.dataset.id);schoolSheet(b.dataset.id);break;
     case 'schoolF':modalCtx.f=v;schoolSheet(modalCtx.id);break;
-    case 'leave':{const t=team();t.joined=false;t.roster=t.roster.filter(n=>n!==S.profile.name&&n!=='You');save();closeModal();render();toast('Left '+teamTitle(t));break}
+    case 'leave':{const t=team();if(cloud())return cloudLeave(t);t.joined=false;t.roster=t.roster.filter(n=>n!==S.profile.name&&n!=='You');save();closeModal();render();toast('Left '+teamTitle(t));break}
     case 'regenAsk':document.getElementById('codeZone').innerHTML=`<span>The old code will stop working.</span><span style="display:flex;gap:12px"><button class="link small" data-act="regenNo">Cancel</button><button class="link small" style="color:var(--bad)" data-act="regenYes">Replace code</button></span>`;break;
     case 'regenNo':teamDetail(modalCtx.id);break;
-    case 'regenYes':{const t=S.teams.find(x=>x.id===modalCtx.id);if(!isCoach()||!t.managed)return;t.code=newCode();save();teamDetail(t.id);toast('New invite code created');break}
-    case 'manage':{const t=team();if(!isCoach()||!sameSchool(t,S.coach.school))return;t.managed=true;if(!t.coach)t.coach=S.coach.name||'Coach';save();render();teamDetail(t.id);toast('You now manage '+teamTitle(t));break}
-    case 'unmanage':{const t=team();t.managed=false;save();closeModal();render();toast('Stopped managing '+teamTitle(t));break}
+    case 'regenYes':{const t=S.teams.find(x=>x.id===modalCtx.id);if(!isCoach()||!t.managed)return;if(cloud()){cloudRegen(t);break}t.code=newCode();save();teamDetail(t.id);toast('New invite code created');break}
+    case 'manage':{const t=team();if(!isCoach()||!sameSchool(t,S.coach.school))return;if(cloud())return cloudClaim(t);t.managed=true;if(!t.coach)t.coach=S.coach.name||'Coach';save();render();teamDetail(t.id);toast('You now manage '+teamTitle(t));break}
+    case 'unmanage':{const t=team();if(cloud())return cloudUnclaim(t);t.managed=false;save();closeModal();render();toast('Stopped managing '+teamTitle(t));break}
     case 'editTeam':teamForm(team());break;
-    case 'rmPlayer':{const t=team();if(!t?.managed||!isCoach())return;const n=t.roster.splice(+b.dataset.i,1)[0];save();teamDetail(t.id);render();toast(`Removed ${n}`);break}
+    case 'rmPlayer':{const t=team();if(!t?.managed||!isCoach())return;if(cloud()){const n=t.roster[+b.dataset.i];cloudRemovePlayer(t,n);toast(`Removed ${n}`);break}const n=t.roster.splice(+b.dataset.i,1)[0];save();teamDetail(t.id);render();toast(`Removed ${n}`);break}
     case 'newGame':if(!isCoach())return;b.dataset.id?gameForm(b.dataset.id):pickTeamForGame();break;
     case 'openGame':gameDetail(b.dataset.id);break;
     case 'editGame':{const g=S.games.find(x=>x.id===b.dataset.id);gameForm(g.teamId,g);break}
     case 'gDelAsk':document.getElementById('delZone').innerHTML=`<span class="small muted" style="margin-right:auto;align-self:center">Delete this official game?</span><button class="btn" data-act="close">Keep</button><button class="btn danger" data-act="gDelYes">Delete</button>`;break;
-    case 'gDelYes':S.games=S.games.filter(g=>g.id!==modalCtx.id);save();closeModal();render();toast('Game deleted');break;
+    case 'gDelYes':if(cloud()){const g=S.games.find(x=>x.id===modalCtx.id);db.doc(`teams/${g.teamId}/games/${g.id}`).delete().catch(cfail);closeModal();toast('Game deleted');break}S.games=S.games.filter(g=>g.id!==modalCtx.id);save();closeModal();render();toast('Game deleted');break;
+    case 'claimSpot':{const t=S.teams.find(x=>x.id===modalCtx.id);cloudClaimSpot(t,v);break}
     case 'copy':navigator.clipboard?.writeText(v).then(()=>toast('Code copied'),()=>toast('Select the code to copy it'));break;
     case 'joinCode':{const jt=S.teams.find(x=>x.id===b.dataset.id);openModal(`${sheetHead(jt?'Join '+esc(teamTitle(jt)):'Join with a code')}<form id="joinForm" novalidate><p class="small muted" style="margin:0">Teams are invite-only. Your coach shares the 6-character code with players at ${esc(S.profile.school||'your school')}.</p>
       <div class="f"><label for="jc">Invite code</label><input id="jc" name="code" autocomplete="off" autocapitalize="characters" placeholder="6 characters" maxlength="6" style="text-transform:uppercase;letter-spacing:.2em;font-weight:700"></div>
       <div id="jc-err" class="err" hidden></div><div class="actions"><button type="button" class="btn" data-act="close">Cancel</button><button class="btn primary">Join team</button></div></form>`,{kind:'join',teamId:jt?.id});break}
-    case 'createTeam':if(isCoach())teamForm();break;
     case 'editProfile':{const c=isCoach(),P=me();openModal(`${sheetHead('Edit profile')}<form id="profForm" novalidate>
       <div class="f"><label for="pf-name">Name</label><input id="pf-name" name="name" value="${esc(P.name)}"></div>
       <div class="f"><label for="pf-school">School</label><select id="pf-school" name="school"><option value="">Choose your school</option>${SCHOOLS.map(s=>`<option ${P.school===s.name?'selected':''}>${esc(s.name)}</option>`).join('')}</select></div>
@@ -817,8 +872,8 @@ document.addEventListener('click',e=>{
       <div class="grid2"><div class="f"><label for="pf-pos">Position</label><input id="pf-pos" name="position" value="${esc(P.position)}"></div><div class="f"><label for="pf-jersey">Jersey #</label><input id="pf-jersey" name="jersey" inputmode="numeric" value="${esc(P.jersey)}"></div></div>`}
       <div class="actions"><button type="button" class="btn" data-act="close">Cancel</button><button class="btn primary">Save profile</button></div></form>`,{kind:'profile'});break}
     case 'startFresh':openModal(`${sheetHead('Start fresh?')}<div class="stack"><p style="margin:0">This removes every session, team membership and official game in this browser. This can’t be undone.</p><div class="actions"><button class="btn" data-act="close">Cancel</button><button class="btn danger" data-act="freshYes">Remove everything</button></div></div>`);break;
-    case 'freshYes':S=blank(S);save();closeModal();UI.tab='profile';render();toast('Cleared. Add your profile to begin.');break;
-    case 'loadSample':{const th=S.theme,ro=S.role;S=sample();S.theme=th;S.role=ro;save();render();toast('Sample data loaded');break}
+    case 'freshYes':{const th=S.theme;S=S.account?newAccount(S.account):blank(S);S.theme=th;save();closeModal();UI.tab='profile';render();toast('Cleared. Your account is ready for real stats.');break}
+    case 'loadSample':{const keep={theme:S.theme,role:S.role,account:S.account};S=sample();Object.assign(S,keep);save();render();toast('Sample data loaded');break}
   }
 });
 document.addEventListener('change',e=>{
@@ -832,12 +887,18 @@ document.addEventListener('change',e=>{
 });
 document.addEventListener('submit',e=>{
   e.preventDefault();const id=e.target.id;const fd=new FormData(e.target);
+  if(id==='authForm')return doAuth(fd);
+  if(id==='onbForm'){const name=(fd.get('name')||'').trim(),school=fd.get('school')||'';
+    if(!name)return authMsg('Enter your full name.');if(!school)return authMsg('Choose your school.');
+    if(db&&!USER.demo){S=cloudBlank();createUserDoc({role:AUTH.role,name,school}).then(startSync).then(()=>{showApp();toast('Welcome to Stateam')}).catch(e=>{console.warn(e);authMsg('Couldn’t create your profile. Check your connection and try again.')});return}
+    S=newAccount({role:AUTH.role,name,school,email:USER.email});save();showApp();toast('Welcome to Stateam');return}
   const fail=(el,msg)=>{const x=document.getElementById(el);x.textContent=msg;x.hidden=false};
   if(id==='logForm'){
     const o=readLogForm();
     if(o.type==='match'&&!o.opponent)return fail('lf-err','Choose the opponent so you can find this match later.');
     if(o.type==='practice'&&!o.focus)return fail('lf-err','Add what you worked on, even a few words like “shooting drills”.');
-    if(modalCtx.editId){const i=S.logs.findIndex(l=>l.id===modalCtx.editId);S.logs[i]={...S.logs[i],...o}}else S.logs.push({id:uid(),...o});
+    if(cloud()){const col=db.collection(`users/${USER.uid}/logs`);(modalCtx.editId?col.doc(modalCtx.editId):col.doc()).set({...o,updatedAt:now()}).catch(cfail)}
+    else if(modalCtx.editId){const i=S.logs.findIndex(l=>l.id===modalCtx.editId);S.logs[i]={...S.logs[i],...o}}else S.logs.push({id:uid(),...o});
     UI.sport=o.sport;save();closeModal();render();toast(o.type==='match'?'Match saved':'Practice saved');
   }
   if(id==='gameForm'){
@@ -847,31 +908,54 @@ document.addEventListener('submit',e=>{
     const keys=[...SPORTS[t.sport].fields.map(x=>x[0]),'minutes'];const box={};
     modalCtx.names.forEach((n,i)=>{const row={};let any=false;keys.forEach(k=>{const v=fd.get(`b_${i}_${k}`);row[k]=Math.max(0,+v||0);if(v!=='')any=true});if(any)box[n]=row});
     const g={teamId:t.id,date:fd.get('date')||today(),opponent:opp,us:+fd.get('us'),them:+fd.get('them'),result:fd.get('result'),location:fd.get('location'),box};
-    if(modalCtx.editId){const i=S.games.findIndex(x=>x.id===modalCtx.editId);S.games[i]={...S.games[i],...g}}else S.games.push({id:uid(),...g});
+    if(cloud())cloudSaveGame(t,g,modalCtx.editId,S.games.find(x=>x.id===modalCtx.editId));
+    else if(modalCtx.editId){const i=S.games.findIndex(x=>x.id===modalCtx.editId);S.games[i]={...S.games[i],...g}}else S.games.push({id:uid(),...g});
     const wasEdit=!!modalCtx.editId;UI.team=t.id;save();closeModal();render();toast(wasEdit?'Game updated':'Game published to '+teamTitle(t));
   }
   if(id==='teamForm'){
     if(!isCoach())return;
-    if(modalCtx.kind==='create'){
+    if(modalCtx.kind==='create'){return;
       if(!S.coach.school)return fail('tf-err','Add your school in Profile first. Teams belong to a school.');const name=(fd.get('name')||'').trim();if(!name)return fail('tf-err','Give your team a name.');
       const t={id:uid(),name,sport:fd.get('sport'),level:fd.get('level'),coach:(fd.get('coach')||'').trim()||S.coach.name,meets:(fd.get('meets')||'').trim(),code:newCode(),school:S.coach.school,roster:[],joined:false,managed:true};
       S.teams.push(t);save();render();teamDetail(t.id);toast('Team created. Share the invite code with players.');
     }else{
       const t=S.teams.find(x=>x.id===modalCtx.id);if(!t.managed)return;
       if(!t.schoolId){const name=(fd.get('name')||'').trim();if(!name)return fail('tf-err','The team needs a name.');t.name=name;t.level=fd.get('level')}
-      t.coach=(fd.get('coach')||'').trim();t.meets=(fd.get('meets')||'').trim();save();render();teamDetail(t.id);toast('Team info saved');
+      t.coach=(fd.get('coach')||'').trim();t.meets=(fd.get('meets')||'').trim();
+      if(cloud())db.doc('teams/'+t.id).update({coachName:t.coach,meets:t.meets}).catch(cfail);
+      save();render();teamDetail(t.id);toast('Team info saved');
     }
   }
   if(id==='addPlayer'){
-    const t=S.teams.find(x=>x.id===modalCtx.id);if(!isCoach()||!t.managed)return;const n=(fd.get('name')||'').trim();if(!n)return;
-    if(t.roster.includes(n)){toast(`${n} is already on the roster`);return}
-    t.roster.push(n);save();render();teamDetail(t.id);document.getElementById('ap-name')?.focus();toast(`Added ${n}`);
+    const t=S.teams.find(x=>x.id===modalCtx.id);if(!isCoach()||!t.managed)return;
+    const n=(fd.get('name')||'').trim().replace(/\s+/g,' '),pos=fd.get('position')||'',num=(fd.get('jersey')||'').trim();
+    if(!n)return fail('ap-err','Enter the player’s full name.');
+    if(!pos)return fail('ap-err','Choose a position.');
+    if(num===''||!/^\d{1,2}$/.test(num))return fail('ap-err','Enter a jersey number from 0 to 99.');
+    if(t.roster.includes(n))return fail('ap-err',`${n} is already on the roster.`);
+    const taken=t.roster.find(x=>pubJersey(x)===String(+num));if(taken)return fail('ap-err',`#${+num} is already worn by ${taken}.`);
+    if(cloud()){cloudAddPlayer(t,n,pos,num);e.target.reset();toast(`Added ${n} · ${pos} · #${+num}`);return}
+    S.people=S.people||{};S.people[n]=[pos,String(+num)];
+    t.roster.push(n);save();render();teamDetail(t.id,modalCtx?.lb);document.getElementById('ap-name')?.focus({preventScroll:true});toast(`Added ${n} · ${pos} · #${+num}`);
+  }
+  if(id==='addSelf'){
+    const t=S.teams.find(x=>x.id===modalCtx.id);const pos=fd.get('position')||'',num=(fd.get('jersey')||'').trim();
+    if(!pos)return fail('as-err','Choose your position.');
+    if(num===''||!/^\d{1,2}$/.test(num))return fail('as-err','Enter your jersey number, 0 to 99.');
+    const taken=t.roster.find(x=>pubJersey(x)===String(+num));if(taken)return fail('as-err',`#${+num} is already worn by ${taken}. If that’s you, pick it from the list.`);
+    return cloudAddSelf(t,pos,num);
   }
   if(id==='joinForm'){
     if(isCoach())return;
     const now=Date.now();if(UI.lockUntil>now)return fail('jc-err',`Too many wrong codes. Try again in ${Math.ceil((UI.lockUntil-now)/1000)} seconds.`);
     if(!S.profile.school)return fail('jc-err','Add your school in Profile first. You can only join teams at your school.');
     const code=(fd.get('code')||'').replace(/\s/g,'').toUpperCase();
+    if(cloud()){if(!/^[A-Z0-9]{6}$/.test(code))return fail('jc-err','Enter the 6-character code from your coach.');
+      const btn=e.target.querySelector('.primary');btn.disabled=true;btn.textContent='Checking…';
+      cloudJoin(code,modalCtx.teamId).then(r=>{btn.disabled=false;btn.textContent='Join team';
+        if(r.miss){UI.fails=(UI.fails||0)+1;if(UI.fails>=5){UI.fails=0;UI.lockUntil=Date.now()+60000;return fail('jc-err','Too many wrong codes. Joining is paused for 60 seconds.')}
+          return fail('jc-err',`That code doesn’t match a team at ${S.profile.school}. Check it with your coach. ${5-UI.fails} tries left.`)}
+        if(r.err)return fail('jc-err',r.err);UI.fails=0;claimSheet(r.teamId)});return}
     const t=S.teams.find(x=>x.code===code&&(!modalCtx.teamId||x.id===modalCtx.teamId));
     if(!t||!sameSchool(t,S.profile.school)){
       UI.fails=(UI.fails||0)+1;
@@ -884,11 +968,411 @@ document.addEventListener('submit',e=>{
   }
   if(id==='profForm'){
     const P=me();['name','school','grade','sport','position','jersey','title'].forEach(k=>{if(fd.has(k))P[k]=(fd.get(k)||'').trim()});
+    if(S.account){S.account.name=P.name;S.account.school=P.school}
+    if(cloud()){P.schoolId=SCHOOLS.find(x=>x.name===P.school)?.id||'';cloudSaveProfile(P)}
+    if(fbAuth?.currentUser&&!USER?.demo)fbAuth.currentUser.updateProfile({displayName:P.name}).catch(()=>{});
     save();closeModal();render();toast('Profile saved');
   }
 });
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('modal').innerHTML)closeModal()});
-render();
+/* ---------- cloud sync (Firestore) ---------- */
+let db=null;
+const subs={};
+const cloud=()=>!!(db&&USER&&!USER.demo&&S&&S.cloud);
+const approved=()=>!cloud()||!!S.coachApproved;
+const FV=()=>firebase.firestore.FieldValue;
+const now=()=>FV().serverTimestamp();
+function sub(key,ref,fn){if(subs[key])return;subs[key]=ref.onSnapshot(fn,err=>{console.warn('sync',key,err);delete subs[key];if(err?.code==='permission-denied')return;toast('Lost connection to Stateam. Changes will sync when it’s back.')})}
+function unsubAll(){Object.keys(subs).forEach(k=>{try{subs[k]()}catch(e){}delete subs[k]})}
+let rrq=0;
+function refresh(){if(rrq)return;rrq=requestAnimationFrame(()=>{rrq=0;if(!S)return;render();refreshModal()})}
+function refreshModal(){
+  const c=modalCtx;if(!c)return;
+  if(c.kind==='team')teamDetail(c.id,c.lb);
+  else if(c.kind==='school')schoolSheet(c.id);
+  else if(c.kind==='game'){if(S.games.some(g=>g.id===c.id))gameDetail(c.id);else closeModal()}
+  else if(c.kind==='player')playerSheet(c.id,c.i);
+  else if(c.kind==='claim')claimSheet(c.id);
+}
+const CERR={'permission-denied':'You don’t have permission to do that.','unavailable':'You’re offline. This will sync when you reconnect.','not-found':'That item no longer exists.'};
+const cfail=e=>{console.warn(e);toast(CERR[e?.code]||'Couldn’t save. Check your connection and try again.')};
+const isMeName=(t,n)=>cloud()?t?.ruid?.[n]===USER.uid:(!isCoach()&&n===S.profile.name);
+
+function cloudBlank(){const st=blank({role:'player'});st.cloud=true;st.teams.forEach(t=>{t.code='';t.roster=[];t.rosterLoaded=false});st.people={};st.coachApproved=false;st.myTeamIds=[];return st}
+function applyUser(d){
+  S.role=d.role==='coach'?'coach':'player';
+  const P={name:d.name||'',school:d.school||'',schoolId:d.schoolId||'',sport:d.sport||'basketball'};
+  if(S.role==='coach'){S.coach={...S.coach,...P,title:d.title||'Coach'};S.coachApproved=!!d.coachApproved}
+  else S.profile={...S.profile,...P,grade:d.grade||'',position:d.position||'',jersey:d.jersey||''};
+  S.myTeamIds=d.teams||[];
+  if(S.role==='player')S.myTeamIds.forEach(watchTeam);
+}
+function watchTeam(id){
+  const t=S.teams.find(x=>x.id===id);if(!t)return;
+  sub('t:'+id,db.doc('teams/'+id),s=>{
+    const d=s.data()||{};t.exists=s.exists;t.coach=d.coachName||'';t.coachUid=d.coachUid||null;t.meets=d.meets||'';
+    t.managed=!!t.coachUid&&t.coachUid===USER.uid;
+    if(t.managed&&isCoach())sub('i:'+id,db.doc(`teams/${id}/private/invite`),x=>{t.code=x.data()?.code||'';refresh()});
+    refresh();
+  });
+  sub('r:'+id,db.collection(`teams/${id}/roster`),s=>{
+    const rows=s.docs.map(d=>({rid:d.id,...d.data()})).sort((a,b)=>(+a.jersey||0)-(+b.jersey||0)||String(a.name).localeCompare(b.name));
+    t.roster=rows.map(r=>r.name);t.rids={};t.ruid={};t.rosterLoaded=true;
+    rows.forEach(r=>{t.rids[r.name]=r.rid;t.ruid[r.name]=r.uid||null;S.people[r.name]=[r.position||'',r.jersey!=null&&r.jersey!==''?String(r.jersey):'']});
+    t.joined=rows.some(r=>r.uid===USER.uid);
+    refresh();
+  });
+  sub('g:'+id,db.collection(`teams/${id}/games`),s=>{
+    S.games=S.games.filter(g=>g.teamId!==id).concat(s.docs.map(d=>{const x=d.data();const box={},boxRid={};
+      Object.entries(x.box||{}).forEach(([rid,b])=>{const n=b.name||rid;const {name,...st}=b;box[n]=st;boxRid[n]=rid});
+      return {id:d.id,teamId:id,date:x.date,opponent:x.opponent,us:x.us,them:x.them,result:x.result,location:x.location,box,boxRid}}));
+    refresh();
+  });
+}
+function watchSchool(schoolId){
+  if(!cloud())return;
+  sub('s:'+schoolId,db.collection('teams').where('schoolId','==',schoolId),s=>{
+    s.docs.forEach(d=>{const t=S.teams.find(x=>x.id===d.id);if(!t)return;const x=d.data();t.exists=true;t.coach=x.coachName||'';t.coachUid=x.coachUid||null;t.meets=x.meets||'';t.managed=!!t.coachUid&&t.coachUid===USER.uid});
+    refresh();
+  });
+}
+function startSync(){
+  return new Promise(res=>{
+    let first=true;
+    sub('u',db.doc('users/'+USER.uid),s=>{if(!s.exists)return;applyUser(s.data());if(first){first=false;res()}refresh()});
+    sub('logs',db.collection(`users/${USER.uid}/logs`),s=>{S.logs=s.docs.map(d=>({...d.data(),id:d.id}));refresh()});
+    sub('mine',db.collection('teams').where('coachUid','==',USER.uid),s=>{s.docs.forEach(d=>watchTeam(d.id));refresh()});
+  });
+}
+async function createUserDoc(a){
+  const sc=SCHOOLS.find(x=>x.name===a.school);
+  await db.doc('users/'+USER.uid).set({role:a.role,name:a.name,school:a.school,schoolId:sc?.id||'',sport:'basketball',position:'',jersey:'',grade:'',title:a.role==='coach'?'Coach':'',teams:[],createdAt:now()});
+}
+async function enterCloud(user){
+  USER=user;closeModal();unsubAll();S=cloudBlank();
+  document.querySelector('.app').hidden=true;document.querySelector('nav.tabs').hidden=true;document.getElementById('auth').hidden=false;renderAuth(true);
+  let snap;
+  try{snap=await db.doc('users/'+user.uid).get()}
+  catch(e){console.warn(e);AUTH.err='Couldn’t load your account. Check your connection and try again.';S=null;USER=null;return showAuth()}
+  if(!snap.exists){
+    const p=AUTH.pending;AUTH.pending=null;
+    if(!(p&&p.school&&(p.name||user.name)))return showOnboarding();
+    try{await createUserDoc({...p,name:p.name||user.name})}catch(e){cfail(e);return showOnboarding()}
+  }
+  await startSync();showApp();
+}
+
+/* --- coach actions --- */
+async function cloudClaim(t){
+  if(!S.coachApproved)return toast('Your coach account is waiting for approval.');
+  const ref=db.doc('teams/'+t.id);const code=newCode();
+  try{
+    const s=await ref.get();
+    if(s.exists&&s.data().coachUid&&s.data().coachUid!==USER.uid)return toast('Another coach already manages this team.');
+    if(!s.exists)await ref.set({schoolId:t.schoolId,name:t.name,sport:t.sport,gender:t.gender,level:t.level,coachUid:USER.uid,coachName:S.coach.name||'Coach',meets:'',createdAt:now()});
+    else await ref.update({coachUid:USER.uid,coachName:S.coach.name||'Coach'});
+    await db.doc('codes/'+code).set({teamId:t.id,schoolId:t.schoolId});
+    await db.doc(`teams/${t.id}/private/invite`).set({code});
+    watchTeam(t.id);toast('You now manage '+teamTitle(t));
+  }catch(e){cfail(e)}
+}
+async function cloudUnclaim(t){
+  try{
+    if(t.code)await db.doc('codes/'+t.code).delete().catch(()=>{});
+    await db.doc(`teams/${t.id}/private/invite`).delete().catch(()=>{});
+    await db.doc('teams/'+t.id).update({coachUid:null,coachName:''});
+    ['i:'+t.id].forEach(k=>{if(subs[k]){subs[k]();delete subs[k]}});
+    t.code='';t.managed=false;closeModal();refresh();toast('Stopped managing '+teamTitle(t));
+  }catch(e){cfail(e)}
+}
+async function cloudRegen(t){
+  const code=newCode();
+  try{
+    await db.doc('codes/'+code).set({teamId:t.id,schoolId:t.schoolId});
+    if(t.code)await db.doc('codes/'+t.code).delete().catch(()=>{});
+    await db.doc(`teams/${t.id}/private/invite`).set({code});
+    toast('New invite code created');
+  }catch(e){cfail(e)}
+}
+function cloudAddPlayer(t,n,pos,num){
+  db.collection(`teams/${t.id}/roster`).doc().set({name:n,position:pos,jersey:String(+num),uid:null,addedAt:now()}).catch(cfail);
+}
+function cloudRemovePlayer(t,n){
+  const rid=t.rids?.[n],u=t.ruid?.[n];if(!rid)return;
+  db.doc(`teams/${t.id}/roster/${rid}`).delete().catch(cfail);
+  if(u)db.doc(`teams/${t.id}/joins/${u}`).delete().catch(()=>{});
+}
+function cloudSaveGame(t,g,editId,prev){
+  const box={};
+  Object.entries(g.box).forEach(([n,st])=>{const rid=t.rids?.[n]||prev?.boxRid?.[n]||('x-'+n.toLowerCase().replace(/[^a-z0-9]+/g,'-'));box[rid]={name:n,...st}});
+  const data={date:g.date,opponent:g.opponent,us:g.us,them:g.them,result:g.result,location:g.location,box,updatedAt:now()};
+  const ref=editId?db.doc(`teams/${t.id}/games/${editId}`):db.collection(`teams/${t.id}/games`).doc();
+  ref.set(data).catch(cfail);
+}
+
+/* --- player actions --- */
+async function cloudJoin(code,hintId){
+  let c;
+  try{c=await db.doc('codes/'+code).get()}catch(e){return {err:CERR[e?.code]||'Couldn’t check the code. Check your connection.'}}
+  if(!c.exists)return {miss:true};
+  const {teamId,schoolId}=c.data();
+  if((hintId&&teamId!==hintId)||schoolId!==S.profile.schoolId)return {miss:true};
+  const t=S.teams.find(x=>x.id===teamId);
+  if(t?.joined)return {err:`You’re already on ${teamTitle(t)}.`};
+  try{await db.doc(`teams/${teamId}/joins/${USER.uid}`).set({code,name:S.profile.name,at:now()})}
+  catch(e){return {err:e?.code==='permission-denied'?'That code is for a team at a different school.':'Couldn’t join. Try again.'}}
+  watchTeam(teamId);
+  return {teamId};
+}
+function claimSheet(teamId){
+  const t=S.teams.find(x=>x.id===teamId);if(!t)return;
+  const open=t.roster.filter(n=>!t.ruid?.[n]);
+  const mine=S.profile.name.trim().toLowerCase();
+  const sorted=[...open].sort((a,b)=>(b.trim().toLowerCase()===mine)-(a.trim().toLowerCase()===mine));
+  openModal(`${sheetHead('Which one is you?')}<div class="stack">
+    <p class="small muted" style="margin:0">Code accepted for <b>${esc(teamTitle(t))}</b>. Pick your spot on the roster so your official stats link to your account.</p>
+    ${!t.rosterLoaded?`<div class="card empty small" style="box-shadow:none">Loading the roster…</div>`:open.length?`<div class="card list" style="box-shadow:none">${sorted.map(n=>{const P=S.people[n]||[];const match=n.trim().toLowerCase()===mine;
+      return `<button class="row srow" data-act="claimSpot" data-v="${esc(n)}"><span class="avatars"><span style="width:40px;height:40px;font-size:12px">${initials(n)}</span></span><span style="min-width:0"><div class="sname">${esc(n)}${match?' <span class="pill W" style="margin-left:4px">Looks like you</span>':''}</div><div class="m">${esc([P[0],P[1]?'#'+P[1]:''].filter(Boolean).join(' · '))}</div></span><span class="chev">${ic('chev',18)}</span></button>`}).join('')}</div>`
+      :`<div class="card empty small" style="box-shadow:none">Your coach hasn’t added any open spots yet.</div>`}
+    <form id="addSelf" class="addcard" novalidate><div class="eyebrow">Not on the list? Add yourself</div>
+      <div class="addgrid"><div class="f"><label for="as-pos">Position</label><select id="as-pos" name="position"><option value="">Choose</option>${POSITIONS[t.sport].map(x=>`<option ${S.profile.position===x?'selected':''}>${x}</option>`).join('')}</select></div>
+      <div class="f"><label for="as-num">Jersey #</label><input id="as-num" name="jersey" type="number" min="0" max="99" inputmode="numeric" value="${esc(S.profile.jersey||'')}"></div></div>
+      <div id="as-err" class="err" hidden></div>
+      <button class="btn block">${ic('plus',18)}Add me as ${esc(S.profile.name)}</button></form>
+  </div>`,{kind:'claim',id:teamId});
+}
+async function finishJoin(t){
+  try{await db.doc('users/'+USER.uid).update({teams:FV().arrayUnion(t.id)})}catch(e){}
+  closeModal();UI.tab='teams';refresh();toast('Joined '+teamTitle(t));
+}
+async function cloudClaimSpot(t,n){
+  const rid=t.rids?.[n];if(!rid)return;
+  try{await db.doc(`teams/${t.id}/roster/${rid}`).update({uid:USER.uid});await finishJoin(t)}
+  catch(e){toast(e?.code==='permission-denied'?'Someone already claimed that spot. Pick another or add yourself.':'Couldn’t join. Try again.')}
+}
+async function cloudAddSelf(t,pos,num){
+  try{await db.doc(`teams/${t.id}/roster/${USER.uid}`).set({name:S.profile.name,position:pos,jersey:String(+num),uid:USER.uid,addedAt:now()});await finishJoin(t)}
+  catch(e){cfail(e)}
+}
+async function cloudLeave(t){
+  const n=Object.keys(t.ruid||{}).find(k=>t.ruid[k]===USER.uid);const rid=n&&t.rids[n];
+  try{
+    if(rid===USER.uid)await db.doc(`teams/${t.id}/roster/${rid}`).delete();
+    else if(rid)await db.doc(`teams/${t.id}/roster/${rid}`).update({uid:null});
+    await db.doc(`teams/${t.id}/joins/${USER.uid}`).delete().catch(()=>{});
+    await db.doc('users/'+USER.uid).update({teams:FV().arrayRemove(t.id)});
+    closeModal();refresh();toast('Left '+teamTitle(t));
+  }catch(e){cfail(e)}
+}
+function cloudSaveProfile(P){
+  const sc=SCHOOLS.find(x=>x.name===P.school);
+  const d={name:P.name,school:P.school,schoolId:sc?.id||'',sport:P.sport||'basketball'};
+  if(isCoach())d.title=P.title||'';else Object.assign(d,{grade:P.grade||'',position:P.position||'',jersey:P.jersey||''});
+  db.doc('users/'+USER.uid).update(d).catch(cfail);
+  if(!isCoach())joinedTeams().forEach(t=>{const n=Object.keys(t.ruid||{}).find(k=>t.ruid[k]===USER.uid);const rid=n&&t.rids[n];
+    if(rid)db.doc(`teams/${t.id}/roster/${rid}`).update({name:P.name,position:P.position||'',jersey:P.jersey||''}).catch(()=>{})});
+  if(isCoach())managedTeams().forEach(t=>db.doc('teams/'+t.id).update({coachName:P.name}).catch(()=>{}));
+}
+
+/* ---------- accounts ---------- */
+// Paste your Firebase web app config here (Firebase console → Project settings → Your apps → Web app).
+// While apiKey is empty, the app uses preview accounts that are saved in this browser only.
+const FIREBASE_CONFIG={
+  apiKey:'AIzaSyBTnZJXzlSgpXZcDa8Z1tK_NB5QO5Ohzvg',
+  authDomain:'stateam-d2fed.firebaseapp.com',
+  projectId:'stateam-d2fed',
+  storageBucket:'stateam-d2fed.firebasestorage.app',
+  messagingSenderId:'746982975789',
+  appId:'1:746982975789:web:e59eef61a6bb87b25a8ba4'
+};
+const FB_VER='10.14.1';
+const useFirebase=!!FIREBASE_CONFIG.apiKey;
+let USER=null,fbAuth=null;
+const AUTH={mode:'login',role:'player',busy:false,err:'',info:'',pending:null};
+const lsGet=k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}};
+const lsSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const lsDel=k=>{try{localStorage.removeItem(k)}catch(e){}};
+const dataKey=uid=>KEY+':'+uid;
+const LOGO='<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M3 3v17h18"/><path d="M8 16v-4M12 16V7M16 16v-6M20 16v-9"/></svg>';
+const GLOGO='<svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>';
+const AUTH_ERR={
+  'auth/email-already-in-use':'An account with this email already exists. Log in instead.',
+  'auth/invalid-email':'Enter a valid email address.',
+  'auth/weak-password':'Use at least 8 characters for your password.',
+  'auth/invalid-credential':'Email or password is incorrect.',
+  'auth/invalid-login-credentials':'Email or password is incorrect.',
+  'auth/wrong-password':'Email or password is incorrect.',
+  'auth/user-not-found':'No account uses this email. Sign up instead.',
+  'auth/user-disabled':'This account has been turned off. Contact your school.',
+  'auth/too-many-requests':'Too many attempts. Wait a few minutes and try again.',
+  'auth/popup-closed-by-user':'The Google window closed before sign-in finished.',
+  'auth/cancelled-popup-request':'The Google window closed before sign-in finished.',
+  'auth/popup-blocked':'Your browser blocked the Google window. Allow pop-ups for this site and try again.',
+  'auth/unauthorized-domain':'This website isn’t on the authorized domains list in Firebase yet.',
+  'auth/operation-not-allowed':'This sign-in method isn’t turned on in Firebase yet.',
+  'auth/network-request-failed':'Network error. Check your connection and try again.',
+  'auth/account-exists-with-different-credential':'This email already uses a password login. Log in with email instead.'
+};
+
+function newAccount(a){
+  const st=blank({role:a.role});st.account={role:a.role,name:a.name,school:a.school,email:a.email||''};
+  if(a.role==='coach')Object.assign(st.coach,{name:a.name,school:a.school,title:'Coach'});
+  else Object.assign(st.profile,{name:a.name,school:a.school});
+  return st;
+}
+function enter(user){
+  USER=user;closeModal();
+  const saved=lsGet(dataKey(user.uid));
+  if(saved&&saved.logs&&saved.coach){S=ensureSchoolTeams(saved);return showApp()}
+  S=null;
+  const p=AUTH.pending;AUTH.pending=null;
+  if(p&&p.school){S=newAccount({...p,name:p.name||user.name||'',email:user.email});
+    if(!S.account.name)return showOnboarding();
+    save();showApp();toast('Welcome to Stateam');return}
+  showOnboarding();
+}
+function enterDemo(role){
+  USER={uid:'demo-'+role,demo:true,email:''};
+  lsSet('stateam.session',{uid:USER.uid,demo:true,role});
+  const saved=lsGet(dataKey(USER.uid));
+  if(saved&&saved.logs&&saved.coach)S=ensureSchoolTeams(saved);else{S=sample();S.role=role;save()}
+  showApp();
+}
+function signOut(){
+  const wasDemo=USER?.demo;
+  lsDel('stateam.session');unsubAll();USER=null;S=null;closeModal();
+  AUTH.mode='login';AUTH.err='';AUTH.info='';
+  if(fbAuth&&!wasDemo)fbAuth.signOut().catch(()=>{});
+  showAuth();
+}
+function showApp(){
+  document.getElementById('auth').hidden=true;
+  document.querySelector('.app').hidden=false;document.querySelector('nav.tabs').hidden=false;
+  UI.tab='home';render();window.scrollTo(0,0);
+}
+function showAuth(){
+  document.querySelector('.app').hidden=true;document.querySelector('nav.tabs').hidden=true;
+  const el=document.getElementById('auth');el.hidden=false;renderAuth();
+}
+
+const schoolOptions=val=>{const cities=[...new Set(SCHOOLS.map(x=>x.city))];
+  return `<option value="">Choose your school</option>${cities.map(c=>`<optgroup label="${c}">${SCHOOLS.filter(x=>x.city===c).map(x=>`<option ${x.name===val?'selected':''}>${esc(x.name)}</option>`).join('')}</optgroup>`).join('')}`};
+const roleCards=()=>`<div class="f"><label>I’m a</label><div class="roles" role="group" aria-label="Account type">${[
+  ['player','profile','Player','Log my own stats and join my school’s teams'],
+  ['coach','whistle','Coach or manager','Run teams and post official game stats']
+].map(([k,i,t,d])=>`<button type="button" class="rolecard" data-act="authRole" data-v="${k}" aria-pressed="${AUTH.role===k}"><span class="ri">${ic(i,20)}</span><b>${t}</b><span class="small muted">${d}</span></button>`).join('')}</div></div>`;
+const msgs=()=>`<div id="auth-err" class="err" ${AUTH.err?'':'hidden'}>${esc(AUTH.err)}</div><div id="auth-info" class="okmsg" ${AUTH.info?'':'hidden'}>${esc(AUTH.info)}</div>`;
+
+function renderAuth(loading){
+  const el=document.getElementById('auth');
+  if(loading){el.innerHTML=`<div class="auth"><div class="authbrand">${LOGO}Stateam</div><p class="muted">Loading…</p></div>`;return}
+  const su=AUTH.mode==='signup';
+  const keep=id=>esc(document.getElementById(id)?.value||'');
+  const email=keep('au-email'),name=keep('au-name'),school=document.getElementById('au-school')?.value||'';
+  el.innerHTML=`<div class="auth">
+    <div class="authbrand">${LOGO}Stateam</div>
+    <div><h1>${su?'Create your account.':'Welcome back.'}</h1><p class="sub" style="margin:4px 0 0">${su?'Players log their own stats. Coaches run their teams.':'Log in to see your stats and teams.'}</p></div>
+    <div class="seg" role="group" aria-label="Log in or sign up">${[['login','Log in'],['signup','Sign up']].map(([k,l])=>`<button type="button" data-act="authMode" data-v="${k}" aria-pressed="${AUTH.mode===k}">${l}</button>`).join('')}</div>
+    <form id="authForm" novalidate>
+      ${su?roleCards()+`<div class="f"><label for="au-name">Full name</label><input id="au-name" name="name" autocomplete="name" value="${name}" placeholder="e.g. Alex Lee"></div>
+      <div class="f"><label for="au-school">School</label><select id="au-school" name="school">${schoolOptions(school)}</select></div>`:''}
+      <div class="f"><label for="au-email">Email</label><input id="au-email" name="email" type="email" autocomplete="email" inputmode="email" value="${email}" placeholder="you@school.org"></div>
+      <div class="f"><div class="sechead"><label for="au-pw">Password</label>${su?'':`<button type="button" class="link small" data-act="forgot">Forgot password?</button>`}</div>
+        <div class="pwrap"><input id="au-pw" name="password" type="password" autocomplete="${su?'new-password':'current-password'}" placeholder="${su?'At least 8 characters':''}"><button type="button" class="link small" data-act="pwToggle" aria-label="Show password">Show</button></div></div>
+      ${msgs()}
+      <button class="btn primary block" id="au-submit" type="submit">${su?'Create account':'Log in'}</button>
+    </form>
+    <div class="or"><span>or</span></div>
+    <button type="button" class="btn block gbtn" data-act="google">${GLOGO}${su?'Sign up with Google':'Continue with Google'}</button>
+    ${useFirebase?'':`<div class="notice">Preview mode. Accounts are saved in this browser only, and Google sign-in turns on once the Firebase config is added.</div>`}
+    <div class="demo"><span>Just looking? Try a demo:</span><button type="button" class="btn sm" data-act="demo" data-v="player">Player</button><button type="button" class="btn sm" data-act="demo" data-v="coach">Coach</button></div>
+  </div>`;
+}
+function showOnboarding(){
+  document.querySelector('.app').hidden=true;document.querySelector('nav.tabs').hidden=true;
+  const el=document.getElementById('auth');el.hidden=false;AUTH.err='';AUTH.info='';
+  el.innerHTML=`<div class="auth">
+    <div class="authbrand">${LOGO}Stateam</div>
+    <div><h1>Finish setting up.</h1><p class="sub" style="margin:4px 0 0">${USER.email?`Signed in as ${esc(USER.email)}. `:''}Tell us who you are so we can show the right tools.</p></div>
+    <form id="onbForm" novalidate>${roleCards()}
+      <div class="f"><label for="ob-name">Full name</label><input id="ob-name" name="name" autocomplete="name" value="${esc(USER.name||'')}"></div>
+      <div class="f"><label for="ob-school">School</label><select id="ob-school" name="school">${schoolOptions('')}</select></div>
+      ${msgs()}
+      <button class="btn primary block" type="submit">Continue</button></form>
+    <button type="button" class="link small" style="align-self:center" data-act="signOut">Use a different account</button>
+  </div>`;
+}
+function authMsg(err,info){AUTH.err=err||'';AUTH.info=info||'';const e=document.getElementById('auth-err'),i=document.getElementById('auth-info');
+  if(e){e.textContent=AUTH.err;e.hidden=!AUTH.err}if(i){i.textContent=AUTH.info;i.hidden=!AUTH.info}}
+function setBusy(on){AUTH.busy=on;const b=document.getElementById('au-submit');if(b){b.disabled=on;b.textContent=on?'Please wait…':(AUTH.mode==='signup'?'Create account':'Log in')}}
+async function sha(s){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('')}
+async function localAuth(mode,email,pw){
+  const accts=lsGet('stateam.accounts')||{};const h=await sha(email+'\n'+pw);
+  if(mode==='signup'){if(accts[email])throw {code:'auth/email-already-in-use'};
+    const uid='local-'+Date.now().toString(36)+newCode().toLowerCase();accts[email]={uid,hash:h};lsSet('stateam.accounts',accts);return {uid,email}}
+  const a=accts[email];if(!a)throw {code:'auth/user-not-found'};if(a.hash!==h)throw {code:'auth/invalid-credential'};return {uid:a.uid,email};
+}
+async function doAuth(fd){
+  if(AUTH.busy)return;
+  const su=AUTH.mode==='signup',email=(fd.get('email')||'').trim().toLowerCase(),pw=fd.get('password')||'';
+  if(su){const name=(fd.get('name')||'').trim(),school=fd.get('school')||'';
+    if(!name)return authMsg('Enter your full name.');
+    if(!school)return authMsg('Choose your school.');
+    if(!/^\S+@\S+\.\S+$/.test(email))return authMsg('Enter a valid email address.');
+    if(pw.length<8)return authMsg('Use at least 8 characters for your password.');
+    AUTH.pending={role:AUTH.role,name,school};
+  }else{
+    if(!/^\S+@\S+\.\S+$/.test(email))return authMsg('Enter a valid email address.');
+    if(!pw)return authMsg('Enter your password.');
+  }
+  authMsg();setBusy(true);
+  try{
+    if(useFirebase){
+      if(su){const c=await fbAuth.createUserWithEmailAndPassword(email,pw);c.user.updateProfile({displayName:AUTH.pending?.name||S?.account?.name||''}).catch(()=>{})}
+      else await fbAuth.signInWithEmailAndPassword(email,pw);
+    }else{const u=await localAuth(AUTH.mode,email,pw);lsSet('stateam.session',{uid:u.uid,email});enter(u)}
+  }catch(e){AUTH.pending=null;authMsg(AUTH_ERR[e?.code]||'Something went wrong. Try again.')}
+  finally{setBusy(false)}
+}
+async function googleAuth(){
+  if(!useFirebase)return authMsg('Google sign-in turns on once the Firebase config is added. Use email for now, or try a demo.');
+  if(AUTH.mode==='signup'){const f=document.getElementById('authForm');const fd=new FormData(f);
+    if(fd.get('school'))AUTH.pending={role:AUTH.role,name:(fd.get('name')||'').trim(),school:fd.get('school')}}
+  authMsg();
+  try{await fbAuth.signInWithPopup(new firebase.auth.GoogleAuthProvider())}
+  catch(e){AUTH.pending=null;authMsg(AUTH_ERR[e?.code]||'Google sign-in didn’t finish. Try again.')}
+}
+async function forgotPw(){
+  const email=(document.getElementById('au-email')?.value||'').trim().toLowerCase();
+  if(!/^\S+@\S+\.\S+$/.test(email))return authMsg('Enter your email above first, then tap “Forgot password?”.');
+  if(!useFirebase)return authMsg('Password reset emails turn on once the Firebase config is added.');
+  try{await fbAuth.sendPasswordResetEmail(email);authMsg('',`If an account uses ${email}, a reset link is on its way. Check your inbox.`)}
+  catch(e){authMsg(AUTH_ERR[e?.code]||'Couldn’t send the reset email. Try again.')}
+}
+function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>rej(new Error('load '+src));document.head.appendChild(s)})}
+async function initFirebase(){
+  const base=`https://cdn.jsdelivr.net/npm/firebase@${FB_VER}/`;
+  await loadScript(base+'firebase-app-compat.js');await loadScript(base+'firebase-auth-compat.js');await loadScript(base+'firebase-firestore-compat.js');
+  firebase.initializeApp(FIREBASE_CONFIG);fbAuth=firebase.auth();db=firebase.firestore();
+  try{await db.enablePersistence({synchronizeTabs:true})}catch(e){}
+  fbAuth.onAuthStateChanged(u=>{
+    if(USER?.demo)return;
+    if(u){if(USER?.uid!==u.uid)enterCloud({uid:u.uid,email:u.email||'',name:u.displayName||''})}
+    else if(USER){unsubAll();USER=null;S=null;showAuth()}
+    else showAuth();
+  });
+}
+async function boot(){
+  applyTheme();
+  const sess=lsGet('stateam.session');
+  if(sess?.demo)return enterDemo(sess.role==='coach'?'coach':'player');
+  if(useFirebase){document.querySelector('.app').hidden=true;document.querySelector('nav.tabs').hidden=true;document.getElementById('auth').hidden=false;renderAuth(true);
+    try{await initFirebase()}catch(e){AUTH.err='Couldn’t reach the sign-in service. Check your connection and reload the page.';showAuth()}return}
+  if(sess?.uid)return enter({uid:sess.uid,email:sess.email||''});
+  showAuth();
+}
+
+boot();
 </script>
 </body>
 </html>
