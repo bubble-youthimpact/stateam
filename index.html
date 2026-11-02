@@ -1212,7 +1212,6 @@ document.addEventListener('click',e=>{
       :`<div class="grid2"><div class="f"><label for="pf-grade">Grade</label><input id="pf-grade" name="grade" type="number" min="1" max="12" step="1" inputmode="numeric" value="${esc(gradeNum(P.grade))}" placeholder="e.g. 10"></div><div class="f"><label for="pf-sport">Main sport</label><select id="pf-sport" name="sport"><option value="">None</option>${Object.entries(SPORTS).map(([k,s])=>`<option value="${k}" ${k===P.sport?'selected':''}>${s.name}</option>`).join('')}</select></div></div>
       <div class="grid2"><div class="f"><label for="pf-pos">Position</label><input id="pf-pos" name="position" value="${esc(P.position)}"></div><div class="f"><label for="pf-jersey">Jersey #</label><input id="pf-jersey" name="jersey" inputmode="numeric" value="${esc(P.jersey)}"></div></div>`}
       <div id="pf-err" class="err" hidden></div><div class="actions"><button type="button" class="btn" data-act="close">Cancel</button><button class="btn primary">Save profile</button></div></form>`,{kind:'profile'});break}
-    case 'freshYes':{const th=S.theme;S=S.account?newAccount(S.account):blank(S);S.theme=th;save();closeModal();UI.tab='profile';render();toast('Cleared. Your account is ready for real stats.');break}
   }
 });
 document.addEventListener('change',e=>{
