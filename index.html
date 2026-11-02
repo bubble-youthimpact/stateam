@@ -1,9 +1,3 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#06080d">
 <title>Stateam</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap">
@@ -87,15 +81,18 @@ h2{font-size:17px;letter-spacing:-.01em;margin:0;font-weight:700}
 select.mini{background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:6px 8px;font-size:13px;font-weight:600}
 
 .list{display:flex;flex-direction:column}
+.card.list,.card:has(>.row),.card:has(>.prow),.card:has(>.list){overflow:hidden}
 .row{display:grid;grid-template-columns:40px 1fr auto;gap:12px;align-items:center;padding:13px 16px;border-top:1px solid var(--line);cursor:pointer;background:none;border-left:0;border-right:0;border-bottom:0;text-align:left;width:100%}
 .row:first-child{border-top:0}
-.row:hover{background:var(--surface2)}
+@media(hover:hover){.row:hover{background:var(--surface2)}}
+.row:active{background:var(--surface2)}
 .row .t{font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .row .m{color:var(--muted);font-size:13px}
 .row .r{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px}
 .row .r b{font-size:17px;font-variant-numeric:tabular-nums}
 .row .r b small{font-size:11px;color:var(--muted);font-weight:600;margin-left:3px}
 .glyph{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)}
+a.btn{text-decoration:none;color:inherit}
 .glyph.prac{background:var(--warn-soft);color:var(--warn)}
 .pill{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;letter-spacing:.02em}
 .pill.W{background:var(--good-soft);color:var(--good)}
@@ -108,7 +105,8 @@ select.mini{background:var(--surface2);border:1px solid var(--line);border-radiu
 .prs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .pr{padding:12px}
 .pr .v{font-size:24px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
-.pr .d{font-size:12px;color:var(--muted)}
+.pr .d{font-size:12px;color:var(--muted);line-height:1.4}
+.clamp2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
 
 .team{padding:16px;display:grid;grid-template-columns:48px 1fr auto;gap:14px;align-items:center;cursor:pointer;text-align:left;width:100%}
 .team:hover{border-color:var(--accent)}
@@ -122,7 +120,8 @@ select.mini{background:var(--surface2);border:1px solid var(--line);border-radiu
 .prow{display:grid;grid-template-columns:1fr auto;align-items:center;border-top:1px solid var(--line)}
 .prow:first-child{border-top:0}
 .pbtn{display:grid;grid-template-columns:32px 1fr 16px;gap:12px;align-items:center;padding:11px 16px;background:none;border:0;text-align:left;cursor:pointer;width:100%}
-.pbtn:hover{background:var(--surface2)}
+@media(hover:hover){.prow:has(.pbtn:hover){background:var(--surface2)}}
+.prow:has(.pbtn:active){background:var(--surface2)}
 .pbtn .t{font-weight:600}
 .pbtn .m{color:var(--muted);font-size:12px}
 .chip.sm{padding:6px 12px;font-size:13px}
@@ -131,8 +130,8 @@ select.mini{background:var(--surface2);border:1px solid var(--line);border-radiu
 .lbrow.me{background:var(--accent-soft)}
 .rank{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:13px;background:var(--surface2);color:var(--muted);font-variant-numeric:tabular-nums}
 .rank.r1{background:var(--accent);color:var(--accent-fg)}
-.rank.r2{background:color-mix(in srgb,var(--accent) 55%,var(--surface2));color:var(--accent-fg)}
-.rank.r3{background:color-mix(in srgb,var(--accent) 30%,var(--surface2));color:var(--fg)}
+.rank.r2{background:#1689c4;color:#fff}
+.rank.r3{background:#7356d9;color:#fff}
 .av.sm{width:64px;height:64px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-size:22px;font-weight:800;flex:0 0 auto}
 .avgs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center}
 .avgs b{display:block;font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
@@ -155,7 +154,6 @@ select.mini{background:var(--surface2);border:1px solid var(--line);border-radiu
 .pwrap button{position:absolute;right:10px;top:50%;transform:translateY(-50%)}
 .okmsg{background:var(--good-soft);color:var(--good);border-radius:10px;padding:10px 12px;font-size:14px;font-weight:600}
 .notice{font-size:13px;color:var(--muted);background:var(--surface2);border-radius:10px;padding:10px 12px}
-.demo{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:18px}
 .btn:disabled{opacity:.6;cursor:default}
 .agree{margin-block:8px;display:grid;grid-template-columns:20px 1fr;gap:10px;align-items:start;font-size:14px;color:var(--muted);cursor:pointer}
 .agree input{width:18px;height:18px;margin:2px 0 0;accent-color:var(--accent)}
@@ -178,6 +176,29 @@ html.modal-open,html.modal-open body{overflow:hidden;overscroll-behavior:none}
 .pbtn .pill{margin-left:8px;vertical-align:1px}
 .confirmbox{display:flex;flex-direction:column;gap:6px;background:var(--bad-soft);border-radius:var(--r);padding:14px}
 .confirmbox .actions{margin-top:6px}
+.legal{display:flex;justify-content:center;gap:8px;font-size:13px;color:var(--muted);margin-top:24px}
+.legal a{color:var(--muted)}.legal a:hover{color:var(--accent)}
+.steam{display:grid;grid-template-columns:40px 1fr auto;gap:12px;align-items:center;padding:12px 14px;width:100%;text-align:left;cursor:pointer}
+button.steam:hover{border-color:var(--accent)}
+.steam .t{font-weight:700;line-height:1.3}.steam .m{font-size:13px;color:var(--muted)}
+.glyph.sm{width:40px;height:40px;border-radius:10px}
+.pendtag{color:var(--accent);font-weight:700}
+.teamgame{background:var(--accent-soft);border-radius:12px;padding:12px;margin:0;color:var(--fg)}
+.pref td:first-child::after{content:"Player’s numbers";display:block;font-size:10px;font-weight:700;color:var(--accent);letter-spacing:.02em}
+.pickbtn{display:flex;align-items:center;gap:10px;width:100%;min-height:46px;padding:8px 12px;border:1px solid var(--line);border-radius:11px;background:var(--surface2);text-align:left;cursor:pointer}
+.pickbtn .pv{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pickbtn[aria-expanded="true"]{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.picker{border:1px solid var(--line);border-radius:12px;background:var(--surface);margin-top:6px;overflow:hidden}
+.pkhead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line)}
+.pklist{max-height:300px;overflow-y:auto;overscroll-behavior:contain}
+.pkcity{padding:10px 12px 4px}
+.pkrow{display:grid;grid-template-columns:28px 1fr 16px;gap:10px;align-items:center;width:100%;padding:9px 12px;background:none;border:0;border-top:1px solid var(--line);text-align:left;cursor:pointer;font-weight:600}
+.pkcity+.pkrow{border-top:0}
+@media(hover:hover){.pkrow:hover{background:var(--surface2)}}.pkrow:active{background:var(--surface2)}.pkrow svg{color:var(--muted)}
+.logo.xs{width:28px;height:28px;border-radius:7px;padding:2px}
+.glyph.xs{width:28px;height:28px;border-radius:7px}
+.pkother{display:flex;gap:8px;padding:12px}
+.pkother input{flex:1;min-width:0;background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:8px 12px;min-height:40px}
 .avatars{display:flex}
 .avatars span{width:26px;height:26px;border-radius:50%;background:var(--surface2);border:2px solid var(--surface);font-size:10px;font-weight:700;display:grid;place-items:center;margin-left:-6px}
 .avatars span:first-child{margin-left:0}
@@ -263,11 +284,13 @@ form{display:flex;flex-direction:column;gap:14px}
 .addgrid{display:grid;grid-template-columns:1.6fr 1fr;gap:10px}
 .addrow{flex-direction:row;gap:8px;margin-top:8px}
 .addrow input{flex:1;min-width:0;background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:8px 12px;min-height:40px}
+.glyph.prac{background:var(--good-soft);color:var(--good)}
+.vid{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000}
+.vid iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.pill.vd{background:var(--good-soft);color:var(--good)}
 .score{display:flex;align-items:center;justify-content:center;gap:24px;text-align:center;padding:6px 0}
 .score b{font-size:40px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;display:block;line-height:1.1}
 </style>
-</head>
-<body>
 
 <div id="auth" hidden></div>
 <div class="app">
@@ -307,6 +330,8 @@ const I={
   clip:'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h6M9 18h3"/>',
   lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
   chev:'<path d="M9 6l6 6-6 6"/>',
+  video:'<rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10.5l5-3v9l-5-3"/>',
+  ext:'<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
   ball_basketball:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3v18M5.7 5.7C8 7.8 9.3 9.9 9.3 12s-1.3 4.2-3.6 6.3M18.3 5.7C16 7.8 14.7 9.9 14.7 12s1.3 4.2 3.6 6.3"/>',
   ball_football:'<circle cx="12" cy="12" r="9"/><path d="M12 7.6l3.9 2.8-1.5 4.6H9.6l-1.5-4.6z"/><path d="M12 7.6V3.2M15.9 10.4l4.2-1.4M14.4 15l2.6 3.6M9.6 15L7 18.6M8.1 10.4L3.9 9"/>',
   ball_volleyball:'<circle cx="12" cy="12" r="9"/><path d="M12 12c0-4 1.6-7 4.4-8M12 12c3.5 2 5.3 4.8 5.2 8M12 12c-3.5 2-6.7 2.2-9.1.5M12 12c-3.4-2-5-5-4.8-8.4M12 12c3.9.2 6.9 1.7 8.6 4.3"/>'
@@ -336,7 +361,7 @@ function schoolTeams(){
   }))));
   return out;
 }
-function ensureSchoolTeams(st){const have=new Set(st.teams.map(t=>t.id));schoolTeams().forEach(t=>{if(!have.has(t.id))st.teams.push(t)});st.games=st.games||[];return st}
+function ensureSchoolTeams(st){const have=new Set(st.teams.map(t=>t.id));schoolTeams().forEach(t=>{if(!have.has(t.id))st.teams.push(t)});st.games=st.games||[];st.practices=st.practices||[];return st}
 const teamTitle=t=>t.schoolId?`${t.schoolId} ${t.name}`:t.name;
 
 const KEY='stateam.v7';
@@ -346,52 +371,7 @@ const fmtDate=d=>new Date(d+'T00:00').toLocaleDateString('en-US',{month:'short',
 const resOf=(a,b)=>a>b?'W':a<b?'L':'D';
 const RES={W:'Win',L:'Loss',D:'Draw'};
 
-/* ---------- sample data ---------- */
-function sample(){
-  const m=(date,sport,opp,us,them,min,stats,team)=>({id:uid(),type:'match',sport,date,opponent:opp,us,them,result:resOf(us,them),minutes:min,stats,teamId:team,notes:''});
-  const p=(date,sport,focus,min,rating,team,notes='')=>({id:uid(),type:'practice',sport,date,focus,minutes:min,rating,stats:{},teamId:team,notes});
-  const T='DIS-MV-BB';
-  const st={
-    sample:true,role:'player',theme:'system',
-    profile:{name:'Alex Lee',school:'Daegu International School',grade:'11',sport:'basketball',position:'Shooting guard',jersey:'27'},
-    coach:{name:'Coach Park',school:'Daegu International School',title:'Head coach',sport:'basketball'},
-    teams:[{id:'club-wu',name:'Weekend United',sport:'football',level:'Club',coach:'Student-run',meets:'Sat, 10:00 am · Back field',code:newCode(),school:'Daegu International School',roster:['Alex Lee','Ryan Lee','Hyunwoo Jang','Sungmin Oh','Daniel Kang'],joined:true,managed:false}],
-    logs:[
-      m('2026-09-08','basketball','Busan Foreign School',55,62,26,{points:12,rebounds:4,assists:3},T),
-      p('2026-09-10','basketball','Catch-and-shoot threes',90,3,T,'Feet set late on the left wing.'),
-      m('2026-09-14','basketball','Gyeongnam International Foreign School',64,60,30,{points:19,rebounds:5,assists:4},T),
-      p('2026-09-17','basketball','Ball handling under pressure',75,4,T),
-      m('2026-09-19','basketball','International School of Busan',75,69,28,{points:16,rebounds:6,assists:5},T),
-      m('2026-09-20','football','Gwangju FC',2,2,70,{goals:1,assists:0,shots:4},'club-wu'),
-      p('2026-09-22','basketball','Free throws, 100 reps',60,4,T,'Made 81 of 100.'),
-      m('2026-09-24','basketball','Daegu Middle High School',58,63,32,{points:21,rebounds:3,assists:6},T),
-      p('2026-09-26','football','Finishing drills',80,3,'club-wu'),
-      m('2026-09-28','basketball','Busan Foreign School',68,61,27,{points:18,rebounds:7,assists:4},T),
-      p('2026-10-01','basketball','Defensive slides + closeouts',90,5,T),
-      m('2026-10-03','basketball','International School of Busan',72,64,29,{points:24,rebounds:5,assists:5},T),
-      p('2026-10-08','basketball','Pick-and-roll reads',85,4,T)
-    ],
-    games:[]
-  };
-  ensureSchoolTeams(st);
-  const t=st.teams.find(x=>x.id===T);
-  Object.assign(t,{joined:true,managed:true,coach:'Coach Park',meets:'Mon · Wed · Fri, 4:00 pm · Main gym',roster:['Alex Lee','Jiho Park','Chaeyoung Lim','Seojun Kim','Minjae Cho','Dohyun Yoon','Ian Moon','Taeyang Seo']});
-  const jv=st.teams.find(x=>x.id==='DIS-MJ-BB');
-  Object.assign(jv,{managed:true,coach:'Coach Park',meets:'Tue · Thu, 3:45 pm · Main gym',roster:['Hayoon Jeon','Leo Kim','Junseo Ryu','Eric Bae','Yejun Song','Noah Han']});
-  [['2026-09-16','Busan Foreign School',48,52],['2026-09-23','Daegu Middle High School',55,41],['2026-10-02','International School of Busan',50,47]].forEach(([d,o,us,them],gi)=>{const box={};let left=us;jv.roster.forEach((n,k)=>{const pts=k===jv.roster.length-1?Math.max(0,left):Math.round(us*[.26,.2,.17,.14,.12][(k+gi)%5]);left-=pts;box[n]={points:pts,rebounds:1+((k*5+gi*3)%9),assists:(k*2+gi)%5,minutes:10+((k*9+gi*4)%20)}});st.games.push({id:uid(),teamId:jv.id,date:d,opponent:o,us,them,result:resOf(us,them),location:gi%2?'Away':'Home',box})});
-  st.people={'Jiho Park':['Point guard','3'],'Chaeyoung Lim':['Small forward','11'],'Seojun Kim':['Center','33'],'Minjae Cho':['Power forward','21'],'Dohyun Yoon':['Shooting guard','8'],'Ian Moon':['Point guard','5'],'Taeyang Seo':['Small forward','14'],'Hayoon Jeon':['Point guard','2'],'Leo Kim':['Shooting guard','10'],'Junseo Ryu':['Center','40'],'Eric Bae':['Power forward','23'],'Yejun Song':['Small forward','7'],'Noah Han':['Shooting guard','12']};
-  // official games mirror Alex's matches, with a full box score per player
-  const w=[.24,.18,.14,.12,.1,.08,.07];
-  st.logs.filter(l=>l.teamId===T&&l.type==='match').forEach((l,gi)=>{
-    const box={'Alex Lee':{...l.stats,minutes:l.minutes}};
-    const rest=l.us-l.stats.points;let left=rest;
-    t.roster.slice(1).forEach((n,i)=>{const pts=i===6?Math.max(0,left):Math.round(rest*w[(i+gi)%7]);left-=pts;
-      box[n]={points:pts,rebounds:2+((i*3+gi*5)%8),assists:(i+gi*2)%6,minutes:12+((i*7+gi*3)%18)}});
-    st.games.push({id:uid(),teamId:T,date:l.date,opponent:l.opponent,us:l.us,them:l.them,result:l.result,location:gi%2?'Away':'Home',box});
-  });
-  return st;
-}
-function blank(prev){return ensureSchoolTeams({sample:false,role:prev?.role||'player',theme:prev?.theme||'system',
+function blank(prev){return ensureSchoolTeams({role:prev?.role||'player',theme:prev?.theme||'system',
   profile:{name:'',school:'',grade:'',sport:'',position:'',jersey:''},coach:{name:'',school:'',title:'',sport:''},teams:[],logs:[],games:[]})}
 
 let S=null;
@@ -402,7 +382,10 @@ const me=()=>isCoach()?S.coach:S.profile;
 const myName=()=>me().name||(isCoach()?'Coach':'You');
 const joinedTeams=()=>S.teams.filter(t=>t.joined);
 const managedTeams=()=>S.teams.filter(t=>t.managed);
-const myTeams=()=>isCoach()?managedTeams():joinedTeams();
+// Coaches and managers have the same rights on a team: roster, team info, invite code and official games.
+const canScore=t=>!!t&&!!t.managed;
+const staffTeams=()=>S.teams.filter(canScore);
+const myTeams=()=>isCoach()?staffTeams():joinedTeams();
 const teamGames=id=>sorted(S.games.filter(g=>g.teamId===id));
 
 const UI={tab:'home',sport:null,type:'all',metric:null,achFilter:'all',team:null};
@@ -424,10 +407,11 @@ function officialEntries(){
       out.push({id:'off:'+g.id,official:true,gameId:g.id,type:'match',sport:t.sport,teamId:t.id,date:g.date,opponent:g.opponent,us:g.us,them:g.them,result:g.result,minutes:+minutes||0,stats:st,me:n})})});
   return out;
 }
-const sameGame=(o,l)=>l.type==='match'&&(l.gameId?l.gameId===o.gameId:true)&&l.date===o.date&&norm(l.opponent)===norm(o.opponent)&&(l.teamId===o.teamId||(!l.teamId&&l.sport===o.sport));
+const sameOpp=(a,b)=>a.oppTeamId&&b.oppTeamId?a.oppTeamId===b.oppTeamId:norm(a.opponent)===norm(b.opponent);
+const sameGame=(o,l)=>l.type==='match'&&(l.gameId?l.gameId===o.gameId:true)&&l.date===o.date&&sameOpp(o,l)&&(l.teamId===o.teamId||(!l.teamId&&l.sport===o.sport));
 function entries(){
   const off=officialEntries(),used=new Set();
-  off.forEach(o=>{const l=S.logs.find(x=>!used.has(x.id)&&x.gameId===o.gameId)||S.logs.find(x=>!used.has(x.id)&&sameGame(o,x));if(l){used.add(l.id);o.mine=l;o.notes=l.notes||''}});
+  off.forEach(o=>{const g=S.games.find(x=>x.id===o.gameId);if(g)o.oppTeamId=g.oppTeamId||'';const l=S.logs.find(x=>!used.has(x.id)&&x.gameId===o.gameId)||S.logs.find(x=>!used.has(x.id)&&sameGame(o,x));if(l){used.add(l.id);o.mine=l;o.notes=l.notes||''}});
   return [...off,...S.logs.filter(l=>!used.has(l.id)&&!l.notesOnly)];
 }
 const sportsUsed=()=>{const s=new Set(entries().map(l=>l.sport));joinedTeams().forEach(t=>s.add(t.sport));return Object.keys(SPORTS).filter(k=>s.has(k))};
@@ -441,7 +425,18 @@ function summary(sport,type='all'){
   return {logs,matches,practices:logs.filter(l=>l.type==='practice'),winRate:matches.length?Math.round(wins/matches.length*100):null,
     avg:matches.length?matches.reduce((s,l)=>s+(+l.stats?.[unit]||0),0)/matches.length:0,minutes:logs.reduce((s,l)=>s+(+l.minutes||0),0)};
 }
-function records(sport){const E=entries();return SPORTS[sport].fields.map(([k,lab])=>{let best=null;E.filter(l=>l.sport===sport&&l.type==='match').forEach(l=>{const v=+l.stats?.[k]||0;if(!best||v>best.v)best={v,l}});return {k,lab,best}})}
+// Player stats (tiles, chart, records) count only official games the coach posted.
+function offStats(sport){
+  const g=entries().filter(e=>e.official&&e.sport===sport);const unit=SPORTS[sport].unit;const wins=g.filter(x=>x.result==='W').length;
+  return {games:g,n:g.length,winRate:g.length?Math.round(wins/g.length*100):null,avg:g.length?g.reduce((s,x)=>s+(+x.stats?.[unit]||0),0)/g.length:0,minutes:g.reduce((s,x)=>s+(+x.minutes||0),0)};
+}
+function sportTeams(sp){
+  const ts=joinedTeams().filter(t=>t.sport===sp);
+  if(!ts.length)return `<div class="card steam"><span class="glyph sm">${ic('teams',20)}</span><span style="min-width:0"><div class="t">No ${SPORTS[sp].name.toLowerCase()} team yet</div><div class="m">Ask your coach for the invite code.</div></span><button class="btn sm" data-act="joinCode">Join</button></div>`;
+  return ts.map(t=>{const r=teamRecord(t.id);return `<button class="card steam" data-act="openTeam" data-id="${t.id}">${logoOr(t,'sm')}<span style="min-width:0"><div class="t">${esc(teamTitle(t))}</div><div class="m">${r.n?`${recStr(r)} · `:''}${(!cloud()||t.rosterLoaded)?t.roster.length+' players':''}${t.coach?' · '+esc(t.coach):''}</div></span><span class="chev">${ic('chev',18)}</span></button>`}).join('');
+}
+const offTiles=sp=>{const o=offStats(sp);return `<div class="kpis">${tile('whistle','Official games',o.n)}${tile('trophy','Win rate',o.winRate==null?'–':o.winRate+'%')}${tile('target','Avg. '+SPORTS[sp].unit,o.n?o.avg.toFixed(1):'–','/ game')}${tile('clock','Minutes played',o.minutes,'min')}</div>`};
+function records(sport){const E=entries();return SPORTS[sport].fields.map(([k,lab])=>{let best=null;E.filter(l=>l.sport===sport&&l.official).forEach(l=>{const v=+l.stats?.[k]||0;if(!best||v>best.v)best={v,l}});return {k,lab,best}})}
 function teamRecord(id){const g=S.games.filter(x=>x.teamId===id);const c=r=>g.filter(x=>x.result===r).length;return {n:g.length,W:c('W'),L:c('L'),D:c('D'),pf:g.reduce((s,x)=>s+(+x.us||0),0),pa:g.reduce((s,x)=>s+(+x.them||0),0)}}
 const recStr=r=>r.n?`${r.W}–${r.L}${r.D?'–'+r.D:''}`:'0–0';
 const played=b=>b&&Object.values(b).some(v=>+v>0);
@@ -503,10 +498,10 @@ function playerChart(sp){
   const fields=[...SPORTS[sp].fields,['minutes','Minutes']];
   if(!UI.metric||!fields.some(f=>f[0]===UI.metric))UI.metric=SPORTS[sp].unit;
   const k=UI.metric,lab=fields.find(f=>f[0]===k)[1];
-  const E=entries();const src=k==='minutes'?E.filter(l=>l.sport===sp&&(UI.type==='all'||l.type===UI.type)):E.filter(l=>l.sport===sp&&l.type==='match');
-  const pts=byDay(src.map(l=>({d:l.date,v:k==='minutes'?+l.minutes||0:+l.stats?.[k]||0,mark:l.type==='practice'?'P':''}))).slice(-10);
-  return chartCard({title:'Performance trend',sub:`${k==='minutes'?'Minutes':lab} per day · last ${pts.length} ${pts.length===1?'day':'days'}`,pts,avgLabel:`Avg. ${k==='minutes'?'minutes':lab.toLowerCase()} per day`,
-    select:`<select class="mini" id="metricSel" aria-label="Metric">${fields.map(([fk,fl])=>`<option value="${fk}" ${fk===k?'selected':''}>${fl}</option>`).join('')}</select>`,empty:`Log at least two ${k==='minutes'?'sessions':'matches'} to see a trend.`});
+  const src=entries().filter(l=>l.sport===sp&&l.official);
+  const pts=byDay(src.map(l=>({d:l.date,v:k==='minutes'?+l.minutes||0:+l.stats?.[k]||0,mark:l.result==='L'?'L':''}))).slice(-10);
+  return chartCard({title:'Performance trend',sub:`${k==='minutes'?'Minutes':lab} per day · official games · losses in red`,pts,avgLabel:`Avg. ${k==='minutes'?'minutes':lab.toLowerCase()} per day`,
+    select:`<select class="mini" id="metricSel" aria-label="Metric">${fields.map(([fk,fl])=>`<option value="${fk}" ${fk===k?'selected':''}>${fl}</option>`).join('')}</select>`,empty:'Your trend appears once your coach has posted two official games.'});
 }
 function sportChips(){return `<div class="chips" role="group" aria-label="Sport">${sportsUsed().map(k=>`<button class="chip" data-act="sport" data-v="${k}" aria-pressed="${k===curSport()}">${SPORTS[k].name}</button>`).join('')}</div>`}
 function logRow(l){
@@ -515,11 +510,62 @@ function logRow(l){
       <span style="min-width:0"><div class="t">vs. ${esc(l.opponent||'Opponent')}</div><div class="m num">${fmtDate(l.date)} · ${l.us}–${l.them} · <span class="offtag">Official</span></div></span>
       <span class="r"><b>${+l.stats?.[u]||0}<small>${u}</small></b><span class="pill ${l.result}">${RES[l.result]}</span></span></button>`;
   if(l.type==='match')return `<button class="row" data-act="openLog" data-id="${l.id}"><span class="glyph">${ic('ball_'+l.sport)}</span>
-      <span style="min-width:0"><div class="t">vs. ${esc(l.opponent||'Opponent')}</div><div class="m num">${fmtDate(l.date)} · ${l.us??'–'}–${l.them??'–'} · ${sp.name}</div></span>
+      <span style="min-width:0"><div class="t">vs. ${esc(l.opponent||'Opponent')}</div><div class="m num">${fmtDate(l.date)} · ${l.us??'–'}–${l.them??'–'} · ${l.teamId&&coached(S.teams.find(t=>t.id===l.teamId))?'<span class="pendtag">Waiting for official stats</span>':sp.name}</div></span>
       <span class="r"><b>${+l.stats?.[u]||0}<small>${u}</small></b><span class="pill ${l.result}">${RES[l.result]}</span></span></button>`;
   return `<button class="row" data-act="openLog" data-id="${l.id}"><span class="glyph prac">${ic('cone')}</span>
     <span style="min-width:0"><div class="t">${esc(l.focus||'Practice')}</div><div class="m num">${fmtDate(l.date)} · ${l.minutes||0} min · ${sp.name}</div></span>
     <span class="r">${stars(l.rating||0)}<span class="pill P">Practice</span></span></button>`;
+}
+/* ---------- team practices (logged by coaches and managers, visible to everyone on the team) ---------- */
+const teamPractices=id=>sorted((S.practices||[]).filter(p=>p.teamId===id));
+const canSeePractices=t=>!!t&&(!!t.managed||(!isCoach()&&!!t.joined));
+function driveId(u){const m=String(u||'').match(/\/file\/d\/([\w-]{10,})|[?&]id=([\w-]{10,})/);return m?(m[1]||m[2]):''}
+function isDrive(u){try{const x=new URL(u);return x.protocol==='https:'&&/^(drive|docs)\.google\.com$/.test(x.hostname)}catch(e){return false}}
+const pracTitle=p=>p.focus||'Team practice';
+function pracRow(p){
+  return `<button class="row" data-act="openPrac" data-id="${p.id}"><span class="glyph prac">${ic('cone')}</span>
+    <span style="min-width:0"><div class="t">${esc(pracTitle(p))}</div><div class="m num">${fmtDate(p.date)}${p.minutes?' · '+p.minutes+' min':''}</div></span>
+    <span class="r" style="flex-direction:row;align-items:center;gap:8px;color:var(--muted)">${p.video?`<span class="pill vd">${ic('video',12)}Video</span>`:''}${ic('chev',16)}</span></button>`;
+}
+function pracSection(t,canEdit){
+  const ps=teamPractices(t.id);
+  return `<div><div class="sechead" style="margin-bottom:8px"><div class="eyebrow">Team practices</div>${canEdit?`<button class="link small" data-act="newPrac" data-id="${t.id}">+ Log practice</button>`:''}</div>
+    <div class="card list" style="box-shadow:none">${ps.length?ps.slice(0,5).map(pracRow).join(''):`<div class="empty small">No team practices yet.${canEdit?'':' Your coach adds these.'}</div>`}
+    ${ps.length>5?`<button class="row" style="grid-template-columns:1fr;text-align:center;color:var(--accent);font-weight:700" data-act="allPrac" data-id="${t.id}">See all ${ps.length} practices</button>`:''}</div></div>`;
+}
+function pracList(teamId){
+  const t=S.teams.find(x=>x.id===teamId);if(!t)return;const ps=teamPractices(teamId);
+  openModal(`<button class="link small backlink" data-act="openTeam" data-id="${t.id}">‹ ${esc(teamTitle(t))}</button>${sheetHead('Team practices')}
+    <div class="card list" style="box-shadow:none">${ps.map(pracRow).join('')||'<div class="empty small">No team practices yet.</div>'}</div>`,{kind:'pracs',id:teamId});
+}
+function practiceDetail(id){
+  const p=(S.practices||[]).find(x=>x.id===id);if(!p)return;const t=S.teams.find(x=>x.id===p.teamId);if(!t)return;
+  const canEdit=isCoach()&&!!t.managed;const vid=p.video?driveId(p.video):'';
+  openModal(`<button class="link small backlink" data-act="openTeam" data-id="${t.id}">‹ ${esc(teamTitle(t))}</button>${sheetHead(esc(pracTitle(p)))}<div class="stack">
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="pill off">Team practice</span><span class="pill a">${esc(teamTitle(t))}</span></div>
+    ${p.video?`<div class="stack" style="gap:8px">${vid?`<div class="vid"><iframe src="https://drive.google.com/file/d/${encodeURIComponent(vid)}/preview" allow="autoplay; fullscreen" allowfullscreen loading="lazy" title="Practice video"></iframe></div>`:''}
+      <a class="btn block" href="${esc(p.video)}" target="_blank" rel="noopener noreferrer">${ic('ext',16)}Open in Google Drive</a>
+      <div class="small muted">${canEdit?'If the video doesn’t play for players, set its sharing in Google Drive to “Anyone with the link”.':'Video won’t play? Ask your coach to share it as “Anyone with the link” in Google Drive.'}</div></div>`
+      :`<div class="card empty small">No video for this practice.${canEdit?' Tap Edit to add a Google Drive link.':''}</div>`}
+    <dl class="kv"><dt>Date</dt><dd>${new Date(p.date+'T00:00').toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric',year:'numeric'})}</dd><dt>Length</dt><dd>${p.minutes?p.minutes+' min':'–'}</dd><dt>Logged by</dt><dd>${esc(p.byName||'Coach')}</dd></dl>
+    ${p.notes?`<div><div class="eyebrow" style="margin-bottom:8px">Notes</div><div class="card pad" style="box-shadow:none;white-space:pre-wrap">${esc(p.notes)}</div></div>`:''}
+    ${canEdit?`<div id="pdelZone" class="actions"><button class="btn danger" data-act="pDelAsk">Delete</button><button class="btn primary" data-act="editPrac" data-id="${p.id}">Edit practice</button></div>`:''}
+  </div>`,{kind:'practice',id});
+}
+function practiceForm(teamId,existing){
+  const t=S.teams.find(x=>x.id===teamId);if(!t)return;const p=existing||{date:today(),minutes:'',focus:'',notes:'',video:''};
+  openModal(`${sheetHead(existing?'Edit team practice':'Log team practice')}
+  <form id="pracForm" novalidate>
+    <div class="card team" style="box-shadow:none;padding:12px;grid-template-columns:40px 1fr;cursor:default">${logoOr(t,'sm')}<span style="font-weight:700">${esc(teamTitle(t))}</span></div>
+    <div class="grid2"><div class="f"><label for="pf-date">Date</label><input id="pf-date" name="date" type="date" value="${p.date}"></div>
+      <div class="f"><label for="pf-min">Minutes</label><input id="pf-min" name="minutes" type="number" min="0" max="600" inputmode="numeric" value="${p.minutes||''}" placeholder="e.g. 90"></div></div>
+    <div class="f"><label for="pf-focus">Focus</label><input id="pf-focus" name="focus" maxlength="80" value="${esc(p.focus||'')}" placeholder="e.g. Defense drills and scrimmage"></div>
+    <div class="f"><label for="pf-video">Practice video (Google Drive link)</label><input id="pf-video" name="video" type="url" inputmode="url" value="${esc(p.video||'')}" placeholder="https://drive.google.com/file/d/…">
+      <div class="small muted" style="margin-top:6px">Upload the video to Google Drive, then Share → General access → “Anyone with the link” → Copy link.</div></div>
+    <div class="f"><label for="pf-notes">Notes</label><textarea id="pf-notes" name="notes" rows="3" maxlength="2000" placeholder="What the team worked on, what to practice next">${esc(p.notes||'')}</textarea></div>
+    <div id="pf-err" class="err" hidden></div>
+    <div class="actions"><button type="button" class="btn" data-act="close">Cancel</button><button class="btn primary" type="submit">${existing?'Save changes':'Post practice'}</button></div>
+  </form>`,{kind:'pracForm',teamId,editId:existing?.id});
 }
 function gameRow(g,showTeam){
   const t=S.teams.find(x=>x.id===g.teamId);
@@ -540,10 +586,9 @@ function teamCard(t){
 function schoolList(){
   const cities=[...new Set(SCHOOLS.map(x=>x.city))];
   return cities.map(c=>`<div class="stack" style="gap:8px"><div class="eyebrow">${c}</div><div class="card list">${SCHOOLS.filter(x=>x.city===c).map(sc=>{
-    const mine=S.teams.filter(t=>t.schoolId===sc.id&&(isCoach()?t.managed:t.joined)).length;const n=S.teams.filter(t=>t.schoolId===sc.id).length;
+    const mine=S.teams.filter(t=>t.schoolId===sc.id&&(isCoach()?canScore(t):t.joined)).length;const n=S.teams.filter(t=>t.schoolId===sc.id).length;
     return `<button class="row srow" data-act="openSchool" data-id="${sc.id}"><img class="logo" src="${sc.logo}" alt=""><span style="min-width:0"><div class="sname">${esc(sc.name)}</div><div class="m">${sc.id} · ${n} teams${mine?` · <span style="color:var(--accent);font-weight:700">${mine} ${isCoach()?'managed':'joined'}</span>`:''}</div></span><span class="chev" aria-hidden="true">${ic('chev',18)}</span></button>`}).join('')}</div></div>`).join('');
 }
-function sampleBadge(){return S.sample&&UI.tab==='profile'?`<span class="pill n" style="margin-bottom:14px">Sample data · <button class="link" style="padding:0;font-size:11px" data-act="startFresh">Start fresh</button></span>`:''}
 const roleBadge=()=>`<span class="pill ${isCoach()?'coach':'a'}">${isCoach()?'Coach account':'Player account'}</span>`;
 
 /* ---------- player views ---------- */
@@ -554,29 +599,30 @@ function vHomePlayer(){
   const sp=curSport(),first=(S.profile.name||'').split(' ')[0],recent=sorted(entries()).slice(0,3),s=sp?summary(sp):null;
   const A=achievements(),done=A.filter(a=>a.done).length,next=A.filter(a=>!a.done).sort((a,b)=>b.pct-a.pct)[0];
   return `<h1>${first?`Let’s make progress, ${esc(first)}.`:'Let’s make progress.'}</h1>
-  <p class="sub">${esc(S.profile.school||'Your school')}${gradeTxt(S.profile.grade)?' · '+gradeTxt(S.profile.grade):''}</p>${sampleBadge()}
+  <p class="sub">${esc(S.profile.school||'Your school')}${gradeTxt(S.profile.grade)?' · '+gradeTxt(S.profile.grade):''}</p>
   ${!sp?startCard():`<div class="stack">${sportChips()}
-  <div class="kpis">${tile('pulse','Sessions',s.logs.length,`${s.matches.length} M · ${s.practices.length} P`)}${tile('trophy','Win rate',s.winRate==null?'–':s.winRate+'%')}${tile('target','Avg. '+SPORTS[sp].unit,s.matches.length?s.avg.toFixed(1):'–','/ match')}${tile('clock','Time logged',s.minutes,'min')}</div>
+  ${sportTeams(sp)}
+  ${offTiles(sp)}
   ${playerChart(sp)}
   <div class="grid2"><button class="btn primary" data-act="log" data-v="match">${ic('plus',18)}Log a match</button><button class="btn" data-act="log" data-v="practice">${ic('cone',18)}Log practice</button></div></div>`}
   <section class="sec"><div class="sechead"><h2>Recent sessions</h2><button class="link" data-act="tab" data-tab="stats">See all</button></div>
     <div class="card list">${recent.length?recent.map(logRow).join(''):`<div class="empty"><b>No sessions yet</b>Log a match or a practice to start your record.</div>`}</div></section>
-  <section class="sec"><div class="sechead"><h2>Your teams <span class="muted small num">${joinedTeams().length}</span></h2><button class="link" data-act="tab" data-tab="teams">Manage</button></div>
-    ${joinedTeams().length?joinedTeams().map(teamCard).join(''):`<div class="card empty"><b>You haven’t joined a team</b>Find your school on the Teams tab.</div>`}</section>
   <section class="sec"><button class="callout" data-act="tab" data-tab="awards" style="text-align:left;cursor:pointer;font:inherit;color:inherit">${ic('medal',30)}
     <span><b>${done} achievements unlocked</b><div class="small muted">${next?`Up next: ${next.name} · ${next.have} / ${next.need} ${next.unit}`:'You’ve unlocked everything.'}</div></span></button></section>`;
 }
 function vStatsPlayer(){
   const sp=curSport();if(!sp)return `<h1>Your game, in numbers.</h1><p class="sub">Your personal stats. Official team stats come from your coach.</p>${startCard()}`;
-  const s=summary(sp,UI.type),logs=sorted(s.logs);
-  return `<h1>Your game, in numbers.</h1><p class="sub">Your personal stats. Official team stats come from your coach.</p>${sampleBadge()}
+  const TYPES=[['all','All'],['official','Official'],['personal','My games'],['practice','Practice']];if(!TYPES.some(x=>x[0]===UI.type))UI.type='all';
+  const logs=sorted(entries().filter(l=>l.sport===sp&&(UI.type==='all'||(UI.type==='official'&&l.official)||(UI.type==='personal'&&!l.official&&l.type==='match')||(UI.type===l.type&&UI.type==='practice'))));
+  return `<h1>Your game, in numbers.</h1><p class="sub">Your stats come from official games your coach posts. Practices and other games you log are listed below.</p>
   <div class="stack">${sportChips()}
-  <div class="seg" role="group" aria-label="Session type">${[['all','All'],['match','Matches'],['practice','Practice']].map(([k,l])=>`<button data-act="type" data-v="${k}" aria-pressed="${UI.type===k}">${l}</button>`).join('')}</div>
-  <div class="kpis">${tile('pulse','Sessions',s.logs.length,`${s.matches.length} M · ${s.practices.length} P`)}${tile('trophy','Win rate',s.winRate==null?'–':s.winRate+'%')}${tile('target','Avg. '+SPORTS[sp].unit,s.matches.length?s.avg.toFixed(1):'–','/ match')}${tile('clock','Time logged',s.minutes,'min')}</div>
+  ${sportTeams(sp)}
+  ${offTiles(sp)}
   ${playerChart(sp)}</div>
-  <section class="sec"><div class="sechead"><h2>Personal records</h2><span class="small muted">Best single match</span></div>
-    <div class="prs">${records(sp).map(p=>`<div class="card pr"><div class="eyebrow">${p.lab}</div><div class="v">${p.best?p.best.v:'–'}</div><div class="d">${p.best?`vs. ${esc(p.best.l.opponent)} · ${fmtDate(p.best.l.date)}`:'No matches yet'}</div></div>`).join('')}</div></section>
+  <section class="sec"><div class="sechead"><h2>Personal records</h2><span class="small muted">Best official game</span></div>
+    <div class="prs">${records(sp).map(p=>`<div class="card pr"><div class="eyebrow">${p.lab}</div><div class="v">${p.best?p.best.v:'–'}</div><div class="d">${p.best?`<span class="clamp2" title="vs. ${esc(p.best.l.opponent)}">vs. ${esc(p.best.l.opponent)}</span>${fmtDate(p.best.l.date)}`:'No official games yet'}</div></div>`).join('')}</div></section>
   <section class="sec"><div class="sechead"><h2>Session log</h2><span class="small muted num">${logs.length} entries</span></div>
+    <div class="seg" role="group" aria-label="Show">${TYPES.map(([k,l])=>`<button data-act="type" data-v="${k}" aria-pressed="${UI.type===k}">${l}</button>`).join('')}</div>
     <div class="card list">${logs.length?logs.map(logRow).join(''):`<div class="empty"><b>Nothing logged here yet</b>Use the buttons below to add one.</div>`}</div>
     <div class="grid2"><button class="btn primary" data-act="log" data-v="match">${ic('plus',18)}Log a match</button><button class="btn" data-act="log" data-v="practice">${ic('cone',18)}Log practice</button></div></section>`;
 }
@@ -597,26 +643,26 @@ function vAwards(){
 
 /* ---------- coach views ---------- */
 function vHomeCoach(){
-  const T=managedTeams(),games=sorted(S.games.filter(g=>T.some(t=>t.id===g.teamId)));
+  const T=staffTeams(),games=sorted(S.games.filter(g=>T.some(t=>t.id===g.teamId)));
   const W=games.filter(g=>g.result==='W').length,players=new Set(T.flatMap(t=>t.roster)).size;
   return `<h1>${S.coach.name?`Welcome back, ${esc(S.coach.name)}.`:'Welcome back, coach.'}</h1>
-  <p class="sub">${esc(S.coach.title||'Coach')}${S.coach.school?' · '+esc(S.coach.school):''}</p>${sampleBadge()}
+  <p class="sub">${esc(S.coach.title||'Coach')}${S.coach.school?' · '+esc(S.coach.school):''}</p>
   ${approved()?'':`<div class="callout" style="margin-bottom:14px">${ic('lock',24)}<span><b>Waiting for approval</b><div class="small muted">Your coach account needs to be approved before you can manage teams and post official stats. Ask the Stateam admin to approve it.</div></span></div>`}
-  <div class="stack"><div class="kpis">${tile('teams','Teams managed',T.length)}${tile('profile','Players',players)}${tile('whistle','Official games',games.length)}${tile('trophy','Win rate',games.length?Math.round(W/games.length*100)+'%':'–')}</div>
-  <button class="btn primary block" data-act="newGame">${ic('whistle',18)}Log team game</button></div>
-  ${T.map(t=>{const n=(S.corrections||[]).filter(c=>c.teamId===t.id&&c.status==='open').length;return n?`<button class="callout" data-act="openTeam" data-id="${t.id}" style="text-align:left;cursor:pointer;font:inherit;color:inherit;margin-top:14px;width:100%">${ic('edit',24)}<span><b>${n} correction request${n>1?'s':''}</b><div class="small muted">${esc(teamTitle(t))} · review on the team page</div></span></button>`:''}).join('')}
-  <section class="sec"><div class="sechead"><h2>Teams you manage <span class="muted small num">${T.length}</span></h2><button class="link" data-act="tab" data-tab="teams">All teams</button></div>
+  ${T.map(t=>{const n=(S.corrections||[]).filter(c=>c.teamId===t.id&&c.status==='open').length;return n?`<button class="callout" data-act="openTeam" data-id="${t.id}" style="text-align:left;cursor:pointer;font:inherit;color:inherit;margin-bottom:14px;width:100%">${ic('edit',24)}<span><b>${n} correction request${n>1?'s':''}</b><div class="small muted">${esc(teamTitle(t))} · review on the team page</div></span></button>`:''}).join('')}
+  <section class="sec" style="margin-top:4px;margin-bottom:26px"><div class="sechead"><h2>Teams you manage <span class="muted small num">${T.length}</span></h2><button class="link" data-act="tab" data-tab="teams">All teams</button></div>
     ${T.length?T.map(teamCard).join(''):`<div class="card empty"><b>You don’t manage a team yet</b>Find your school on the Teams tab and choose the team you coach.</div>`}</section>
+  <div class="stack"><div class="kpis">${tile('teams','Teams managed',T.length)}${tile('profile','Players',players)}${tile('whistle','Official games',games.length)}${tile('trophy','Win rate',games.length?Math.round(W/games.length*100)+'%':'–')}</div>
+  <div class="grid2"><button class="btn primary" data-act="newGame">${ic('whistle',18)}Log game</button><button class="btn" data-act="newPrac">${ic('cone',18)}Log practice</button></div></div>
   <section class="sec"><div class="sechead"><h2>Recent official games</h2><button class="link" data-act="tab" data-tab="stats">Team stats</button></div>
     <div class="card list">${games.length?games.slice(0,4).map(g=>gameRow(g,true)).join(''):`<div class="empty"><b>No official games yet</b>Log a game to publish scores and player stats to your team.</div>`}</div></section>`;
 }
 function vStatsCoach(){
-  const T=managedTeams();
+  const T=staffTeams();
   if(!T.length)return `<h1>Team stats.</h1><p class="sub">Official records for the teams you manage.</p><div class="card empty"><b>No teams to show</b>Choose the team you coach on the Teams tab first.</div>`;
   if(!UI.team||!T.some(t=>t.id===UI.team))UI.team=T[0].id;
   const t=T.find(x=>x.id===UI.team),r=teamRecord(t.id),games=teamGames(t.id),sp=SPORTS[t.sport],tot=seasonTotals(t);
   const pts=byDay(games.map(g=>({d:g.date,v:+g.us||0,mark:g.result==='L'?'L':''}))).slice(-10);
-  return `<h1>Team stats.</h1><p class="sub">Official records for the teams you manage.</p>${sampleBadge()}
+  return `<h1>Team stats.</h1><p class="sub">Official records for the teams you manage.</p>
   <div class="stack"><div class="chips" role="group" aria-label="Team">${T.map(x=>`<button class="chip" data-act="pickTeam" data-v="${x.id}" aria-pressed="${x.id===t.id}">${esc(teamTitle(x))}</button>`).join('')}</div>
   <div class="kpis">${tile('trophy','Record',recStr(r),'W–L')}${tile('pulse','Win rate',r.n?Math.round(r.W/r.n*100)+'%':'–')}${tile('target','Avg. scored',r.n?(r.pf/r.n).toFixed(1):'–','/ game')}${tile('shield','Avg. allowed',r.n?(r.pa/r.n).toFixed(1):'–','/ game')}</div>
   ${chartCard({title:'Team scoring',sub:`${sp.unit==='points'?'Points':sp.unit[0].toUpperCase()+sp.unit.slice(1)} scored per day · days with a loss in red`,pts,avgLabel:'Avg. scored per day',empty:'Log at least two official games to see a trend.'})}</div>
@@ -643,9 +689,9 @@ function vTeams(){
 }
 function vProfile(){
   const c=isCoach(),P=me();
-  const trio=c?[['Teams',managedTeams().length],['Players',new Set(managedTeams().flatMap(t=>t.roster)).size],['Games',S.games.filter(g=>managedTeams().some(t=>t.id===g.teamId)).length]]
+  const trio=c?[['Teams',staffTeams().length],['Players',new Set(staffTeams().flatMap(t=>t.roster)).size],['Games',S.games.filter(g=>staffTeams().some(t=>t.id===g.teamId)).length]]
     :[['Jersey',P.jersey?'#'+esc(P.jersey):'–'],['Teams',joinedTeams().length],['Sessions',entries().length]];
-  return `<h1>${c?'Your coach profile.':'Your athlete profile.'}</h1><p class="sub">This is how ${c?'players and other coaches':'teammates and coaches'} see you.</p>${sampleBadge()}
+  return `<h1>${c?'Your coach profile.':'Your athlete profile.'}</h1><p class="sub">This is how ${c?'players and other coaches':'teammates and coaches'} see you.</p>
   <div class="card profile-hero"><div class="cover"></div><div class="pad" style="padding-top:0">
     <div style="display:flex;justify-content:space-between;align-items:flex-end"><div class="av">${initials(P.name)}</div><span class="pill ${c?'coach':'a'}">${c?'Coach':'Athlete'}</span></div>
     <div style="font-size:22px;font-weight:800;margin-top:8px">${esc(P.name||'Your name')}</div>
@@ -655,15 +701,14 @@ function vProfile(){
     <button class="btn block" style="margin-top:14px" data-act="editProfile">Edit profile</button></div></div>
   <section class="sec"><h2>Account</h2>
     <div class="card pad stack" style="gap:12px">
-      <dl class="kv"><dt>Signed in as</dt><dd style="overflow-wrap:anywhere">${USER?.demo?'Demo account':esc(USER?.email||S.account?.email||'')}</dd><dt>Account type</dt><dd>${c?'Coach / manager':'Player'}</dd>${c&&cloud()?`<dt>Coach status</dt><dd>${S.coachApproved?'<span class="pill W">Approved</span>':'<span class="pill P">Waiting for approval</span>'}</dd>`:''}</dl>
-      <div class="small muted" style="display:grid;grid-template-columns:20px 1fr;gap:10px"><span style="color:${c?'var(--coach)':'var(--accent)'}">${ic(c?'whistle':'profile',18)}</span><span>${c?'You can create teams, edit team info and rosters, and post official game stats.':'You can log your own matches and practices and join teams at your school with an invite code. Official team stats come from your coach.'}</span></div>
-      <div id="outZone" class="actions" style="justify-content:stretch"><button class="btn block" data-act="signOutAsk">${USER?.demo?'Leave demo':'Log out'}</button></div>
-      ${USER?.demo?'':`<button class="link small" style="color:var(--bad);align-self:center" data-act="delAcct">Delete account</button>`}</div></section>
+      <dl class="kv"><dt>Signed in as</dt><dd style="overflow-wrap:anywhere">${esc(USER?.email||S.account?.email||'')}</dd><dt>Account type</dt><dd>${c?'Coach / manager':'Player'}</dd>${c&&cloud()?`<dt>Coach status</dt><dd>${S.coachApproved?'<span class="pill W">Approved</span>':'<span class="pill P">Waiting for approval</span>'}</dd>`:''}</dl>
+      <div class="small muted" style="display:grid;grid-template-columns:20px 1fr;gap:10px"><span style="color:${c?'var(--coach)':'var(--accent)'}">${ic(c?'whistle':'profile',18)}</span><span>${c?'You can manage your school’s teams, rosters, team practices and official game stats.':'You can log your own matches and practices and join teams at your school with an invite code. Official team stats come from your coach.'}</span></div>
+      <div id="outZone" class="actions" style="justify-content:stretch"><button class="btn block" data-act="signOutAsk">Log out</button></div>
+      <button class="link small" style="color:var(--bad);align-self:center" data-act="delAcct">Delete account</button></div></section>
   <section class="sec"><h2>Appearance</h2>
     <div class="seg" role="group" aria-label="Theme">${[['system','System'],['light','Light'],['dark','Dark']].map(([k,l])=>`<button data-act="theme" data-v="${k}" aria-pressed="${S.theme===k}">${l}</button>`).join('')}</div></section>
-  ${cloud()?`<section class="sec"><h2>Your data</h2><div class="card pad small muted">Your stats, teams and games are saved to your Stateam account and sync across your devices.</div></section>`:`<section class="sec"><h2>Your data</h2>
-    <div class="card pad stack"><div class="small muted">Everything is saved in this browser on this device.</div>
-    <div class="grid2"><button class="btn" data-act="startFresh">Start fresh</button><button class="btn" data-act="loadSample">Load sample data</button></div></div></section>`}`;
+  <section class="sec"><h2>Your data</h2><div class="card pad small muted">${cloud()?'Your stats, teams and games are saved to your Stateam account and sync across your devices.':'Preview mode: everything is saved in this browser on this device.'}</div></section>
+  ${legalLinks()}`;
 }
 
 /* ---------- modals ---------- */
@@ -671,7 +716,7 @@ let modalCtx=null;
 // Sheets remember the window they were opened from, so X steps back one window at a time.
 let modalStack=[],navBack=false,navTop=0;
 const sameCtx=(a,b)=>!!a&&!!b&&a.kind===b.kind&&a.id===b.id&&(a.kind!=='player'||a.i===b.i);
-const REOPEN={team:c=>teamDetail(c.id,c.lb),school:c=>schoolSheet(c.id,c.f),player:c=>playerSheet(c.id,c.i),game:c=>gameDetail(c.id),detail:c=>logDetail(c.id),claim:c=>claimSheet(c.id)};
+const REOPEN={practice:c=>practiceDetail(c.id),pracs:c=>pracList(c.id),team:c=>teamDetail(c.id,c.lb),school:c=>schoolSheet(c.id,c.f),player:c=>playerSheet(c.id,c.i),game:c=>gameDetail(c.id),detail:c=>logDetail(c.id),claim:c=>claimSheet(c.id)};
 function openModal(html,ctx){
   const m=document.getElementById('modal');const old=m.querySelector('.sheet');const pc=modalCtx;
   const same=!!old&&sameCtx(pc,ctx);let top=same?old.scrollTop:0,restored=false;
@@ -701,26 +746,44 @@ function back(){
 const sheetHead=t=>`<div class="sheethead"><h2>${t}</h2><button class="iconbtn" data-act="close" aria-label="Close" style="flex:0 0 auto">${ic('x',18)}</button></div>`;
 const lockNote=msg=>`<div class="lock">${ic('lock',16)}<span>${msg}</span></div>`;
 
-function oppField(pfx,val){
-  const own=me().school;const list=SCHOOLS.filter(x=>x.name!==own);const custom=!!val&&!list.some(x=>x.name===val);
-  const cities=[...new Set(list.map(x=>x.city))];
-  return `<div class="f"><label for="${pfx}-opp">Opponent</label><select id="${pfx}-opp" name="oppSel" data-opp="${pfx}"><option value="">Choose opponent</option>
-    ${cities.map(c=>`<optgroup label="${c}">${list.filter(x=>x.city===c).map(x=>`<option ${x.name===val?'selected':''}>${esc(x.name)}</option>`).join('')}</optgroup>`).join('')}
-    <option value="__other" ${custom?'selected':''}>Other team (type the name)</option></select>
-    <input id="${pfx}-oppx" name="oppOther" aria-label="Other team name" value="${custom?esc(val):''}" placeholder="Team name" ${custom?'':'hidden'}></div>`;
+/* Opponent picker: tap to choose a school, then that school's team in this sport (or type another team). */
+const oppName=t=>`${t.schoolId} ${t.gender} ${t.level}`;
+function oppLabel(val,oppId){const t=oppId&&S.teams.find(x=>x.id===oppId);const sc=t&&school(t.schoolId);
+  return `${sc?`<img class="logo xs" src="${sc.logo}" alt="">`:''}<span class="pv ${val?'':'muted'}">${val?esc(val):'Choose opponent'}</span>${ic('chev',16)}`}
+function oppField(pfx,val,oppId){
+  return `<div class="f"><label for="${pfx}-oppbtn">Opponent</label>
+    <input type="hidden" name="opponent" id="${pfx}-opp" value="${esc(val||'')}"><input type="hidden" name="oppTeamId" id="${pfx}-oppid" value="${esc(oppId||'')}">
+    <button type="button" class="pickbtn" id="${pfx}-oppbtn" data-act="oppOpen" data-v="${pfx}" aria-expanded="false">${oppLabel(val,oppId)}</button>
+    <div class="picker" id="${pfx}-opppanel" hidden></div></div>`;
 }
-const readOpp=fd=>{const v=fd.get('oppSel');return (v==='__other'?fd.get('oppOther')||'':v||'').trim()};
+function oppSport(pfx){return pfx==='lf'?(document.getElementById('lf-sport')?.value||'basketball'):(S.teams.find(t=>t.id===modalCtx?.teamId)?.sport||'basketball')}
+function oppPanel(pfx,step){
+  const el=document.getElementById(pfx+'-opppanel');if(!el)return;const sp=oppSport(pfx);const own=me().school;
+  if(step==='other'){el.innerHTML=`<div class="pkhead"><button type="button" class="link small" data-act="oppOpen" data-v="${pfx}" data-step="schools">‹ All schools</button></div>
+    <div class="pkother"><input id="${pfx}-oppx" aria-label="Opponent team name" placeholder="Team name, e.g. Gwangju FC"><button type="button" class="btn sm primary" data-act="oppUse" data-v="${pfx}">Use</button></div>`;
+    document.getElementById(pfx+'-oppx').focus();return}
+  if(step&&step!=='schools'){const sc=school(step);const ts=S.teams.filter(t=>t.schoolId===step&&t.sport===sp);
+    el.innerHTML=`<div class="pkhead"><button type="button" class="link small" data-act="oppOpen" data-v="${pfx}" data-step="schools">‹ All schools</button><span class="small muted">${esc(sc.name)}</span></div>
+      <div class="pklist">${ts.map(t=>`<button type="button" class="pkrow" data-act="oppPick" data-v="${pfx}" data-id="${t.id}"><img class="logo xs" src="${sc.logo}" alt=""><span>${t.gender} ${t.level} ${SPORTS[sp].name}</span>${ic('chev',16)}</button>`).join('')}</div>`;return}
+  const list=SCHOOLS.filter(x=>x.name!==own);const cities=[...new Set(list.map(x=>x.city))];
+  el.innerHTML=`<div class="pkhead"><span class="small muted">Choose a school, then the ${SPORTS[sp].name.toLowerCase()} team</span></div><div class="pklist">${cities.map(c=>`<div class="eyebrow pkcity">${c}</div>${list.filter(x=>x.city===c).map(x=>`<button type="button" class="pkrow" data-act="oppSchool" data-v="${pfx}" data-id="${x.id}"><img class="logo xs" src="${x.logo}" alt=""><span>${esc(x.name)}</span>${ic('chev',16)}</button>`).join('')}`).join('')}
+    <button type="button" class="pkrow" data-act="oppOpen" data-v="${pfx}" data-step="other"><span class="glyph xs">${ic('plus',14)}</span><span>Other team (type a name)</span>${ic('chev',16)}</button></div>`;
+}
+function setOpp(pfx,val,oppId){setTimeout(()=>{if(pfx==='gf')prefillGame()},0);document.getElementById(pfx+'-opp').value=val;document.getElementById(pfx+'-oppid').value=oppId||'';
+  const b=document.getElementById(pfx+'-oppbtn');b.innerHTML=oppLabel(val,oppId);b.setAttribute('aria-expanded','false');document.getElementById(pfx+'-opppanel').hidden=true}
+const readOpp=fd=>(fd.get('opponent')||'').trim();
 function logForm(type,existing,draft){
   const l=existing||draft||{type,sport:curSport()||S.profile.sport||joinedTeams()[0]?.sport||'basketball',date:today(),minutes:type==='match'?'':60,stats:{},rating:3,result:'W'};
   type=l.type;const sp=l.sport;
-  const coachedTeams=joinedTeams().filter(coached);
+  const tg=joinedTeams().filter(t=>coached(t)&&t.sport===sp);
+  const isTeam=existing?(!!l.teamId&&tg.some(t=>t.id===l.teamId)):(draft&&('teamId' in draft))?(!!draft.teamId&&tg.some(t=>t.id===draft.teamId)):tg.length>0;
   openModal(`${sheetHead(existing?'Edit session':type==='match'?'Log a match':'Log practice')}
   <form id="logForm" novalidate>
     <div class="seg" role="group" aria-label="Session type">${[['match','Match'],['practice','Practice']].map(([k,lab])=>`<button type="button" data-act="logType" data-v="${k}" aria-pressed="${type===k}">${lab}</button>`).join('')}</div>
     <div class="grid2"><div class="f"><label for="lf-sport">Sport</label><select id="lf-sport" name="sport">${Object.entries(SPORTS).map(([k,s])=>`<option value="${k}" ${k===sp?'selected':''}>${s.name}</option>`).join('')}</select></div>
       <div class="f"><label for="lf-date">Date</label><input id="lf-date" name="date" type="date" value="${l.date}" max="${today()}"></div></div>
     ${type==='match'?`
-      ${oppField('lf',l.opponent)}
+      ${oppField('lf',l.opponent,l.oppTeamId)}
       <div class="grid3"><div class="f"><label for="lf-us">Our score</label><input id="lf-us" name="us" type="number" min="0" inputmode="numeric" value="${l.us??''}"></div>
         <div class="f"><label for="lf-them">Their score</label><input id="lf-them" name="them" type="number" min="0" inputmode="numeric" value="${l.them??''}"></div>
         <div class="f"><label for="lf-res">Result</label><select id="lf-res" name="result">${Object.entries(RES).map(([k,v])=>`<option value="${k}" ${l.result===k?'selected':''}>${v}</option>`).join('')}</select></div></div>`
@@ -728,9 +791,9 @@ function logForm(type,existing,draft){
       <div class="f"><label>How did it go?</label><div class="rating" role="group" aria-label="Session rating, 1 to 5">${[1,2,3,4,5].map(n=>`<button type="button" data-act="rate" data-v="${n}" class="${n<=(l.rating||3)?'on':''}" aria-pressed="${(l.rating||3)===n}" aria-label="${n} of 5">${STAR(28)}</button>`).join('')}<span class="rlab">${RATE_LAB[l.rating||3]}</span></div></div>`}
     <div class="grid3">${SPORTS[sp].fields.map(([k,lab])=>`<div class="f"><label for="lf-${k}">${lab}</label><input id="lf-${k}" name="s_${k}" type="number" min="0" inputmode="numeric" value="${l.stats?.[k]??0}"></div>`).join('')}</div>
     <div class="f"><label for="lf-min">Minutes</label><input id="lf-min" name="minutes" type="number" min="0" inputmode="numeric" value="${l.minutes??''}"></div>
+    ${type==='match'&&tg.length?`<label class="agree teamgame" for="lf-tg"><input type="checkbox" id="lf-tg" name="teamGame" value="1" ${isTeam?'checked':''}><span>This was a <b>${esc(teamTitle(tg[0]))}</b> game. Your coach sees your numbers when they record the official game, and the official stats replace yours once it’s posted.</span></label><input type="hidden" name="tgId" value="${tg[0].id}">`:''}
     <input type="hidden" name="teamId" value="${esc(l.teamId||'')}">
     <div class="f"><label for="lf-notes">Notes</label><textarea id="lf-notes" name="notes" placeholder="What went well? What will you work on next?">${esc(l.notes||'')}</textarea></div>
-    ${type==='match'&&coachedTeams.length&&!existing?`<div class="notice">Games for ${coachedTeams.length===1?esc(teamTitle(coachedTeams[0])):'your school teams'} are posted by your coach and show up in your stats automatically. Use this for club, pickup or other games. To add notes to a team game, open it from your stats.</div>`:''}
     <div class="small muted">This goes to your personal record only.</div>
     <div id="lf-err" class="err" hidden></div>
     <div class="actions"><button type="button" class="btn" data-act="close">Cancel</button><button class="btn primary" type="submit">${existing?'Save changes':type==='match'?'Save match':'Save practice'}</button></div>
@@ -739,8 +802,9 @@ function logForm(type,existing,draft){
 function readLogForm(){
   const fd=new FormData(document.getElementById('logForm'));const sp=fd.get('sport');
   const stats={};SPORTS[sp].fields.forEach(([k])=>stats[k]=Math.max(0,+fd.get('s_'+k)||0));
-  const o={type:modalCtx.type,sport:sp,date:fd.get('date')||today(),minutes:Math.max(0,+fd.get('minutes')||0),stats,teamId:fd.get('teamId')||'',notes:(fd.get('notes')||'').trim()};
-  if(o.type==='match'){o.opponent=readOpp(fd);o.us=fd.get('us')===''?null:+fd.get('us');o.them=fd.get('them')===''?null:+fd.get('them');o.result=fd.get('result')}
+  const teamId=fd.has('tgId')?(fd.get('teamGame')?fd.get('tgId'):''):(fd.get('teamId')||'');
+  const o={type:modalCtx.type,sport:sp,date:fd.get('date')||today(),minutes:Math.max(0,+fd.get('minutes')||0),stats,teamId,notes:(fd.get('notes')||'').trim()};
+  if(o.type==='match'){o.opponent=readOpp(fd);o.oppTeamId=fd.get('oppTeamId')||'';o.us=fd.get('us')===''?null:+fd.get('us');o.them=fd.get('them')===''?null:+fd.get('them');o.result=fd.get('result')}
   else{o.focus=(fd.get('focus')||'').trim();o.rating=modalCtx.rating}
   return o;
 }
@@ -755,13 +819,30 @@ function logDetail(id){
     <div id="delZone" class="actions"><button class="btn danger" data-act="delAsk">Delete</button><button class="btn primary" data-act="editLog" data-id="${l.id}">Edit</button></div></div>`,{kind:'detail',id});
 }
 
+function staffOf(t){const ids=[...(t.coachUid?[t.coachUid]:[]),...(t.managers||[]).filter(u=>u!==t.coachUid)];return ids.map(u=>({uid:u,name:(u===t.coachUid?t.coach:t.managerNames?.[u])||'Coach'}))}
+function mgrSection(t){
+  const st=staffOf(t);
+  return `<div><div class="sechead" style="margin-bottom:8px"><div class="eyebrow">Coaches & managers</div><button class="link small" data-act="addMgr" data-id="${t.id}">+ Add coach or manager</button></div>
+    <div class="card list" style="box-shadow:none">${st.map(m=>`<div class="prow"><div class="pbtn" style="cursor:default"><span class="avatars"><span style="width:32px;height:32px;font-size:11px">${initials(m.name)}</span></span><span style="min-width:0"><span class="t">${esc(m.name)}</span>${m.uid===USER.uid?' <span class="muted small">(you)</span>':''}</span><span></span></div>${m.uid!==USER.uid?`<span class="rmzone" id="mg-${m.uid}"><button class="link small" style="color:var(--bad)" data-act="mgrRmAsk" data-v="${m.uid}">Remove</button></span>`:''}</div>`).join('')}</div>
+    <p class="small muted" style="margin:6px 0 0">Everyone here can edit team info, the roster, the invite code and official games.</p></div>`;
+}
+async function mgrSheet(teamId){
+  const t=S.teams.find(x=>x.id===teamId);
+  openModal(`${sheetHead('Add a coach or manager')}<div class="stack"><p class="small muted" style="margin:0">Approved coach and manager accounts at ${esc(teamSchool(t))}. They’ll get the same access to ${esc(teamTitle(t))} as you.</p><div id="mgrList" class="card list" style="box-shadow:none"><div class="empty small">Loading…</div></div></div>`,{kind:'mgr',id:teamId,teamId});
+  let rows=[];
+  try{const q=await db.collection('users').where('role','==','coach').where('schoolId','==',t.schoolId).get();rows=q.docs.map(d=>({uid:d.id,...d.data()})).filter(u=>u.coachApproved&&u.uid!==USER.uid&&u.uid!==t.coachUid&&!(t.managers||[]).includes(u.uid))}
+  catch(e){console.warn(e)}
+  const el=document.getElementById('mgrList');if(!el||modalCtx?.kind!=='mgr')return;
+  el.innerHTML=rows.length?rows.map(u=>`<div class="arow"><div class="avatars"><span style="width:40px;height:40px;font-size:12px">${initials(u.name)}</span></div><div style="min-width:0"><div class="t">${esc(u.name||'No name')}</div><div class="m">${esc(u.title||'Coach')}</div></div><div class="aact"><button class="btn sm primary" data-act="mgrAdd" data-v="${u.uid}" data-name="${esc(u.name||'')}">Add</button></div></div>`).join('')
+    :`<div class="empty small">No other approved coach or manager accounts at this school yet. They need to sign up as “Coach or manager” and be approved first.</div>`;
+}
 function teamDetail(id,lb){
   const t=S.teams.find(x=>x.id===id);if(!t)return;lb=lb||SPORTS[t.sport].unit;
   const sc=school(t.schoolId),c=isCoach(),mine=t.managed,games=teamGames(t.id),r=teamRecord(t.id);
-  const canEdit=c&&mine;
+  const canEdit=c&&mine,score=c&&canScore(t);
   let action='';
   if(c){action=mine?`<div id="actZone" class="stack" style="gap:8px"><button class="btn block" data-act="unmanageAsk" data-id="${t.id}">Stop managing this team</button></div>`
-    :t.coachUid?lockNote(`${esc(t.coach||'Another coach')} already manages this team.`)
+    :(t.coachUid||t.managers?.length)?lockNote(`${esc(t.coach||t.managerNames?.[t.managers[0]]||'Another coach')} already runs this team. Ask them to add you under Coaches & managers.`)
     :!approved()?lockNote('Your coach account is waiting for approval. You can manage teams once the Stateam admin approves it.')
     :sameSchool(t,S.coach.school)?`<button class="btn block coachbtn" data-act="manage" data-id="${t.id}">${ic('whistle',18)}Manage this team</button>`
     :lockNote(S.coach.school?`Only coaches at ${esc(teamSchool(t))} can manage this team. Your profile school is ${esc(S.coach.school)}.`:'Add your school in Profile before managing a team.')}
@@ -773,12 +854,14 @@ function teamDetail(id,lb){
     <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="pill a">${SPORTS[t.sport].name}</span><span class="pill n">${esc(t.gender?t.gender+' '+t.level:t.level)}</span>${!c&&t.joined?'<span class="pill W">Member</span>':''}${c&&mine?'<span class="pill coach">You manage this team</span>':''}</div>
     <div><div class="sechead" style="margin-bottom:8px"><div class="eyebrow">Team info</div>${canEdit?`<button class="link small" data-act="editTeam" data-id="${t.id}">${ic('edit',14)} Edit</button>`:''}</div>
     <dl class="kv"><dt>Coach</dt><dd>${esc(t.coach||'Not set yet')}</dd><dt>Practices</dt><dd>${esc(t.meets||'Not set yet')}</dd><dt>Record</dt><dd>${recStr(r)}${r.D?' (W–L–D)':''}</dd><dt>Players</dt><dd>${cloud()&&!t.rosterLoaded?'…':t.roster.length}</dd></dl></div>
-    ${canEdit?`<div class="card pad" style="box-shadow:none;background:var(--surface2)"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><div><div class="eyebrow">Invite code · only you can see this</div><div class="code">${t.code||'······'}</div></div><button class="btn sm" data-act="copy" data-v="${t.code}" ${t.code?'':'disabled'}>${ic('copy',16)}Copy</button></div>
-      <div id="codeZone" class="small muted" style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px">Share it only with players on this team.<button class="link small" data-act="regenAsk">New code</button></div></div>`:''}
-    ${canEdit?corrList(t):''}
+    ${canEdit?`<div class="card pad" style="box-shadow:none;background:var(--surface2)"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><div><div class="eyebrow">Invite code</div><div class="code">${t.code||'······'}</div></div><button class="btn sm" data-act="copy" data-v="${t.code}" ${t.code?'':'disabled'}>${ic('copy',16)}Copy</button></div>
+      <div id="codeZone" class="small muted" style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px">Only coaches and managers see this. Share it only with players on this team.<button class="link small" data-act="regenAsk">New code</button></div></div>`:''}
+    ${cloud()&&canEdit?mgrSection(t):''}
+    ${score?corrList(t):''}
     ${leaderboard(t,lb)}
-    <div><div class="sechead" style="margin-bottom:8px"><div class="eyebrow">Official games</div>${canEdit?`<button class="link small" data-act="newGame" data-id="${t.id}">+ Log game</button>`:''}</div>
-      <div class="card list" style="box-shadow:none">${games.length?games.slice(0,5).map(g=>gameRow(g)).join(''):`<div class="empty small">No official games yet.${canEdit?'':' Your coach adds these.'}</div>`}</div></div>
+    <div><div class="sechead" style="margin-bottom:8px"><div class="eyebrow">Official games</div>${score?`<button class="link small" data-act="newGame" data-id="${t.id}">+ Log game</button>`:''}</div>
+      <div class="card list" style="box-shadow:none">${games.length?games.slice(0,5).map(g=>gameRow(g)).join(''):`<div class="empty small">No official games yet.${score?'':' Your coach adds these.'}</div>`}</div></div>
+    ${canSeePractices(t)?pracSection(t,canEdit):''}
     <div><div class="eyebrow" style="margin-bottom:8px">Roster</div><div class="card list" style="box-shadow:none">${t.roster.length?'':'<div class="empty small">No players yet.</div>'}${t.roster.map((n,i)=>`<div class="prow"><button class="pbtn" data-act="openPlayer" data-i="${i}"><span class="avatars"><span style="width:32px;height:32px;font-size:11px">${initials(n)}</span></span><span style="min-width:0"><span class="t">${esc(n)}</span>${!c&&isMeName(t,n)?' <span class="muted small">(you)</span>':''}${canEdit&&cloud()?(t.ruid?.[n]?' <span class="pill W">Joined</span>':' <span class="pill n">Not signed up</span>'):''}${pubInfo(n)?`<div class="m">${esc(pubInfo(n))}</div>`:''}</span><span class="chev">${ic('chev',16)}</span></button>${canEdit?`<span class="rmzone" id="rm-${i}">${cloud()&&t.ruid?.[n]?`<button class="link small" data-act="unlinkAsk" data-i="${i}">Unlink</button>`:''}<button class="link small" style="color:var(--bad)" data-act="rmAsk" data-i="${i}">Remove</button></span>`:''}</div>`).join('')}</div>
       ${canEdit?`<form id="addPlayer" class="addcard" novalidate><div class="eyebrow">Add a player</div>
         <div class="f"><label for="ap-name">Full name</label><input id="ap-name" name="name" autocomplete="off" placeholder="e.g. Minho Lee"></div>
@@ -903,7 +986,7 @@ function corrList(t,gameId){
 }
 function resolveCorrection(cid,apply){
   const c=(S.corrections||[]).find(x=>x.id===cid);if(!c)return;const g=S.games.find(x=>x.id===c.gameId);const t=S.teams.find(x=>x.id===c.teamId);
-  if(!isCoach()||!t?.managed)return;
+  if(!isCoach()||!canScore(t))return;
   if(cloud()){
     if(apply&&g){const rid=g.boxRid?.[c.name]||t.rids?.[c.name];if(rid)db.doc(`teams/${t.id}/games/${g.id}`).update({['box.'+rid]:{name:c.name,...c.stats}}).catch(cfail)}
     db.doc(`teams/${t.id}/corrections/${cid}`).update({status:apply?'applied':'dismissed',resolvedAt:now()}).catch(cfail);
@@ -914,7 +997,7 @@ function resolveCorrection(cid,apply){
 }
 function gameDetail(id){
   const g=S.games.find(x=>x.id===id);if(!g)return;const t=S.teams.find(x=>x.id===g.teamId);const f=SPORTS[t.sport].fields;
-  const canEdit=isCoach()&&t.managed;const rows=Object.entries(g.box||{}).filter(([,b])=>played(b));
+  const canEdit=isCoach()&&canScore(t);const rows=Object.entries(g.box||{}).filter(([,b])=>played(b));
   openModal(`<button class="link small backlink" data-act="openTeam" data-id="${t.id}">‹ ${esc(teamTitle(t))}</button>${sheetHead('vs. '+esc(g.opponent))}<div class="stack">
     <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="pill ${g.result}">${RES[g.result]}</span><span class="pill off">Official</span><span class="pill a">${esc(teamTitle(t))}</span></div>
     <div class="score"><div><div class="eyebrow">${esc(t.schoolId||'Us')}</div><b>${g.us}</b></div><span class="muted">–</span><div><div class="eyebrow">Opponent</div><b>${g.them}</b></div></div>
@@ -933,17 +1016,37 @@ function gameForm(teamId,existing){
     <div class="card team" style="box-shadow:none;padding:12px;grid-template-columns:40px 1fr;cursor:default">${logoOr(t,'sm')}<span style="font-weight:700">${esc(teamTitle(t))}</span></div>
     <div class="grid2"><div class="f"><label for="gf-date">Date</label><input id="gf-date" name="date" type="date" value="${g.date}"></div>
       <div class="f"><label for="gf-loc">Venue</label><select id="gf-loc" name="location">${['Home','Away','Neutral'].map(v=>`<option ${g.location===v?'selected':''}>${v}</option>`).join('')}</select></div></div>
-    ${oppField('gf',g.opponent)}
+    ${oppField('gf',g.opponent,g.oppTeamId)}
     <div class="grid3"><div class="f"><label for="gf-us">Our score</label><input id="gf-us" name="us" type="number" min="0" inputmode="numeric" value="${g.us}"></div>
       <div class="f"><label for="gf-them">Their score</label><input id="gf-them" name="them" type="number" min="0" inputmode="numeric" value="${g.them}"></div>
       <div class="f"><label for="gf-res">Result</label><select id="gf-res" name="result">${Object.entries(RES).map(([k,v])=>`<option value="${k}" ${g.result===k?'selected':''}>${v}</option>`).join('')}</select></div></div>
     <div><div class="eyebrow" style="margin-bottom:8px">Player stats</div>
+    <div id="gf-pref" class="notice" style="margin-bottom:8px" hidden></div>
     ${names.length?`<div class="card tablewrap" style="box-shadow:none"><table class="tbl entry"><thead><tr><th>Player</th>${f.map(x=>`<th title="${x[1]}">${x[2]}</th>`).join('')}<th>MIN</th></tr></thead><tbody>
-      ${names.map((n,i)=>`<tr><td>${esc(n)}</td>${[...f.map(x=>x[0]),'minutes'].map(k=>`<td><input id="gb-${i}-${k}" name="b_${i}_${k}" type="number" min="0" inputmode="numeric" value="${g.box?.[n]?.[k]??''}" placeholder="0" aria-label="${esc(n)} ${k}"></td>`).join('')}</tr>`).join('')}</tbody></table></div>
+      ${names.map((n,i)=>`<tr id="gr-${i}"><td>${esc(n)}</td>${[...f.map(x=>x[0]),'minutes'].map(k=>`<td><input id="gb-${i}-${k}" name="b_${i}_${k}" type="number" min="0" inputmode="numeric" value="${g.box?.[n]?.[k]??''}" placeholder="0" aria-label="${esc(n)} ${k}"></td>`).join('')}</tr>`).join('')}</tbody></table></div>
       <div class="small muted" style="margin-top:6px">Leave a row empty for players who didn’t play.</div>`:`<div class="card empty small">Add players to the roster first to enter their stats.</div>`}</div>
     <div id="gf-err" class="err" hidden></div>
     <div class="actions"><button type="button" class="btn" data-act="close">Cancel</button><button class="btn primary" type="submit">${existing?'Save changes':'Publish game'}</button></div>
   </form>`,{kind:'gameForm',teamId,editId:existing?.id,names});
+  if(!existing)prefillGame();
+}
+/* Pre-fill the official game with numbers players logged themselves for the same date and opponent.
+   Rows the coach has typed in are never overwritten. */
+function prefillGame(){
+  const c=modalCtx;if(c?.kind!=='gameForm'||c.editId)return;
+  const t=S.teams.find(x=>x.id===c.teamId);if(!t)return;
+  const date=document.getElementById('gf-date')?.value;const opp={opponent:document.getElementById('gf-opp')?.value||'',oppTeamId:document.getElementById('gf-oppid')?.value||''};
+  const keys=[...SPORTS[t.sport].fields.map(x=>x[0]),'minutes'];const cell=(i,k)=>document.getElementById(`gb-${i}-${k}`);
+  Object.keys(c.pref||{}).forEach(i=>{keys.forEach(k=>{const el=cell(i,k);if(el)el.value=''});document.getElementById('gr-'+i)?.classList.remove('pref')});c.pref={};
+  const subs=cloud()?(S.subs?.[t.id]||[]):S.logs.filter(l=>l.type==='match'&&l.teamId===t.id).map(l=>({...l,name:myRosterName(t)}));
+  const list=opp.opponent?subs.filter(x=>x.date===date&&sameOpp(x,opp)):[];
+  let filled=0;
+  list.forEach(x=>{const n=(x.uid&&Object.keys(t.ruid||{}).find(k=>t.ruid[k]===x.uid))||x.name;const i=c.names.indexOf(n);if(i<0)return;
+    if(keys.some(k=>cell(i,k)&&cell(i,k).value!==''))return;
+    keys.forEach(k=>{const el=cell(i,k);if(el)el.value=k==='minutes'?(+x.minutes||0):(+x.stats?.[k]||0)});c.pref[i]=1;document.getElementById('gr-'+i)?.classList.add('pref');filled++});
+  const us=document.getElementById('gf-us'),them=document.getElementById('gf-them');const sx=list.find(x=>x.us!=null&&x.them!=null&&x.us!==''&&x.them!=='');
+  if(!c.scoreTouched){if(sx){us.value=sx.us;them.value=sx.them;document.getElementById('gf-res').value=resOf(+sx.us,+sx.them);c.scorePref=true}else if(c.scorePref){us.value='';them.value='';c.scorePref=false}}
+  const note=document.getElementById('gf-pref');if(note){note.hidden=!filled;note.textContent=filled?`Pre-filled with ${filled} player${filled>1?'s’':'’s'} own numbers. Check them and edit anything before publishing.`:''}
 }
 function teamForm(t){
   const isNew=!t;t=t||{name:'',sport:S.coach.sport||'basketball',level:'Varsity',meets:'',coach:S.coach.name};
@@ -958,10 +1061,17 @@ function teamForm(t){
     <div id="tf-err" class="err" hidden></div><div class="actions"><button type="button" class="btn" data-act="close">Cancel</button><button class="btn primary">${isNew?'Create team':'Save team info'}</button></div></form>`,{kind:isNew?'create':'editTeam',id:t.id});
 }
 function pickTeamForGame(){
-  const T=managedTeams();
+  const T=staffTeams();
   if(!T.length){toast('Choose the team you coach on the Teams tab first');return}
   if(T.length===1)return gameForm(T[0].id);
   openModal(`${sheetHead('Which team played?')}<div class="card list" style="box-shadow:none">${T.map(t=>`<button class="row srow" data-act="newGame" data-id="${t.id}">${logoOr(t)}<span style="min-width:0"><div class="sname">${esc(teamTitle(t))}</div><div class="m">${t.roster.length} players</div></span><span class="chev">${ic('chev',18)}</span></button>`).join('')}</div>`);
+}
+
+function pickTeamForPrac(){
+  const T=managedTeams();
+  if(!T.length){toast('Choose the team you coach on the Teams tab first');return}
+  if(T.length===1)return practiceForm(T[0].id);
+  openModal(`${sheetHead('Which team practiced?')}<div class="card list" style="box-shadow:none">${T.map(t=>`<button class="row srow" data-act="newPrac" data-id="${t.id}">${logoOr(t)}<span style="min-width:0"><div class="sname">${esc(teamTitle(t))}</div><div class="m">${t.roster.length} players</div></span><span class="chev">${ic('chev',18)}</span></button>`).join('')}</div>`);
 }
 
 /* ---------- render ---------- */
@@ -990,7 +1100,6 @@ document.addEventListener('click',e=>{
     case 'pwToggle':{const i=document.getElementById(b.dataset.for||'au-pw');const show=i.type==='password';i.type=show?'text':'password';b.textContent=show?'Hide':'Show';b.setAttribute('aria-label',show?'Hide password':'Show password');break}
     case 'google':googleAuth();break;
     case 'forgot':forgotPw();break;
-    case 'demo':enterDemo(v);break;
     case 'signOutAsk':document.getElementById('outZone').innerHTML=`<span class="small muted" style="margin-right:auto;align-self:center">Log out of Stateam?</span><button class="btn" data-act="signOutNo">Cancel</button><button class="btn danger" data-act="signOut">Log out</button>`;break;
     case 'signOutNo':render();break;
     case 'signOut':signOut();break;
@@ -1001,7 +1110,7 @@ document.addEventListener('click',e=>{
     case 'openLog':logDetail(b.dataset.id);break;
     case 'editLog':logForm(null,S.logs.find(l=>l.id===b.dataset.id));break;
     case 'delAsk':document.getElementById('delZone').innerHTML=`<span class="small muted" style="margin-right:auto;align-self:center">Delete this session?</span><button class="btn" data-act="close">Keep</button><button class="btn danger" data-act="delYes">Delete</button>`;break;
-    case 'delYes':if(cloud()){db.doc(`users/${USER.uid}/logs/${modalCtx.id}`).delete().catch(cfail);back();toast('Session deleted');break}S.logs=S.logs.filter(l=>l.id!==modalCtx.id);save();back();render();toast('Session deleted');break;
+    case 'delYes':if(cloud()){const prev=S.logs.find(x=>x.id===modalCtx.id);db.doc(`users/${USER.uid}/logs/${modalCtx.id}`).delete().catch(cfail);syncSubmission(modalCtx.id,null,prev);back();toast('Session deleted');break}S.logs=S.logs.filter(l=>l.id!==modalCtx.id);save();back();render();toast('Session deleted');break;
     case 'openTeam':if(cloud())watchTeam(b.dataset.id);teamDetail(b.dataset.id);break;
     case 'openPlayer':playerSheet(modalCtx.id,+b.dataset.i);break;
     case 'lb':teamDetail(modalCtx.id,v);break;
@@ -1029,6 +1138,14 @@ document.addEventListener('click',e=>{
     case 'rmPlayer':{const t=team();if(!t?.managed||!isCoach())return;if(cloud()){const n=t.roster[+b.dataset.i];cloudRemovePlayer(t,n);toast(`Removed ${n}`);break}const n=t.roster.splice(+b.dataset.i,1)[0];save();teamDetail(t.id);render();toast(`Removed ${n}`);break}
     case 'newGame':if(!isCoach())return;b.dataset.id?gameForm(b.dataset.id):pickTeamForGame();break;
     case 'openGame':gameDetail(b.dataset.id);break;
+    case 'newPrac':{if(!isCoach())break;if(!b.dataset.id){pickTeamForPrac();break}const t=S.teams.find(x=>x.id===b.dataset.id);if(t?.managed)practiceForm(t.id);break}
+    case 'openPrac':practiceDetail(b.dataset.id);break;
+    case 'allPrac':pracList(b.dataset.id);break;
+    case 'editPrac':{const p=(S.practices||[]).find(x=>x.id===b.dataset.id);if(p)practiceForm(p.teamId,p);break}
+    case 'pDelAsk':document.getElementById('pdelZone').innerHTML=`<span class="small muted" style="margin-right:auto;align-self:center">Delete this practice?</span><button class="btn" data-act="close">Keep</button><button class="btn danger" data-act="pDelYes">Delete</button>`;break;
+    case 'pDelYes':{const p=(S.practices||[]).find(x=>x.id===modalCtx?.id);if(!p)break;
+      if(cloud())db.doc(`teams/${p.teamId}/practices/${p.id}`).delete().catch(cfail);else{S.practices=S.practices.filter(x=>x.id!==p.id);save()}
+      back();render();toast('Practice deleted');break}
     case 'editGame':{const g=S.games.find(x=>x.id===b.dataset.id);gameForm(g.teamId,g);break}
     case 'gDelAsk':document.getElementById('delZone').innerHTML=`<span class="small muted" style="margin-right:auto;align-self:center">Delete this official game?</span><button class="btn" data-act="close">Keep</button><button class="btn danger" data-act="gDelYes">Delete</button>`;break;
     case 'gDelYes':if(cloud()){const g=S.games.find(x=>x.id===modalCtx.id);db.doc(`teams/${g.teamId}/games/${g.id}`).delete().catch(cfail);back();toast('Game deleted');break}S.games=S.games.filter(g=>g.id!==modalCtx.id);save();back();render();toast('Game deleted');break;
@@ -1038,6 +1155,19 @@ document.addEventListener('click',e=>{
     case 'revokeNo':render();break;
     case 'revokeYes':if(isAdmin())setApproval(b.dataset.id,false);break;
     case 'delAcct':deleteSheet();break;
+    case 'oppOpen':{const pfx=v,el=document.getElementById(pfx+'-opppanel'),btn=document.getElementById(pfx+'-oppbtn');
+      if(b===btn&&!el.hidden){el.hidden=true;btn.setAttribute('aria-expanded','false');break}
+      el.hidden=false;btn.setAttribute('aria-expanded','true');oppPanel(pfx,b.dataset.step||'schools');break}
+    case 'oppSchool':oppPanel(v,b.dataset.id);break;
+    case 'oppPick':{const t=S.teams.find(x=>x.id===b.dataset.id);setOpp(v,oppName(t),t.id);break}
+    case 'oppUse':{const x=document.getElementById(v+'-oppx');const n=(x.value||'').trim();if(!n){x.focus();break}setOpp(v,n,'');break}
+    case 'addMgr':mgrSheet(b.dataset.id);break;
+    case 'mgrAdd':{const t=S.teams.find(x=>x.id===modalCtx.teamId);if(!t?.managed)return;b.disabled=true;b.textContent='Adding…';
+      db.doc('teams/'+t.id).update({managers:FV().arrayUnion(v),['managerNames.'+v]:b.dataset.name||'Coach'}).then(()=>{toast(`${b.dataset.name||'Coach'} added`);back()}).catch(cfail);break}
+    case 'mgrRmAsk':{const z=document.getElementById('mg-'+v);const t=team();z.classList.add('confirming');z.innerHTML=`<span class="small muted" style="margin-right:auto">Remove ${esc(staffOf(t).find(m=>m.uid===v)?.name||'them')}? They’ll lose access to this team.</span><button class="link small" data-act="rmNo">Cancel</button><button class="btn sm danger" data-act="mgrRm" data-v="${v}">Remove</button>`;break}
+    case 'mgrRm':{const t=team();if(!t?.managed)return;
+      const upd=v===t.coachUid?{coachUid:USER.uid,coachName:S.coach.name||'Coach',managers:FV().arrayRemove(USER.uid)}:{managers:FV().arrayRemove(v)};
+      db.doc('teams/'+t.id).update(upd).then(()=>toast('Removed from this team')).catch(cfail);break}
     case 'notesForm':notesForm(b.dataset.id);break;
     case 'corrForm':corrForm(b.dataset.id);break;
     case 'corrYes':resolveCorrection(b.dataset.id,true);break;
@@ -1053,20 +1183,18 @@ document.addEventListener('click',e=>{
       :`<div class="grid2"><div class="f"><label for="pf-grade">Grade</label><input id="pf-grade" name="grade" type="number" min="1" max="12" step="1" inputmode="numeric" value="${esc(gradeNum(P.grade))}" placeholder="e.g. 10"></div><div class="f"><label for="pf-sport">Main sport</label><select id="pf-sport" name="sport"><option value="">None</option>${Object.entries(SPORTS).map(([k,s])=>`<option value="${k}" ${k===P.sport?'selected':''}>${s.name}</option>`).join('')}</select></div></div>
       <div class="grid2"><div class="f"><label for="pf-pos">Position</label><input id="pf-pos" name="position" value="${esc(P.position)}"></div><div class="f"><label for="pf-jersey">Jersey #</label><input id="pf-jersey" name="jersey" inputmode="numeric" value="${esc(P.jersey)}"></div></div>`}
       <div id="pf-err" class="err" hidden></div><div class="actions"><button type="button" class="btn" data-act="close">Cancel</button><button class="btn primary">Save profile</button></div></form>`,{kind:'profile'});break}
-    case 'startFresh':openModal(`${sheetHead('Start fresh?')}<div class="stack"><p style="margin:0">This removes every session, team membership and official game in this browser. This can’t be undone.</p><div class="actions"><button class="btn" data-act="close">Cancel</button><button class="btn danger" data-act="freshYes">Remove everything</button></div></div>`);break;
     case 'freshYes':{const th=S.theme;S=S.account?newAccount(S.account):blank(S);S.theme=th;save();closeModal();UI.tab='profile';render();toast('Cleared. Your account is ready for real stats.');break}
-    case 'loadSample':{const keep={theme:S.theme,role:S.role,account:S.account};S=sample();Object.assign(S,keep);save();render();toast('Sample data loaded');break}
   }
 });
 document.addEventListener('change',e=>{
   const id=e.target.id;
   if(id==='metricSel'){UI.metric=e.target.value;render()}
   if((id==='au-agree'||id==='ob-agree')&&e.target.checked&&/agree/.test(AUTH.err))authMsg();
-  if(e.target.dataset.opp){const x=document.getElementById(e.target.dataset.opp+'-oppx');x.hidden=e.target.value!=='__other';if(!x.hidden)x.focus()}
-  if(id==='lf-sport'){const cur=readLogForm();cur.teamId='';cur.stats={};const ed=modalCtx.editId;if(ed){cur.id=ed;logForm(cur.type,cur)}else logForm(cur.type,null,cur)}
+  if(id==='lf-sport'){const cur=readLogForm();delete cur.teamId;cur.stats={};if(cur.oppTeamId){cur.opponent='';cur.oppTeamId=''}const ed=modalCtx.editId;if(ed){cur.id=ed;logForm(cur.type,cur)}else logForm(cur.type,null,cur)}
   const auto=(a,b,r)=>{const u=document.getElementById(a)?.value,t=document.getElementById(b)?.value;if(u!==''&&t!=='')document.getElementById(r).value=resOf(+u,+t)};
   if(id==='lf-us'||id==='lf-them')auto('lf-us','lf-them','lf-res');
-  if(id==='gf-us'||id==='gf-them')auto('gf-us','gf-them','gf-res');
+  if(id==='gf-us'||id==='gf-them'){auto('gf-us','gf-them','gf-res');if(modalCtx)modalCtx.scoreTouched=true}
+  if(id==='gf-date')prefillGame();
 });
 document.addEventListener('submit',e=>{
   e.preventDefault();const id=e.target.id;const fd=new FormData(e.target);
@@ -1081,7 +1209,7 @@ document.addEventListener('submit',e=>{
   if(id==='onbForm'){const name=(fd.get('name')||'').trim(),school=fd.get('school')||'';
     if(!name)return authMsg('Enter your full name.');if(!school)return authMsg('Choose your school.');
     if(!fd.get('agree'))return authMsg('To continue, agree to the Privacy Policy and Terms of Service.');
-    if(db&&!USER.demo){S=cloudBlank();createUserDoc({role:AUTH.role,name,school,agreed:true}).then(startSync).then(()=>{showApp();toast('Welcome to Stateam')}).catch(e=>{console.warn(e);authMsg('Couldn’t create your profile. Check your connection and try again.')});return}
+    if(db){S=cloudBlank();createUserDoc({role:AUTH.role,name,school,agreed:true}).then(startSync).then(()=>{showApp();toast('Welcome to Stateam')}).catch(e=>{console.warn(e);authMsg('Couldn’t create your profile. Check your connection and try again.')});return}
     S=newAccount({role:AUTH.role,name,school,email:USER.email});save();showApp();toast('Welcome to Stateam');return}
   const fail=(el,msg)=>{const x=document.getElementById(el);x.textContent=msg;x.hidden=false};
   if(id==='logForm'){
@@ -1091,17 +1219,28 @@ document.addEventListener('submit',e=>{
     const orig=modalCtx.editId&&S.logs.find(x=>x.id===modalCtx.editId);const keySame=orig&&orig.date===o.date&&orig.sport===o.sport&&norm(orig.opponent)===norm(o.opponent);
     if(o.type==='match'&&!keySame){const dupL=S.logs.find(x=>x.id!==modalCtx.editId&&!x.notesOnly&&x.type==='match'&&x.sport===o.sport&&x.date===o.date&&norm(x.opponent)===norm(o.opponent));
       if(dupL&&!modalCtx.allowDup){const x=document.getElementById('lf-err');x.innerHTML=`<div>You already logged a match vs. ${esc(o.opponent)} on ${fmtDate(o.date)}. If you played them twice that day, you can still log this one.</div><div class="errbtns"><button type="button" class="btn sm go" data-act="editLog" data-id="${dupL.id}">Edit that match</button><button type="button" class="btn sm" data-act="postAnyway" data-v="logForm">Log it anyway</button></div>`;x.hidden=false;return}}
-    if(cloud()){const col=db.collection(`users/${USER.uid}/logs`);(modalCtx.editId?col.doc(modalCtx.editId):col.doc()).set({...o,updatedAt:now()}).catch(cfail)}
+    if(cloud()){const col=db.collection(`users/${USER.uid}/logs`);const ref=modalCtx.editId?col.doc(modalCtx.editId):col.doc();const prev=S.logs.find(x=>x.id===modalCtx.editId);ref.set({...o,updatedAt:now()}).catch(cfail);syncSubmission(ref.id,o,prev)}
     else if(modalCtx.editId){const i=S.logs.findIndex(l=>l.id===modalCtx.editId);S.logs[i]={...S.logs[i],...o}}else S.logs.push({id:uid(),...o});
     UI.sport=o.sport;save();back();render();toast(o.type==='match'?'Match saved':'Practice saved');
   }
+  if(id==='pracForm'){
+    const t=S.teams.find(x=>x.id===modalCtx.teamId);if(!isCoach()||!t?.managed)return;
+    const video=String(fd.get('video')||'').trim();if(video&&!isDrive(video))return fail('pf-err','Paste a Google Drive link (it starts with https://drive.google.com/).');
+    const o={date:fd.get('date')||today(),minutes:Math.max(0,Math.min(600,+fd.get('minutes')||0)),focus:String(fd.get('focus')||'').trim().slice(0,80),notes:String(fd.get('notes')||'').trim().slice(0,2000),video};
+    const editId=modalCtx.editId;
+    if(cloud()){const col=db.collection(`teams/${t.id}/practices`);
+      (editId?col.doc(editId).update({...o,updatedAt:now()}):col.doc().set({...o,byUid:USER.uid,byName:S.coach.name||'Coach',createdAt:now(),updatedAt:now()})).catch(cfail)}
+    else if(editId){const i=S.practices.findIndex(x=>x.id===editId);S.practices[i]={...S.practices[i],...o}}
+    else S.practices.push({id:uid(),teamId:t.id,byName:S.coach.name||'Coach',...o});
+    save();back();render();toast(editId?'Practice updated':'Practice posted to '+teamTitle(t));
+  }
   if(id==='gameForm'){
-    if(!isCoach())return;const t=S.teams.find(x=>x.id===modalCtx.teamId);if(!t.managed)return;
+    if(!isCoach())return;const t=S.teams.find(x=>x.id===modalCtx.teamId);if(!canScore(t))return;
     const opp=readOpp(fd);if(!opp)return fail('gf-err','Choose the opponent.');
     if(fd.get('us')===''||fd.get('them')==='')return fail('gf-err','Enter the final score for both teams.');
     const keys=[...SPORTS[t.sport].fields.map(x=>x[0]),'minutes'];const box={};
     modalCtx.names.forEach((n,i)=>{const row={};let any=false;keys.forEach(k=>{const v=fd.get(`b_${i}_${k}`);row[k]=Math.max(0,+v||0);if(v!=='')any=true});if(any)box[n]=row});
-    const g={teamId:t.id,date:fd.get('date')||today(),opponent:opp,us:+fd.get('us'),them:+fd.get('them'),result:fd.get('result'),location:fd.get('location'),box};
+    const g={teamId:t.id,date:fd.get('date')||today(),opponent:opp,oppTeamId:fd.get('oppTeamId')||'',us:+fd.get('us'),them:+fd.get('them'),result:fd.get('result'),location:fd.get('location'),box};
     const dupG=S.games.find(x=>x.teamId===t.id&&x.id!==modalCtx.editId&&x.date===g.date&&norm(x.opponent)===norm(g.opponent));
     if(dupG&&!modalCtx.allowDup){const x=document.getElementById('gf-err');x.innerHTML=`<div>${esc(teamTitle(t))} already has a game vs. ${esc(g.opponent)} on ${fmtDate(g.date)} (${dupG.us}–${dupG.them}). If this is a second game, like a tournament rematch, you can still post it.</div><div class="errbtns"><button type="button" class="btn sm go" data-act="openGame" data-id="${dupG.id}">Open that game</button><button type="button" class="btn sm" data-act="postAnyway" data-v="gameForm">Post anyway</button></div>`;x.hidden=false;return}
     if(cloud())cloudSaveGame(t,g,modalCtx.editId,S.games.find(x=>x.id===modalCtx.editId));
@@ -1168,16 +1307,17 @@ document.addEventListener('submit',e=>{
     const P=me();['name','school','grade','sport','position','jersey','title'].forEach(k=>{if(fd.has(k))P[k]=(fd.get(k)||'').trim()});
     if(S.account){S.account.name=P.name;S.account.school=P.school}
     if(cloud()){P.schoolId=SCHOOLS.find(x=>x.name===P.school)?.id||'';cloudSaveProfile(P)}
-    if(fbAuth?.currentUser&&!USER?.demo)fbAuth.currentUser.updateProfile({displayName:P.name}).catch(()=>{});
+    if(fbAuth?.currentUser)fbAuth.currentUser.updateProfile({displayName:P.name}).catch(()=>{});
     save();back();render();toast('Profile saved');
   }
 });
 function dismiss(){back()}
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('modal').innerHTML)dismiss()});
+document.addEventListener('input',e=>{const m=/^gb-(\d+)-/.exec(e.target.id||'');if(m&&modalCtx?.pref?.[m[1]]){delete modalCtx.pref[m[1]];document.getElementById('gr-'+m[1])?.classList.remove('pref')}});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id?.endsWith('-oppx')){e.preventDefault();e.target.closest('.picker').querySelector('[data-act=oppUse]').click();return}if(e.key==='Escape'&&document.getElementById('modal').innerHTML)dismiss()});
 /* ---------- cloud sync (Firestore) ---------- */
 let db=null;
 const subs={};
-const cloud=()=>!!(db&&USER&&!USER.demo&&S&&S.cloud);
+const cloud=()=>!!(db&&USER&&S&&S.cloud);
 const approved=()=>!cloud()||!!S.coachApproved;
 const FV=()=>firebase.firestore.FieldValue;
 const now=()=>FV().serverTimestamp();
@@ -1191,6 +1331,8 @@ function refreshModal(){
   else if(c.kind==='school')schoolSheet(c.id);
   else if(c.kind==='game'){if(S.games.some(g=>g.id===c.id))gameDetail(c.id);else back()}
   else if(c.kind==='player')playerSheet(c.id,c.i);
+  else if(c.kind==='practice'){if((S.practices||[]).some(p=>p.id===c.id))practiceDetail(c.id);else back()}
+  else if(c.kind==='pracs')pracList(c.id);
   else if(c.kind==='claim')claimSheet(c.id);
 }
 const CERR={'permission-denied':'You don’t have permission to do that.','unavailable':'You’re offline. This will sync when you reconnect.','not-found':'That item no longer exists.'};
@@ -1210,9 +1352,11 @@ function watchTeam(id){
   const t=S.teams.find(x=>x.id===id);if(!t)return;
   sub('t:'+id,db.doc('teams/'+id),s=>{
     const d=s.data()||{};t.exists=s.exists;t.coach=d.coachName||'';t.coachUid=d.coachUid||null;t.meets=d.meets||'';
-    t.managed=!!t.coachUid&&t.coachUid===USER.uid;
-    if(t.managed&&isCoach()){sub('i:'+id,db.doc(`teams/${id}/private/invite`),x=>{t.code=x.data()?.code||'';refresh()});
-      sub('ca:'+id,db.collection(`teams/${id}/corrections`),x=>setCorr(id,x))}
+    t.managers=d.managers||[];t.managerNames=d.managerNames||{};t.isPrimary=!!t.coachUid&&t.coachUid===USER.uid;t.managed=isCoach()&&(t.isPrimary||t.managers.includes(USER.uid));
+    pracSub(t);
+    if(t.managed)sub('i:'+id,db.doc(`teams/${id}/private/invite`),x=>{t.code=x.data()?.code||'';refresh()});
+    if(canScore(t)&&isCoach()){sub('ca:'+id,db.collection(`teams/${id}/corrections`),x=>setCorr(id,x));
+      sub('sb:'+id,db.collection(`teams/${id}/submissions`),x=>{S.subs=S.subs||{};S.subs[id]=x.docs.map(d=>({id:d.id,...d.data()}));if(modalCtx?.kind==='gameForm'&&modalCtx.teamId===id&&!modalCtx.editId)prefillGame()})}
     refresh();
   });
   if(!isCoach())sub('cm:'+id,db.collection(`teams/${id}/corrections`).where('uid','==',USER.uid),x=>setCorr(id,x));
@@ -1221,13 +1365,25 @@ function watchTeam(id){
     t.roster=rows.map(r=>r.name);t.rids={};t.ruid={};t.rosterLoaded=true;t.ridName=Object.fromEntries(rows.map(r=>[r.rid,r.name]));
     rows.forEach(r=>{t.rids[r.name]=r.rid;t.ruid[r.name]=r.uid||null;S.people[r.name]=[r.position||'',r.jersey!=null&&r.jersey!==''?String(r.jersey):'']});
     t.joined=rows.some(r=>r.uid===USER.uid);
-    nameBoxes(t);refresh();
+    nameBoxes(t);pracSub(t);refresh();
   });
   sub('g:'+id,db.collection(`teams/${id}/games`),s=>{
     S.games=S.games.filter(g=>g.teamId!==id).concat(s.docs.map(d=>{const x=d.data();
-      return {id:d.id,teamId:id,date:x.date,opponent:x.opponent,us:x.us,them:x.them,result:x.result,location:x.location,raw:x.box||{},box:{},boxRid:{}}}));
+      return {id:d.id,teamId:id,date:x.date,opponent:x.opponent,oppTeamId:x.oppTeamId||'',us:x.us,them:x.them,result:x.result,location:x.location,raw:x.box||{},box:{},boxRid:{}}}));
     nameBoxes(t);refresh();
   });
+}
+// Team practices are readable only by the team's coaches, managers and players who joined with the code.
+function pracSub(t){if(!cloud())return;const k='p:'+t.id;
+  if(canSeePractices(t))sub(k,db.collection(`teams/${t.id}/practices`),s=>{S.practices=(S.practices||[]).filter(p=>p.teamId!==t.id).concat(s.docs.map(d=>{const x=d.data();return {id:d.id,teamId:t.id,date:x.date,minutes:x.minutes||0,focus:x.focus||'',notes:x.notes||'',video:x.video||'',byName:x.byName||''}}));refresh()});
+  else if(subs[k]){subs[k]();delete subs[k];S.practices=(S.practices||[]).filter(p=>p.teamId!==t.id)}}
+// A player's own log of a team game is shared with that team's coach and managers so it can pre-fill the official game.
+function syncSubmission(logId,o,prev){
+  if(!cloud()||isCoach())return;
+  const newT=o&&o.type==='match'&&o.teamId&&coached(S.teams.find(t=>t.id===o.teamId))?o.teamId:null;const oldT=prev?.teamId||null;
+  if(oldT&&oldT!==newT)db.doc(`teams/${oldT}/submissions/${logId}`).delete().catch(()=>{});
+  if(newT){const t=S.teams.find(x=>x.id===newT);
+    db.doc(`teams/${newT}/submissions/${logId}`).set({uid:USER.uid,name:myRosterName(t)||S.profile.name,logId,date:o.date,opponent:o.opponent||'',oppTeamId:o.oppTeamId||'',us:o.us??null,them:o.them??null,result:o.result||'',stats:o.stats||{},minutes:o.minutes||0,updatedAt:now()}).catch(()=>{})}
 }
 function setCorr(teamId,snap){S.corrections=(S.corrections||[]).filter(c=>c.teamId!==teamId).concat(snap.docs.map(d=>({...d.data(),id:d.id,teamId})));refresh()}
 // Box scores are stored by roster spot id. Show each one under the spot's current name, so renaming
@@ -1237,7 +1393,7 @@ function nameBoxes(t){S.games.filter(g=>g.teamId===t.id&&g.raw).forEach(g=>{cons
 function watchSchool(schoolId){
   if(!cloud())return;
   sub('s:'+schoolId,db.collection('teams').where('schoolId','==',schoolId),s=>{
-    s.docs.forEach(d=>{const t=S.teams.find(x=>x.id===d.id);if(!t)return;const x=d.data();t.exists=true;t.coach=x.coachName||'';t.coachUid=x.coachUid||null;t.meets=x.meets||'';t.managed=!!t.coachUid&&t.coachUid===USER.uid});
+    s.docs.forEach(d=>{const t=S.teams.find(x=>x.id===d.id);if(!t)return;const x=d.data();t.exists=true;t.coach=x.coachName||'';t.coachUid=x.coachUid||null;t.meets=x.meets||'';t.managers=x.managers||[];t.managerNames=x.managerNames||{};t.isPrimary=!!t.coachUid&&t.coachUid===USER.uid;t.managed=isCoach()&&(t.isPrimary||t.managers.includes(USER.uid))});
     refresh();
   });
 }
@@ -1247,6 +1403,7 @@ function startSync(){
     sub('u',db.doc('users/'+USER.uid),s=>{if(!s.exists)return;applyUser(s.data());if(first){first=false;res()}refresh()});
     sub('logs',db.collection(`users/${USER.uid}/logs`),s=>{S.logs=s.docs.map(d=>({...d.data(),id:d.id}));refresh()});
     sub('mine',db.collection('teams').where('coachUid','==',USER.uid),s=>{s.docs.forEach(d=>watchTeam(d.id));refresh()});
+    sub('staffOf',db.collection('teams').where('managers','array-contains',USER.uid),s=>{s.docs.forEach(d=>watchTeam(d.id));refresh()});
     watchAdmin();
   });
 }
@@ -1272,7 +1429,7 @@ async function enterCloud(user){
 /* --- admin --- */
 const ADMIN_EMAIL='jilim1995@gmail.com';
 const isAdmin=()=>cloud()&&(USER.email||'').toLowerCase()===ADMIN_EMAIL;
-function saveContact(){if(db&&USER&&!USER.demo&&USER.email)db.doc(`users/${USER.uid}/private/contact`).set({email:USER.email},{merge:true}).catch(()=>{})}
+function saveContact(){if(db&&USER&&USER.email)db.doc(`users/${USER.uid}/private/contact`).set({email:USER.email},{merge:true}).catch(()=>{})}
 function watchAdmin(){
   if(!isAdmin())return;S.admin=S.admin||{coaches:[],emails:{},loaded:false};
   sub('admin',db.collection('users').where('role','==','coach'),s=>{
@@ -1338,11 +1495,7 @@ async function deleteAccount(fd){
   try{
     unsubAll();
     if(isCoach()){
-      for(const t of managedTeams()){
-        if(t.code)await db.doc('codes/'+t.code).delete().catch(()=>{});
-        await db.doc(`teams/${t.id}/private/invite`).delete().catch(()=>{});
-        await db.doc('teams/'+t.id).update({coachUid:null,coachName:''}).catch(()=>{});
-      }
+      for(const t of managedTeams())await leaveStaff(t).catch(()=>{});
     }else{
       const ids=new Set([...(S.myTeamIds||[]),...joinedTeams().map(t=>t.id)]);
       for(const id of ids){
@@ -1373,13 +1526,24 @@ async function cloudClaim(t){
     watchTeam(t.id);toast('You now manage '+teamTitle(t));
   }catch(e){cfail(e)}
 }
-async function cloudUnclaim(t){
-  try{
+// Step down from a team. If others still run it, they keep it; the last one out frees the team and its invite code.
+async function leaveStaff(t){
+  const others=staffOf(t).filter(m=>m.uid!==USER.uid);
+  if(others.length){
+    const upd=t.coachUid===USER.uid?{coachUid:others[0].uid,coachName:others[0].name,managers:FV().arrayRemove(others[0].uid)}:{managers:FV().arrayRemove(USER.uid)};
+    await db.doc('teams/'+t.id).update(upd);
+  }else{
     if(t.code)await db.doc('codes/'+t.code).delete().catch(()=>{});
     await db.doc(`teams/${t.id}/private/invite`).delete().catch(()=>{});
-    await db.doc('teams/'+t.id).update({coachUid:null,coachName:''});
-    ['i:'+t.id].forEach(k=>{if(subs[k]){subs[k]();delete subs[k]}});
-    t.code='';t.managed=false;back();refresh();toast('Stopped managing '+teamTitle(t));
+    await db.doc('teams/'+t.id).update({coachUid:null,coachName:'',managers:[]});
+  }
+}
+async function cloudUnclaim(t){
+  try{
+    await leaveStaff(t);
+    S.practices=(S.practices||[]).filter(p=>p.teamId!==t.id);
+    ['i:'+t.id,'ca:'+t.id,'sb:'+t.id,'p:'+t.id].forEach(k=>{if(subs[k]){subs[k]();delete subs[k]}});
+    t.code='';t.managed=false;t.isPrimary=false;back();refresh();toast('Stopped managing '+teamTitle(t));
   }catch(e){cfail(e)}
 }
 async function cloudRegen(t){
@@ -1402,7 +1566,7 @@ function cloudRemovePlayer(t,n){
 function cloudSaveGame(t,g,editId,prev){
   const box={};
   Object.entries(g.box).forEach(([n,st])=>{const rid=t.rids?.[n]||prev?.boxRid?.[n]||('x-'+n.toLowerCase().replace(/[^a-z0-9]+/g,'-'));box[rid]={name:n,...st}});
-  const data={date:g.date,opponent:g.opponent,us:g.us,them:g.them,result:g.result,location:g.location,box,updatedAt:now()};
+  const data={date:g.date,opponent:g.opponent,oppTeamId:g.oppTeamId||'',us:g.us,them:g.them,result:g.result,location:g.location,box,updatedAt:now()};
   const ref=editId?db.doc(`teams/${t.id}/games/${editId}`):db.collection(`teams/${t.id}/games`).doc();
   ref.set(data).catch(cfail);
 }
@@ -1470,7 +1634,7 @@ function cloudSaveProfile(P){
   db.doc('users/'+USER.uid).update(d).catch(cfail);
   if(!isCoach())joinedTeams().forEach(t=>{const n=Object.keys(t.ruid||{}).find(k=>t.ruid[k]===USER.uid);const rid=n&&t.rids[n];
     if(rid)db.doc(`teams/${t.id}/roster/${rid}`).update({name:P.name,position:P.position||'',jersey:P.jersey||''}).catch(()=>{})});
-  if(isCoach())managedTeams().forEach(t=>db.doc('teams/'+t.id).update({coachName:P.name}).catch(()=>{}));
+  if(isCoach())managedTeams().forEach(t=>db.doc('teams/'+t.id).update(t.isPrimary?{coachName:P.name}:{['managerNames.'+USER.uid]:P.name}).catch(()=>{}));
 }
 
 /* ---------- accounts ---------- */
@@ -1530,18 +1694,10 @@ function enter(user){
     save();showApp();toast('Welcome to Stateam');return}
   showOnboarding();
 }
-function enterDemo(role){
-  USER={uid:'demo-'+role,demo:true,email:''};
-  lsSet('stateam.session',{uid:USER.uid,demo:true,role});
-  const saved=lsGet(dataKey(USER.uid));
-  if(saved&&saved.logs&&saved.coach)S=ensureSchoolTeams(saved);else{S=sample();S.role=role;save()}
-  showApp();
-}
 function signOut(){
-  const wasDemo=USER?.demo;
   lsDel('stateam.session');unsubAll();USER=null;S=null;closeModal();
   AUTH.mode='login';AUTH.err='';AUTH.info='';
-  if(fbAuth&&!wasDemo)fbAuth.signOut().catch(()=>{});
+  if(fbAuth)fbAuth.signOut().catch(()=>{});
   showAuth();
 }
 function showApp(){
@@ -1562,8 +1718,9 @@ const roleCards=()=>`<div class="f"><label>I’m a</label><div class="roles" rol
 ].map(([k,i,t,d])=>`<button type="button" class="rolecard" data-act="authRole" data-v="${k}" aria-pressed="${AUTH.role===k}"><span class="ri">${ic(i,20)}</span><b>${t}</b><span class="small muted">${d}</span></button>`).join('')}</div></div>`;
 const msgs=()=>`<div id="auth-err" class="err" ${AUTH.err?'':'hidden'}>${esc(AUTH.err)}</div><div id="auth-info" class="okmsg" ${AUTH.info?'':'hidden'}>${esc(AUTH.info)}</div>`;
 
-const POLICY_VERSION='2026-10-21';
-const agreeBox=id=>`<label class="agree" for="${id}"><input type="checkbox" id="${id}" name="agree" value="1"><span>I agree to the <a href="privacy" target="_blank" rel="noopener">Privacy Policy</a> and <a href="terms" target="_blank" rel="noopener">Terms of Service</a>.</span></label>`;
+const POLICY_VERSION='2026-11-02';
+const legalLinks=()=>`<div class="legal"><a href="privacy/" target="_blank" rel="noopener">Privacy Policy</a><span aria-hidden="true">·</span><a href="terms/" target="_blank" rel="noopener">Terms of Service</a></div>`;
+const agreeBox=id=>`<label class="agree" for="${id}"><input type="checkbox" id="${id}" name="agree" value="1"><span>I agree to the <a href="privacy/" target="_blank" rel="noopener">Privacy Policy</a> and <a href="terms/" target="_blank" rel="noopener">Terms of Service</a>.</span></label>`;
 function renderAuth(loading){
   const el=document.getElementById('auth');
   if(loading){el.innerHTML=`<div class="auth"><div class="authbrand">${LOGO}Stateam</div><p class="muted">Loading…</p></div>`;return}
@@ -1587,7 +1744,7 @@ function renderAuth(loading){
     <div class="or"><span>or</span></div>
     <button type="button" class="btn block gbtn" data-act="google">${GLOGO}${su?'Sign up with Google':'Continue with Google'}</button>
     ${useFirebase?'':`<div class="notice">Preview mode. Accounts are saved in this browser only, and Google sign-in turns on once the Firebase config is added.</div>`}
-    <div class="demo"><span>Just looking? Try a demo:</span><button type="button" class="btn sm" data-act="demo" data-v="player">Player</button><button type="button" class="btn sm" data-act="demo" data-v="coach">Coach</button></div>
+    ${legalLinks()}
   </div>`;
 }
 function showOnboarding(){
@@ -1640,7 +1797,7 @@ async function doAuth(fd){
   finally{setBusy(false)}
 }
 async function googleAuth(){
-  if(!useFirebase)return authMsg('Google sign-in turns on once the Firebase config is added. Use email for now, or try a demo.');
+  if(!useFirebase)return authMsg('Google sign-in turns on once the Firebase config is added. Use email for now.');
   if(AUTH.mode==='signup'){const f=document.getElementById('authForm');const fd=new FormData(f);
     if(!fd.get('agree'))return authMsg('To sign up with Google, first agree to the Privacy Policy and Terms of Service.');
     if(fd.get('school'))AUTH.pending={role:AUTH.role,name:(fd.get('name')||'').trim(),school:fd.get('school'),agreed:true}}
@@ -1662,7 +1819,6 @@ async function initFirebase(){
   firebase.initializeApp(FIREBASE_CONFIG);fbAuth=firebase.auth();db=firebase.firestore();
   try{await db.enablePersistence({synchronizeTabs:true})}catch(e){}
   fbAuth.onAuthStateChanged(u=>{
-    if(USER?.demo)return;
     if(u){if(USER?.uid!==u.uid)enterCloud({uid:u.uid,email:u.email||'',name:u.displayName||''})}
     else if(USER){unsubAll();USER=null;S=null;showAuth()}
     else showAuth();
@@ -1671,7 +1827,7 @@ async function initFirebase(){
 async function boot(){
   applyTheme();
   const sess=lsGet('stateam.session');
-  if(sess?.demo)return enterDemo(sess.role==='coach'?'coach':'player');
+  if(sess?.demo)lsDel('stateam.session');
   if(useFirebase){document.querySelector('.app').hidden=true;document.querySelector('nav.tabs').hidden=true;document.getElementById('auth').hidden=false;renderAuth(true);
     try{await initFirebase()}catch(e){AUTH.err='Couldn’t reach the sign-in service. Check your connection and reload the page.';showAuth()}return}
   if(sess?.uid)return enter({uid:sess.uid,email:sess.email||''});
@@ -1680,5 +1836,3 @@ async function boot(){
 
 boot();
 </script>
-</body>
-</html>
