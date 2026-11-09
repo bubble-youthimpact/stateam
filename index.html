@@ -195,7 +195,8 @@ a.btn{text-decoration:none;color:inherit}
 .rmzone{display:flex;align-items:center;gap:10px;padding-right:14px;flex-wrap:wrap;justify-content:flex-end}
 .rmzone.confirming{grid-column:1/-1;padding:0 14px 12px 16px;background:var(--bad-soft);padding-top:10px}
 html.modal-open,html.modal-open body{overflow:hidden;overscroll-behavior:none}
-.sheet{overscroll-behavior:contain}
+.sheet{overscroll-behavior:contain;scrollbar-width:none;-ms-overflow-style:none;background-clip:padding-box}
+.sheet::-webkit-scrollbar{display:none;width:0;height:0}
 .scrim{overscroll-behavior:contain}
 .errbtns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 .errbtns .btn{color:var(--bad)}
@@ -1382,7 +1383,65 @@ const CASES=[
  skills:['Discipline','Time management','Goal setting','Working under pressure'],
  lessons:['You don’t have to pick between being an athlete and being a student.','Small improvements every day add up, in training and in school.','Staying calm under pressure on the field is the same skill a surgeon needs.'],
  careers:[],field:'Health & Medicine',
- sources:[['Myron Rolle to begin residency at Harvard and Mass General (ESPN, 2017)','https://africa.espn.com/college-football/story/_/id/18938175/ex-florida-state-seminoles-star-myron-rolle-begin-residency-harvard-medical-school-massachusetts-general-hospital'],['Small improvements paved the way to neurosurgery (WUSF, 2022)','https://health.wusf.usf.edu/health-news-florida/2022-05-25/small-improvements-paved-the-way-to-neurosurgery-for-former-fsu-football-star-myron-rolle']]}
+ sources:[['Myron Rolle to begin residency at Harvard and Mass General (ESPN, 2017)','https://africa.espn.com/college-football/story/_/id/18938175/ex-florida-state-seminoles-star-myron-rolle-begin-residency-harvard-medical-school-massachusetts-general-hospital'],['Small improvements paved the way to neurosurgery (WUSF, 2022)','https://health.wusf.usf.edu/health-news-florida/2022-05-25/small-improvements-paved-the-way-to-neurosurgery-for-former-fsu-football-star-myron-rolle']]},
+{id:'becky-hammon',name:'Becky Hammon',ini:'BH',sport:'Basketball',role:'Guard · New York Liberty and San Antonio Stars',type:'Injury',
+ headline:'She spent an injury season learning from NBA coaches, and became a championship head coach.',
+ setback:'Hammon played 16 WNBA seasons, the first eight with the New York Liberty and the last eight in San Antonio. In 2013, while she was recovering from an injury, she started attending the San Antonio Spurs’ practices, games and coaching meetings, like an internship.',
+ next:'In August 2014, as her final season was ending, Spurs coach Gregg Popovich hired her as a full-time assistant coach, the first woman in NBA history in that role. In 2015 she became the first woman to be a head coach in the NBA Summer League, and her team won it. At the end of 2021 the Las Vegas Aces hired her as head coach. In her first season, 2022, she was named Coach of the Year and won the WNBA championship, then won it again in 2023.',
+ timeline:[['2013','Spent an injury season learning in Spurs practices and meetings'],['2014','Retired and became the NBA’s first full-time female assistant coach'],['2015','First woman to be head coach in the NBA Summer League, and won it'],['2021','Hired as head coach of the Las Vegas Aces'],['2022','Coach of the Year and WNBA champion'],['2023','Won a second straight WNBA title']],
+ skills:['Leadership','Communication','Basketball IQ','Persistence'],
+ lessons:['Time away from playing can be time to learn the next job up close.','She was willing to be the first, even when nobody had done it before.','Coaching uses what a guard does on the court: reading the game and directing teammates.'],
+ careers:['Sports Coach','Player Development Specialist','Game Analyst'],
+ sources:[['Becky Hammon, head coach (Las Vegas Aces)','https://aces.wnba.com/head-coach-becky-hammon'],['Hammon’s 2022 championship season (Swish Appeal)','https://www.swishappeal.com/2022/9/21/23364577/wnba-becky-hammon-las-vegas-aces-2022-finals-championship-title-san-antonio-spurs-gregg-popovich'],['Hammon leaving Spurs to coach the Aces (CBS Sports)','https://www.cbssports.com/wnba/news/wnba-legend-becky-hammon-leaving-spurs-to-become-head-coach-of-las-vegas-aces']]},
+{id:'kim-yuna',name:'Kim Yuna',ini:'KY',sport:'Figure skating',role:'Olympic champion · South Korea',type:'Planned',
+ headline:'After 17 years on the ice, she retired on her own terms and became a face of Korean sport and charity.',
+ setback:'Kim won Korea’s first Olympic gold in figure skating at Vancouver in 2010, then silver at Sochi in 2014. She had competed for 17 years, and announced her retirement shortly after Sochi.',
+ quote:['I was able to be a mature person through those challenging moments.','Kim Yuna, to JoongAng Ilbo in 2015'],
+ next:'She had already helped bring the Winter Olympics to Korea, traveling to Durban in 2011 with the PyeongChang bid team. After retiring she became an honorary ambassador for PyeongChang 2018 and lit the Olympic cauldron at the opening ceremony. She studied for a master’s degree in physical education at Korea University, gave advice to young skaters at the national training center, and served as an ambassador for the Special Olympics and the 2016 Youth Olympic Games. She has been a UNICEF Goodwill Ambassador since 2010, taking part in relief efforts in Haiti, Japan and the Philippines.',
+ timeline:[['2010','Won Olympic gold and became a UNICEF Goodwill Ambassador'],['2011','Joined the PyeongChang bid team in Durban'],['2014','Won silver at Sochi and retired'],['2015','Studying physical education at Korea University'],['2018','Lit the Olympic cauldron at PyeongChang']],
+ skills:['Discipline','Composure','Public speaking','Goal setting'],
+ lessons:['You can use what you built as an athlete to help causes you care about.','Representing your country or a cause is a real job: preparing, presenting and showing up.','Helping younger athletes is a way to stay close to your sport.'],
+ careers:['Sports Marketing','Nonprofit / Community Work','Sports Event Manager'],
+ sources:[['Former ice skating ‘Queen’ melts the hearts of fans (JoongAng Daily, 2015)','https://www.koreajoongangdaily.com/sports/former-ice-skating-queen-melts-the-hearts-of-fans/10442412'],['Yuna Kim lights the Olympic cauldron (TIME, 2018)','https://time.com/5141402/yuna-kim-olympics-2018'],['Yuna Kim named PyeongChang 2018 ambassador (NBC Sports)','https://www.nbcsports.com/olympics/news/yuna-kim-pyeongchang-olympics-2018-ambassador-figure-skating']]},
+{id:'john-urschel',name:'John Urschel',ini:'JU',sport:'Football',role:'Offensive lineman · Baltimore Ravens',type:'Planned',
+ headline:'He left the NFL at 26 to finish a math PhD, and now teaches math at MIT.',
+ setback:'Urschel earned bachelor’s and master’s degrees in mathematics at Penn State while playing football there. The Baltimore Ravens drafted him in 2014, and he started a math PhD at MIT while still in the NFL. In July 2017, at 26, he retired, saying he was worried about the long-term risk of brain injury.',
+ quote:['This was actually a serious, serious concern of mine.','John Urschel, on brain injury and his 2017 retirement'],
+ next:'He finished his PhD in mathematics at MIT in 2021 and joined MIT’s math department as an assistant professor in 2023. He also wrote a book with Louisa Thomas, Mind and Matter: A Life in Math and Football, and served on the College Football Playoff selection committee.',
+ timeline:[['2013','Earned a master’s degree in math at Penn State'],['2014','Drafted by the Baltimore Ravens'],['2017','Retired at 26 to focus on math'],['2019','Published Mind and Matter'],['2021','Finished his PhD at MIT'],['2023','Became an MIT math professor']],
+ skills:['Problem-solving','Discipline','Time management','Focus'],
+ lessons:['You don’t have to choose between being an athlete and being great at a subject.','Thinking about your long-term health is part of planning a career.','The work ethic from training carries over to hard classes and research.'],
+ careers:['Sports Data Scientist','Sports Statistician','Technology / Data Analytics'],field:'Tech & Data',
+ sources:[['John Urschel (Wikipedia)','https://en.wikipedia.org/wiki/John_Urschel'],['Ravens player retires to finish Ph.D. at MIT (CBS Sports, 2017)','https://www.cbssports.com/nfl/news/ravens-player-battling-for-starting-job-retires-from-nfl-to-finish-ph-d-at-mit/']]},
+{id:'michelle-kwan',name:'Michelle Kwan',ini:'MK',sport:'Figure skating',role:'Figure skater · United States',type:'Injury',
+ headline:'An injury ended her last Olympic run. She went to college, studied diplomacy and became a U.S. ambassador.',
+ setback:'Kwan earned a spot on the 2006 U.S. Olympic team, but was hurt in her first practice in Turin and had to withdraw. She later had hip surgery, and the 2005 World Championships turned out to be her last competition.',
+ quote:['I am a better person because of the sport.','Michelle Kwan, to U.S. Figure Skating'],
+ next:'She went to the University of Denver, graduating in 2009 with a degree in international studies. While still in college she was named the first U.S. Public Diplomacy Envoy, traveling to speak with young people around the world. She earned a master’s in international relations from Tufts University in 2011 and became a senior advisor at the U.S. State Department. In 2021 she was nominated as U.S. Ambassador to Belize, and she took the post in October 2022.',
+ timeline:[['2006','Withdrew from the Turin Olympics after an injury'],['2009','Graduated from the University of Denver'],['2011','Earned a master’s in international relations from Tufts'],['2022','Became U.S. Ambassador to Belize']],
+ skills:['Resilience','Communication','Discipline','Working under pressure'],
+ lessons:['An injury can close one door at the exact moment you’re ready for another.','School was the bridge from skating to a completely new field.','Representing your country as an athlete can lead to representing it in other ways.'],
+ careers:['Public Policy Analyst','Government Program Manager'],field:'Public Service',
+ sources:[['Michelle Kwan (Britannica)','https://www.britannica.com/biography/Michelle-Kwan'],['Michelle Kwan: From the podium to politics (U.S. Figure Skating)','https://www.usfigureskating.org/news/article/michelle-kwan-podium-politics']]},
+{id:'alan-page',name:'Alan Page',ini:'AP',sport:'Football',role:'Defensive tackle · Minnesota Vikings and Chicago Bears',type:'Planned',
+ headline:'He went to law school while playing in the NFL and became a state supreme court justice.',
+ setback:'Page was named the NFL’s Most Valuable Player in 1971 and played for the Minnesota Vikings and Chicago Bears. While still playing, he went to law school and graduated from the University of Minnesota Law School in 1978. He retired from football in 1981.',
+ next:'He practiced law at a Minneapolis firm and then worked in the Minnesota Attorney General’s office. In 1992 he was elected to the Minnesota Supreme Court, the first African American to serve on it, and stayed until 2015, when he reached the mandatory retirement age of 70. He also started the Page Education Foundation, which helps Minnesota students of color pay for college.',
+ timeline:[['1971','Named NFL Most Valuable Player'],['1978','Graduated from law school while still playing'],['1981','Retired from football'],['1992','Elected to the Minnesota Supreme Court'],['2015','Retired from the court at 70']],
+ skills:['Discipline','Preparation','Critical thinking','Leadership'],
+ lessons:['He prepared for his next career while his first one was still going.','Studying while competing is hard, but it gave him a head start.','Success in one field can open doors to help others in your community.'],
+ careers:['Law / Sports Law','Nonprofit Program Manager'],field:'Public Service',
+ sources:[['Justice Alan Page biography (Minnesota State Law Library)','https://mn.gov/law-library/research-links/justice-bios/alan-page.jsp']]},
+{id:'dikembe-mutombo',name:'Dikembe Mutombo',ini:'DM',sport:'Basketball',role:'Center · Denver, Atlanta, Houston and others',type:'Injury',
+ headline:'He built a hospital in his hometown while still playing, then made giving back his full-time work.',
+ setback:'Mutombo was an eight-time NBA All-Star and ranks second all-time in blocked shots. In 2009, at 42, he was carried off the court with a knee injury in a playoff game for the Houston Rockets, and announced he would not come back.',
+ quote:['I’ve had a wonderful 18 years of staying injury-free, so I just want to go out with my head up, no regrets.','Dikembe Mutombo, on retiring in 2009'],
+ next:'He had started the Dikembe Mutombo Foundation in 1997 to improve health and education in Kinshasa, in the Democratic Republic of the Congo, where he was born. Its biggest project, the 300-bed Biamba Marie Mutombo Hospital, opened in 2007. It is named after his mother, who died because she could not get proper medical care, and he gave $15 million to build it. After retiring he worked as an ambassador for the NBA and helped create NBA Africa. He died of brain cancer in 2024, at 58.',
+ timeline:[['1997','Started his foundation for health and education in Kinshasa'],['2007','Opened the Biamba Marie Mutombo Hospital'],['2009','Retired at 42 after a knee injury'],['2024','Died at 58; the hospital carries on his work']],
+ skills:['Leadership','Generosity','Communication','Persistence'],
+ lessons:['You can start building your next chapter while you’re still playing.','A personal loss became the reason for his life’s work.','Your platform as an athlete can help people far beyond the court.'],
+ careers:['Nonprofit Program Manager','Healthcare Administrator','Fundraising Manager'],
+ sources:[['Mutombo announces retirement after knee injury (FIBA, 2009)','https://www.fiba.basketball/en/news/cod-usa-mutombo-announces-retirement-after-knee-injury'],['DRC mourns NBA legend Dikembe Mutombo (Mwananchi, 2024)','https://mwananchi.co.tz/kenya/sports/basketball/drc-mourns-nba-legend-dikembe-mutombo-4783264']]}
 ];
 /* ---------- Explore: career quiz, careers, resume builder, case studies ---------- */
 const CAREER_CATS=[...new Set(CAREERS.map(c=>c.c))].sort();
@@ -1395,7 +1454,7 @@ const exHead=(t,s)=>`<button class="link small pageback" data-act="exOpen" data-
 const resumeDone=r=>r?[!!(r.personal?.name&&r.personal?.email),(r.summary||'').trim().length>40,(r.edu||[]).some(e=>e.school),(r.exp||[]).some(e=>e.title&&(e.bullets||'').trim()),(r.skills||[]).length>=4].filter(Boolean).length:0;
 function careerRow(n,i){const d=career(n);if(!d)return '';
   return `<button class="row" data-act="openCareer" data-v="${esc(n)}"><span class="rk${i===0?' top':''}" style="justify-self:center">${i+1}</span><span style="min-width:0"><div class="t">${esc(n)}</div><div class="m">${esc(d.c)} · <span style="color:var(--accent);font-weight:700">${esc(d.s)}</span></div></span>${ic('chev',18)}</button>`}
-function caseRow(c){return `<button class="case" data-act="openCase" data-v="${c.id}"><span class="av">${c.ini}</span><span style="min-width:0"><span class="t">${esc(c.name)}</span> <span class="pill ${c.type==='Injury'?'out':'sp'}" style="vertical-align:2px">${c.type==='Injury'?'After an injury':'Planned change'}</span><div class="h">${esc(c.headline)}</div></span><span class="chev">${ic('chev',18)}</span></button>`}
+function caseRow(c){return `<button class="case" data-act="openCase" data-v="${c.id}"><span class="av">${c.ini}</span><span style="min-width:0"><span style="display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px"><span class="t">${esc(c.name)}</span><span class="pill ${c.type==='Injury'?'out':'sp'}">${c.type==='Injury'?'After an injury':'Planned change'}</span></span><div class="h">${esc(c.headline)}</div></span><span class="chev">${ic('chev',18)}</span></button>`}
 
 function vExplore(){
   if(UI.ex==='careers')return vCareers();
