@@ -318,6 +318,13 @@ form{display:flex;flex-direction:column;gap:14px}
 .score{display:flex;align-items:center;justify-content:center;gap:24px;text-align:center;padding:6px 0}
 .score b{font-size:40px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;display:block;line-height:1.1}
 /* ---------- Explore ---------- */
+.crow2{grid-template-columns:40px minmax(0,1fr) auto;padding:12px 16px}
+.crow2 .t{white-space:normal;line-height:1.3}
+.crow2 .r b{font-size:14px;color:var(--fg);white-space:nowrap}
+.crow2:first-child{border-top:0}
+.glyph.out{background:var(--surface2);color:var(--muted)}
+.pageback{display:flex;width:fit-content;align-items:center;margin:12px 0 0;padding:4px 0;min-height:28px}
+.pageback+h1{margin-top:12px}
 .xgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .xtool{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:16px;text-align:left;cursor:pointer;color:inherit;font:inherit;min-height:168px}
 .xtool b{font-size:16px;font-weight:800;line-height:1.25;margin-top:4px}
@@ -1384,7 +1391,7 @@ const career=n=>CAREERS.find(c=>c.n===n);
 CAREERS.forEach(d=>{d._h=(d.n+' '+d.w+' '+d.k.join(' ')+' '+d.m.join(' ')+' '+d.c+' '+d.d).toLowerCase()});
 const CX0={q:'',sp:'all',cat:'',ed:'',pay:0,sort:'az'};
 UI.ex='';UI.cx={...CX0};
-const exHead=(t,s)=>`<button class="link small backlink" data-act="exOpen" data-v="">‹ Explore</button><h1>${t}</h1><p class="sub">${s}</p>`;
+const exHead=(t,s)=>`<button class="link small pageback" data-act="exOpen" data-v="">‹ Explore</button><h1>${t}</h1><p class="sub">${s}</p>`;
 const resumeDone=r=>r?[!!(r.personal?.name&&r.personal?.email),(r.summary||'').trim().length>40,(r.edu||[]).some(e=>e.school),(r.exp||[]).some(e=>e.title&&(e.bullets||'').trim()),(r.skills||[]).length>=4].filter(Boolean).length:0;
 function careerRow(n,i){const d=career(n);if(!d)return '';
   return `<button class="row" data-act="openCareer" data-v="${esc(n)}"><span class="rk${i===0?' top':''}" style="justify-self:center">${i+1}</span><span style="min-width:0"><div class="t">${esc(n)}</div><div class="m">${esc(d.c)} · <span style="color:var(--accent);font-weight:700">${esc(d.s)}</span></div></span>${ic('chev',18)}</button>`}
@@ -1435,12 +1442,14 @@ function cxFiltered(){
     if(words.length){const an=a.n.toLowerCase().includes(words[0]),bn=b.n.toLowerCase().includes(words[0]);if(an!==bn)return an?-1:1}
     return a.n.localeCompare(b.n)});
 }
+const CAT_IC={'Coaching & Fitness':'whistle','Business & Finance':'career','Health & Medicine':'pulse','Tech & Data':'stats','Media & Marketing':'video','Education & Counseling':'book','Engineering & Design':'edit','Public Service':'shield','Nonprofit & Community':'teams','Science & Environment':'target'};
+const EDU_SHORT={'No degree required':'No degree needed','Associate degree':'Associate','Bachelor\'s degree':'Bachelor’s','Graduate degree':'Graduate degree'};
 function cxList(){
   const el=document.getElementById('cx-list');if(!el)return;const c=UI.cx,L=cxFiltered();
   document.getElementById('cx-count').textContent=`${L.length} ${L.length===1?'career':'careers'}`;
   document.getElementById('cx-reset').hidden=!(c.sp!=='all'||c.cat||c.ed||c.pay||c.q);
   const clr=document.querySelector('.xsearch .clr');if(clr)clr.hidden=!c.q;
-  el.innerHTML=L.length?L.map(d=>`<button class="crow" data-act="openCareer" data-v="${esc(d.n)}" data-list="1"><b>${esc(d.n)}</b><span class="meta"><span class="pill ${d.sp?'sp':'out'}">${d.sp?'In sports':'Beyond sports'}</span>${esc(d.c)}</span><span class="d">${esc(d.w)}</span><span class="pay">${esc(d.s)} / yr</span></button>`).join('')
+  el.innerHTML=L.length?L.map(d=>`<button class="row crow2" data-act="openCareer" data-v="${esc(d.n)}" data-list="1"><span class="glyph${d.sp?'':' out'}">${ic(CAT_IC[d.c]||'career',20)}</span><span style="min-width:0"><div class="t">${esc(d.n)}</div><div class="m" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${d.sp?'<span style="color:var(--accent);font-weight:700">In sports</span> · ':''}${esc(d.c)}</div></span><span class="r"><b>${esc(d.s.replace(/\$(\d+K)–\$/,'$$$1–'))}</b><span class="m" style="font-size:12px">per year</span></span></button>`).join('')
     :`<div class="empty"><b>No careers match these filters</b>Try a different word or remove a filter.<div style="margin-top:12px"><button class="btn primary" data-act="cxReset">Clear filters</button></div></div>`;
 }
 function careerSheet(name,list){
